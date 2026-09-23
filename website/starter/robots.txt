@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://luneandcrumb.co.uk/sitemap.xml
