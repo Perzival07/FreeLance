@@ -10,6 +10,7 @@ import { NAV_CATEGORIES, SITE, fullAddress, whatsappLink } from "../config/site"
 import { showroomStatus } from "../utils/format";
 import { FAQS } from "../config/policies";
 import { assets } from "../assets/assets";
+import Stars from "../components/Stars";
 
 const SHOWROOM_FAQ_QUESTIONS = ["Can I see the furniture before buying?", "Do you make furniture in custom sizes or fabrics?", "What payment methods do you accept?", "Which areas do you deliver to?"];
 
@@ -29,7 +30,15 @@ const Showroom = () => {
       <div className="container-site py-10">
         <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr]">
           <div className="space-y-4">
-            <img src={assets.hero_img} alt="Sofa in a bright living room" className="aspect-[16/10] w-full rounded-xl object-cover" />
+            {SITE.showroomPhotos.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3">
+                {SITE.showroomPhotos.map((src, i) => (
+                  <img key={src} src={src} alt={`Inside ${SITE.name}, photo ${i + 1}`} loading={i === 0 ? "eager" : "lazy"} className={`w-full rounded-xl object-cover ${i === 0 ? "col-span-2 aspect-[16/10]" : "aspect-square"}`} />
+                ))}
+              </div>
+            ) : (
+              <img src={assets.hero_img} alt="Sofa in a bright living room" className="aspect-[16/10] w-full rounded-xl object-cover" />
+            )}
             <div className="h-72 overflow-hidden rounded-xl border border-cream-300">
               <iframe src={SITE.mapsEmbedUrl} title={`Map showing ${SITE.name}`} className="h-full w-full border-0" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
             </div>
@@ -47,6 +56,15 @@ const Showroom = () => {
                 {SITE.address.line1}, {SITE.address.locality}<br />
                 {SITE.address.city} – {SITE.address.pincode}, {SITE.address.state}
               </address>
+              {SITE.landmark && <p className="mt-1 text-sm text-stone-600">{SITE.landmark}</p>}
+              <p className="mt-3 text-sm">
+                <a href={`mailto:${SITE.email}`} className="link">{SITE.email}</a>
+              </p>
+              {SITE.googleRating && (
+                <a href={SITE.mapsUrl} target="_blank" rel="noopener noreferrer" className="mt-3 flex items-center gap-2 text-sm text-stone-700">
+                  <Stars value={SITE.googleRating.value} /> {SITE.googleRating.value} on Google · {SITE.googleRating.count} reviews
+                </a>
+              )}
               <div className="mt-5 grid grid-cols-2 gap-3">
                 <a href={SITE.mapsUrl} target="_blank" rel="noopener noreferrer" className="btn-primary col-span-2">
                   <Icon name="pin" className="h-4 w-4" /> Get directions
@@ -89,7 +107,7 @@ const Showroom = () => {
           <div>
             <h2 className="section-title">Book a visit</h2>
             <p className="mb-6 mt-2 text-stone-600">Walk-ins are always welcome. Book a time if you&apos;d like us to keep a specific piece ready or to discuss a custom order.</p>
-            <LeadForm type="visit" fields={["preferredDate", "preferredTime", "message"]} submitLabel="Book my visit" messageLabel="What are you looking for? (optional)" />
+            <LeadForm type="visit" fields={["purpose", "preferredDate", "preferredTime", "message"]} submitLabel="Book my visit" messageLabel="What are you looking for? (optional)" />
           </div>
           <div>
             <h2 className="section-title">Areas we deliver to</h2>

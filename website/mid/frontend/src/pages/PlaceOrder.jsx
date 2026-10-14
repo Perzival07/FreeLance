@@ -2,6 +2,7 @@ import { useContext, useState, useEffect } from "react";
 import { assets } from "../assets/assets";
 import { Link } from "react-router-dom";
 import useSeo from "../hooks/useSeo";
+import { formatPrice } from "../utils/format";
 import CartTotal from "./../components/CartTotal";
 import { ShopContext } from "../context/ShopContext";
 import { toast } from "react-toastify";
@@ -480,9 +481,9 @@ const PlaceOrder = () => {
           {formData.distance && formData.distance > 0 && (
             <div className="mt-3 p-3 bg-white border border-cream-300 rounded">
               <p className="text-sm font-semibold text-stone-700">Estimated Delivery Charge:</p>
-              <p className="text-lg font-display text-gold-gradient font-bold">₹{calculatedDeliveryFee}</p>
+              <p className="text-lg font-display text-gold-gradient font-bold">{formatPrice(calculatedDeliveryFee)}</p>
               <p className="text-xs text-stone-600 mt-1">
-                Range: ₹{deliveryRange.min} - ₹{deliveryRange.max}
+                Range: {formatPrice(deliveryRange.min)} – {formatPrice(deliveryRange.max)}
               </p>
             </div>
           )}
@@ -509,7 +510,7 @@ const PlaceOrder = () => {
                   method === "stripe" ? "bg-green-600" : ""
                 }`}
               ></p>
-              <img src={assets.stripe_logo} alt="stripe_logo" />
+              <img src={assets.stripe_logo} alt="Stripe" />
             </div> */}
 
             {/* Razorpay payment method - DISABLED */}
@@ -522,7 +523,7 @@ const PlaceOrder = () => {
                   method === "razorpay" ? "bg-green-600" : ""
                 }`}
               ></p>
-              <img src={assets.razorpay_logo} alt="razorpay_logo" />
+              <img src={assets.razorpay_logo} alt="Razorpay" />
             </div> */}
 
             <button

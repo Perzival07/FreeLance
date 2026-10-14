@@ -32,6 +32,9 @@ const Add = ({ token }) => {
   const [seating, setSeating] = useState("");
   const [warranty, setWarranty] = useState("");
   const [madeToOrder, setMadeToOrder] = useState(false);
+  // More specs, card badge and search-engine fields
+  const [extra, setExtra] = useState({});
+  const setExtraField = (key) => (e) => setExtra((x) => ({ ...x, [key]: e.target.value }));
   const [length, setLength] = useState("");
   const [breadth, setBreadth] = useState("");
   const [height, setHeight] = useState("");
@@ -63,6 +66,7 @@ const Add = ({ token }) => {
       if (seating.trim()) formData.append("seating", seating.trim());
       if (warranty.trim()) formData.append("warranty", warranty.trim());
       formData.append("madeToOrder", madeToOrder);
+      Object.entries(extra).forEach(([k, v]) => v.trim() && formData.append(k, v.trim()));
       
       // Convert to cm if input is in feet/inches
       let lengthCm, breadthCm, heightCm;
@@ -125,6 +129,7 @@ const Add = ({ token }) => {
         setSeating('');
         setWarranty('');
         setMadeToOrder(false);
+        setExtra({});
         setStock("0");
         setLength('');
         setBreadth('');
@@ -150,15 +155,15 @@ const Add = ({ token }) => {
     <form onSubmit={onSubmitHandler} className="flex flex-col w-full items-start gap-6">
       <div>
         <p className="eyebrow-gold text-xs mb-1">NEW PRODUCT</p>
-        <h2 className="font-display text-3xl text-ivory-50">Add Item</h2>
+        <h2 className="font-display text-3xl text-stone-900">Add Item</h2>
       </div>
 
       <div className="card-luxury rounded p-6 w-full">
-        <p className="mb-3 text-ivory-200">Upload Images (Minimum 1, Maximum 10)</p>
+        <p className="mb-3 text-stone-800">Upload Images (Minimum 1, Maximum 10)</p>
         <div className="flex gap-2 flex-wrap">
           <label className="group cursor-pointer" htmlFor="image1">
             <img
-              className="w-20 h-20 object-cover rounded border-2 border-dashed border-gold-500/25 bg-ink-950/40 p-1 group-hover:border-gold-400 group-hover:shadow-gold transition-all"
+              className="w-20 h-20 object-cover rounded border-2 border-dashed border-cream-300 bg-cream-50 p-1 group-hover:border-stone-400 group-hover:shadow-md transition-all"
               src={!image1 ? assets.upload_area : URL.createObjectURL(image1)}
               alt="upload_area_image"
             />
@@ -173,7 +178,7 @@ const Add = ({ token }) => {
 
           <label className="group cursor-pointer" htmlFor="image2">
             <img
-              className="w-20 h-20 object-cover rounded border-2 border-dashed border-gold-500/25 bg-ink-950/40 p-1 group-hover:border-gold-400 group-hover:shadow-gold transition-all"
+              className="w-20 h-20 object-cover rounded border-2 border-dashed border-cream-300 bg-cream-50 p-1 group-hover:border-stone-400 group-hover:shadow-md transition-all"
               src={!image2 ? assets.upload_area : URL.createObjectURL(image2)}
               alt="upload_area_image"
             />
@@ -188,7 +193,7 @@ const Add = ({ token }) => {
 
           <label className="group cursor-pointer" htmlFor="image3">
             <img
-              className="w-20 h-20 object-cover rounded border-2 border-dashed border-gold-500/25 bg-ink-950/40 p-1 group-hover:border-gold-400 group-hover:shadow-gold transition-all"
+              className="w-20 h-20 object-cover rounded border-2 border-dashed border-cream-300 bg-cream-50 p-1 group-hover:border-stone-400 group-hover:shadow-md transition-all"
               src={!image3 ? assets.upload_area : URL.createObjectURL(image3)}
               alt="upload_area_image"
             />
@@ -203,7 +208,7 @@ const Add = ({ token }) => {
 
           <label className="group cursor-pointer" htmlFor="image4">
             <img
-              className="w-20 h-20 object-cover rounded border-2 border-dashed border-gold-500/25 bg-ink-950/40 p-1 group-hover:border-gold-400 group-hover:shadow-gold transition-all"
+              className="w-20 h-20 object-cover rounded border-2 border-dashed border-cream-300 bg-cream-50 p-1 group-hover:border-stone-400 group-hover:shadow-md transition-all"
               src={!image4 ? assets.upload_area : URL.createObjectURL(image4)}
               alt="upload_area_image"
             />
@@ -218,7 +223,7 @@ const Add = ({ token }) => {
 
           <label className="group cursor-pointer" htmlFor="image5">
             <img
-              className="w-20 h-20 object-cover rounded border-2 border-dashed border-gold-500/25 bg-ink-950/40 p-1 group-hover:border-gold-400 group-hover:shadow-gold transition-all"
+              className="w-20 h-20 object-cover rounded border-2 border-dashed border-cream-300 bg-cream-50 p-1 group-hover:border-stone-400 group-hover:shadow-md transition-all"
               src={!image5 ? assets.upload_area : URL.createObjectURL(image5)}
               alt="upload_area_image"
             />
@@ -233,7 +238,7 @@ const Add = ({ token }) => {
 
           <label className="group cursor-pointer" htmlFor="image6">
             <img
-              className="w-20 h-20 object-cover rounded border-2 border-dashed border-gold-500/25 bg-ink-950/40 p-1 group-hover:border-gold-400 group-hover:shadow-gold transition-all"
+              className="w-20 h-20 object-cover rounded border-2 border-dashed border-cream-300 bg-cream-50 p-1 group-hover:border-stone-400 group-hover:shadow-md transition-all"
               src={!image6 ? assets.upload_area : URL.createObjectURL(image6)}
               alt="upload_area_image"
             />
@@ -248,7 +253,7 @@ const Add = ({ token }) => {
 
           <label className="group cursor-pointer" htmlFor="image7">
             <img
-              className="w-20 h-20 object-cover rounded border-2 border-dashed border-gold-500/25 bg-ink-950/40 p-1 group-hover:border-gold-400 group-hover:shadow-gold transition-all"
+              className="w-20 h-20 object-cover rounded border-2 border-dashed border-cream-300 bg-cream-50 p-1 group-hover:border-stone-400 group-hover:shadow-md transition-all"
               src={!image7 ? assets.upload_area : URL.createObjectURL(image7)}
               alt="upload_area_image"
             />
@@ -263,7 +268,7 @@ const Add = ({ token }) => {
 
           <label className="group cursor-pointer" htmlFor="image8">
             <img
-              className="w-20 h-20 object-cover rounded border-2 border-dashed border-gold-500/25 bg-ink-950/40 p-1 group-hover:border-gold-400 group-hover:shadow-gold transition-all"
+              className="w-20 h-20 object-cover rounded border-2 border-dashed border-cream-300 bg-cream-50 p-1 group-hover:border-stone-400 group-hover:shadow-md transition-all"
               src={!image8 ? assets.upload_area : URL.createObjectURL(image8)}
               alt="upload_area_image"
             />
@@ -278,7 +283,7 @@ const Add = ({ token }) => {
 
           <label className="group cursor-pointer" htmlFor="image9">
             <img
-              className="w-20 h-20 object-cover rounded border-2 border-dashed border-gold-500/25 bg-ink-950/40 p-1 group-hover:border-gold-400 group-hover:shadow-gold transition-all"
+              className="w-20 h-20 object-cover rounded border-2 border-dashed border-cream-300 bg-cream-50 p-1 group-hover:border-stone-400 group-hover:shadow-md transition-all"
               src={!image9 ? assets.upload_area : URL.createObjectURL(image9)}
               alt="upload_area_image"
             />
@@ -293,7 +298,7 @@ const Add = ({ token }) => {
 
           <label className="group cursor-pointer" htmlFor="image10">
             <img
-              className="w-20 h-20 object-cover rounded border-2 border-dashed border-gold-500/25 bg-ink-950/40 p-1 group-hover:border-gold-400 group-hover:shadow-gold transition-all"
+              className="w-20 h-20 object-cover rounded border-2 border-dashed border-cream-300 bg-cream-50 p-1 group-hover:border-stone-400 group-hover:shadow-md transition-all"
               src={!image10 ? assets.upload_area : URL.createObjectURL(image10)}
               alt="upload_area_image"
             />
@@ -306,12 +311,12 @@ const Add = ({ token }) => {
             />
           </label>
         </div>
-        <p className="text-xs text-ivory-400 mt-2">Upload 1-10 images (minimum 1 required)</p>
+        <p className="text-xs text-stone-500 mt-2">Upload 1-10 images (minimum 1 required)</p>
       </div>
 
       <div className="card-luxury rounded p-6 w-full flex flex-col gap-4">
       <div className="w-full">
-        <p className="mb-2 text-ivory-200">Product Name</p>
+        <p className="mb-2 text-stone-800">Product Name</p>
         <input
           onChange={(e) => setName(e.target.value)}
           value={name}
@@ -323,7 +328,7 @@ const Add = ({ token }) => {
       </div>
 
       <div className="w-full">
-        <p className="mb-2 text-ivory-200">Product Description</p>
+        <p className="mb-2 text-stone-800">Product Description</p>
         <textarea
           onChange={(e) => setDescription(e.target.value)}
           value={description}
@@ -336,7 +341,7 @@ const Add = ({ token }) => {
 
       <div className="flex flex-col sm:flex-row gap-2 w-full sm:gap-8">
         <div>
-          <p className="mb-2 text-ivory-200">Product Category</p>
+          <p className="mb-2 text-stone-800">Product Category</p>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
@@ -349,7 +354,7 @@ const Add = ({ token }) => {
         </div>
 
         <div>
-          <p className="mb-2 text-ivory-200">Sub Category</p>
+          <p className="mb-2 text-stone-800">Sub Category</p>
           <select
             value={subCategory}
             onChange={(e) => setSubCategory(e.target.value)}
@@ -362,7 +367,7 @@ const Add = ({ token }) => {
         </div>
 
         <div>
-          <p className="mb-2 text-ivory-200">Product Price</p>
+          <p className="mb-2 text-stone-800">Product Price</p>
           <input
             onChange={(e) => setPrice(e.target.value)}
             value={price}
@@ -374,7 +379,7 @@ const Add = ({ token }) => {
         </div>
 
         <div>
-          <p className="mb-2 text-ivory-200">Stock Quantity</p>
+          <p className="mb-2 text-stone-800">Stock Quantity</p>
           <input
             onChange={(e) => setStock(e.target.value)}
             value={stock}
@@ -390,7 +395,7 @@ const Add = ({ token }) => {
 
       <div className="card-luxury rounded p-6 w-full">
         <div className="mb-3">
-          <p className="mb-2 text-ivory-200">Unit System</p>
+          <p className="mb-2 text-stone-800">Unit System</p>
           <div className="flex gap-4">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -430,7 +435,7 @@ const Add = ({ token }) => {
                 required
               />
               {length && (
-                <p className="text-xs text-ivory-400 mt-1">
+                <p className="text-xs text-stone-500 mt-1">
                   {cmToMeters(Number(length))} m ({cmToFeetInches(Number(length)).feet}' {cmToFeetInches(Number(length)).inches}")
                 </p>
               )}
@@ -449,7 +454,7 @@ const Add = ({ token }) => {
                 required
               />
               {breadth && (
-                <p className="text-xs text-ivory-400 mt-1">
+                <p className="text-xs text-stone-500 mt-1">
                   {cmToMeters(Number(breadth))} m ({cmToFeetInches(Number(breadth)).feet}' {cmToFeetInches(Number(breadth)).inches}")
                 </p>
               )}
@@ -468,7 +473,7 @@ const Add = ({ token }) => {
                 required
               />
               {height && (
-                <p className="text-xs text-ivory-400 mt-1">
+                <p className="text-xs text-stone-500 mt-1">
                   {cmToMeters(Number(height))} m ({cmToFeetInches(Number(height)).feet}' {cmToFeetInches(Number(height)).inches}")
                 </p>
               )}
@@ -503,7 +508,7 @@ const Add = ({ token }) => {
                   />
                 </div>
                 {(lengthFt || lengthIn) && (
-                  <p className="text-xs text-ivory-400 mt-1">
+                  <p className="text-xs text-stone-500 mt-1">
                     {feetInchesToCm(Number(lengthFt || 0), Number(lengthIn || 0))} cm ({cmToMeters(feetInchesToCm(Number(lengthFt || 0), Number(lengthIn || 0)))} m)
                   </p>
                 )}
@@ -535,7 +540,7 @@ const Add = ({ token }) => {
                   />
                 </div>
                 {(breadthFt || breadthIn) && (
-                  <p className="text-xs text-ivory-400 mt-1">
+                  <p className="text-xs text-stone-500 mt-1">
                     {feetInchesToCm(Number(breadthFt || 0), Number(breadthIn || 0))} cm ({cmToMeters(feetInchesToCm(Number(breadthFt || 0), Number(breadthIn || 0)))} m)
                   </p>
                 )}
@@ -567,7 +572,7 @@ const Add = ({ token }) => {
                   />
                 </div>
                 {(heightFt || heightIn) && (
-                  <p className="text-xs text-ivory-400 mt-1">
+                  <p className="text-xs text-stone-500 mt-1">
                     {feetInchesToCm(Number(heightFt || 0), Number(heightIn || 0))} cm ({cmToMeters(feetInchesToCm(Number(heightFt || 0), Number(heightIn || 0)))} m)
                   </p>
                 )}
@@ -580,31 +585,63 @@ const Add = ({ token }) => {
 
 
       <div className="card-luxury rounded p-6 w-full">
-        <p className="mb-1 text-ivory-200">Details (optional)</p>
-        <p className="mb-4 text-xs text-ivory-400">Shown on the product page. Leave blank if not applicable.</p>
+        <p className="mb-1 text-stone-800">Details (optional)</p>
+        <p className="mb-4 text-xs text-stone-500">Shown on the product page. Leave blank if not applicable.</p>
         <div className="grid gap-4 sm:grid-cols-2">
-          <label className="text-sm text-ivory-300">
+          <label className="text-sm text-stone-700">
             MRP (original price, shows a discount if higher than price)
             <input value={mrp} onChange={(e) => setMrp(e.target.value)} type="number" min="0" className="mt-1 w-full px-3 py-2 rounded-md" placeholder="e.g. 55000" />
           </label>
-          <label className="text-sm text-ivory-300">
+          <label className="text-sm text-stone-700">
             Material
             <input value={material} onChange={(e) => setMaterial(e.target.value)} className="mt-1 w-full px-3 py-2 rounded-md" placeholder="e.g. Sheesham wood frame, velvet fabric" />
           </label>
-          <label className="text-sm text-ivory-300">
+          <label className="text-sm text-stone-700">
             Available colours (comma separated)
             <input value={colors} onChange={(e) => setColors(e.target.value)} className="mt-1 w-full px-3 py-2 rounded-md" placeholder="e.g. Grey, Teal, Beige" />
           </label>
-          <label className="text-sm text-ivory-300">
+          <label className="text-sm text-stone-700">
             Seating
             <input value={seating} onChange={(e) => setSeating(e.target.value)} className="mt-1 w-full px-3 py-2 rounded-md" placeholder="e.g. 3-seater, L-shape" />
           </label>
-          <label className="text-sm text-ivory-300">
+          <label className="text-sm text-stone-700">
             Warranty (leave blank for the standard warranty)
             <input value={warranty} onChange={(e) => setWarranty(e.target.value)} className="mt-1 w-full px-3 py-2 rounded-md" placeholder="e.g. 3-year frame warranty" />
           </label>
-          <label className="flex items-center gap-2 text-sm text-ivory-300 sm:mt-6">
-            <input type="checkbox" checked={madeToOrder} onChange={(e) => setMadeToOrder(e.target.checked)} className="accent-gold-500 w-4 h-4" />
+          <label className="text-sm text-stone-700">
+            Frame
+            <input value={extra.frame || ""} onChange={setExtraField("frame")} className="mt-1 w-full px-3 py-2 rounded-md" placeholder="e.g. Kiln-dried sal wood" />
+          </label>
+          <label className="text-sm text-stone-700">
+            Cushion foam
+            <input value={extra.foamDensity || ""} onChange={setExtraField("foamDensity")} className="mt-1 w-full px-3 py-2 rounded-md" placeholder="e.g. 40-density HR foam" />
+          </label>
+          <label className="text-sm text-stone-700">
+            Finish
+            <input value={extra.finish || ""} onChange={setExtraField("finish")} className="mt-1 w-full px-3 py-2 rounded-md" placeholder="e.g. Walnut matte polish" />
+          </label>
+          <label className="text-sm text-stone-700">
+            Weight
+            <input value={extra.weight || ""} onChange={setExtraField("weight")} className="mt-1 w-full px-3 py-2 rounded-md" placeholder="e.g. 65 kg" />
+          </label>
+          <label className="text-sm text-stone-700">
+            Card badge (max 30 chars)
+            <input value={extra.badge || ""} onChange={setExtraField("badge")} className="mt-1 w-full px-3 py-2 rounded-md" placeholder="e.g. Festive offer" />
+          </label>
+          <label className="text-sm text-stone-700">
+            Custom URL text
+            <input value={extra.slug || ""} onChange={setExtraField("slug")} className="mt-1 w-full px-3 py-2 rounded-md" placeholder="e.g. 3-seater-velvet-sofa" />
+          </label>
+          <label className="text-sm text-stone-700">
+            SEO title (max 70 chars)
+            <input value={extra.seoTitle || ""} onChange={setExtraField("seoTitle")} className="mt-1 w-full px-3 py-2 rounded-md" placeholder="Shown in Google results" />
+          </label>
+          <label className="text-sm text-stone-700">
+            SEO description (max 170 chars)
+            <input value={extra.seoDescription || ""} onChange={setExtraField("seoDescription")} className="mt-1 w-full px-3 py-2 rounded-md" placeholder="Shown under the title in Google" />
+          </label>
+          <label className="flex items-center gap-2 text-sm text-stone-700 sm:mt-6">
+            <input type="checkbox" checked={madeToOrder} onChange={(e) => setMadeToOrder(e.target.checked)} className="accent-gold-700 w-4 h-4" />
             Made to order (can be bought even when stock is 0)
           </label>
         </div>
@@ -616,9 +653,9 @@ const Add = ({ token }) => {
           checked={bestseller}
           type="checkbox"
           id="bestseller"
-          className="accent-gold-500 w-4 h-4"
+          className="accent-gold-700 w-4 h-4"
         />
-        <label className="cursor-pointer text-ivory-200" htmlFor="bestseller">
+        <label className="cursor-pointer text-stone-800" htmlFor="bestseller">
           Add to bestseller
         </label>
       </div>

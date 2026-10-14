@@ -21,8 +21,10 @@ export const slugify = (str) =>
     .slice(0, 80);
 
 /** /product/3-seater-chesterfield-sofa-66a1f… — the id at the end is what the page reads */
-export const productUrl = (product) =>
-  `/product/${slugify(product?.name)}${product?.name ? "-" : ""}${product?._id}`;
+export const productUrl = (product) => {
+  const slug = product?.slug || slugify(product?.name);
+  return `/product/${slug}${slug ? "-" : ""}${product?._id}`;
+};
 
 /** Accepts "<slug>-<id>" or a bare id */
 export const productIdFromParam = (param) => {

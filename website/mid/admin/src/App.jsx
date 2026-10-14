@@ -8,6 +8,7 @@ import Orders from "./pages/Orders";
 import Customers from "./pages/Customers";
 import Dashboard from "./pages/Dashboard";
 import Enquiries from "./pages/Enquiries";
+import Reviews from "./pages/Reviews";
 import Login from "./components/Login";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -34,17 +35,16 @@ const App = () => {
 
   return (
     <div className="min-h-screen">
-      <ToastContainer />
+      <ToastContainer position="bottom-center" autoClose={2500} hideProgressBar theme="light" />
       {token === "" ?
         <Login setToken={setToken} />
        :
         <>
           <Navbar setToken={setToken} />
-          <div className="divider-gold" />
           <div className="flex w-full">
             <Sidebar />
 
-            <div className="w-[70%] mx-auto ml-[max(5vw,25px)] my-8 text-ivory-300 text-base">
+            <main className="min-w-0 flex-1 px-4 py-8 text-base text-stone-700 sm:px-8">
               <Routes>
                 <Route path="/" element={<Dashboard token={token} />} />
                 <Route path="/add" element={<Add token={token}/>} />
@@ -52,8 +52,9 @@ const App = () => {
                 <Route path="/orders" element={<Orders token={token}/>} />
                 <Route path="/customers" element={<Customers token={token}/>} />
                 <Route path="/enquiries" element={<Enquiries token={token}/>} />
+                <Route path="/reviews" element={<Reviews token={token}/>} />
               </Routes>
-            </div>
+            </main>
           </div>
         </>
       }

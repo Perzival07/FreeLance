@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1B2A41">
+<title>Website plans</title>
+<script>document.documentElement.classList.add('js')</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1B2A41;
+  --paper:#FAF6EF;
+  --card:#FFFEFB;
+  --muted:#5A544A;
+  --rule:#E7DECF;
+  --gold:#E9A620;
+  --gold-soft:#FCF0D6;
+  --teal:#9A3F0A;
+  --teal-deep:#7C2D12;
+  --dim:#A39A8B;
+  --panel:#1B2A41;
+  --on-panel:#FFFFFF;
+  --on-panel-2:#D9DFEB;
+  --teal-fill:#B45309;
+  --teal-fill-hover:#92400E;
+  --gold-text:#7A4E00;
+  --foot-text:#463F35;
+}
+:root:not([data-theme="light"]){}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#F4EEE2;
+    --paper:#181410;
+    --card:#221D17;
+    --muted:#B9AF9F;
+    --rule:#3B342B;
+    --gold:#F2B33D;
+    --gold-soft:#3A2D14;
+    --teal:#F6B26B;
+    --teal-deep:#F0A050;
+    --dim:#7C7464;
+    --panel:#22304C;
+    --on-panel:#FFFFFF;
+    --on-panel-2:#D9DFEB;
+    --teal-fill:#B45309;
+    --teal-fill-hover:#C2620F;
+    --gold-text:#F2B33D;
+    --foot-text:#E3DBCB;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#F4EEE2; --paper:#181410; --card:#221D17; --muted:#B9AF9F;
+  --rule:#3B342B; --gold:#F2B33D; --gold-soft:#3A2D14; --teal:#F6B26B;
+  --teal-deep:#F0A050; --dim:#7C7464;
+  --panel:#22304C; --on-panel:#FFFFFF; --on-panel-2:#D9DFEB;
+  --teal-fill:#B45309; --teal-fill-hover:#C2620F; --gold-text:#F2B33D; --foot-text:#E3DBCB;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:16px;
+  line-height:1.55;
+  padding-bottom:150px;
+}
+@media (max-width:560px){body{padding-bottom:210px}}
+h1,h2,h3{font-family:"Bricolage Grotesque","IBM Plex Sans",Georgia,sans-serif;font-weight:700;letter-spacing:-.015em;margin:0}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1040px;margin:0 auto;padding:0 18px}
+a{color:var(--teal)}
+
+/* header */
+header{background:var(--panel);color:var(--on-panel);padding:30px 0 26px}
+header h1{font-size:clamp(26px,6vw,40px);line-height:1.12;color:var(--on-panel)}
+header p{margin:10px 0 0;color:var(--on-panel-2);max-width:58ch;font-size:15px}
+
+.toggle-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:20px}
+.toggle{display:inline-flex;background:rgba(255,255,255,.1);border-radius:999px;padding:4px;gap:4px}
+.toggle button{
+  font:inherit;font-size:14px;font-weight:500;color:var(--on-panel-2);background:none;border:0;
+  padding:8px 14px;border-radius:999px;cursor:pointer;
+}
+.toggle button[aria-pressed="true"]{background:var(--gold);color:#17233F;font-weight:600}
+.toggle button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.toggle-note{font-size:13px;color:var(--on-panel-2)}
+
+section{padding:34px 0 8px}
+h2{font-size:clamp(20px,4.5vw,27px);margin-bottom:6px}
+.lede{color:var(--muted);margin:0 0 18px;max-width:62ch;font-size:15px}
+
+/* comparison table */
+.scroller{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--rule);border-radius:10px;background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:14px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{background:var(--panel);color:var(--on-panel);font-weight:600;font-size:14px;position:sticky;top:0}
+thead th.pop{background:var(--teal-fill);color:#FFFFFF}
+tbody th{font-weight:600;color:var(--ink)}
+td{color:var(--muted)}
+tr:last-child th,tr:last-child td{border-bottom:0}
+td.pop{background:var(--gold-soft);color:var(--ink)}
+.price-cell{font-weight:600;color:var(--ink)}
+.was{color:var(--muted);text-decoration:line-through;font-size:13px}
+.hint{font-size:13px;color:var(--muted);margin-top:8px}
+
+/* plan cards */
+.plans{display:grid;gap:14px;grid-template-columns:1fr}
+@media (min-width:860px){.plans{grid-template-columns:repeat(3,1fr)}}
+.plan{
+  background:var(--card);border:1.5px solid var(--rule);border-radius:12px;padding:18px;
+  display:flex;flex-direction:column;position:relative;transition:opacity .18s ease,border-color .18s ease;
+}
+.plan .tag{
+  position:absolute;top:-10px;left:16px;background:var(--teal-fill);color:#FFFFFF;font-size:12px;
+  font-weight:600;padding:3px 9px;border-radius:999px;
+}
+.plan h3{font-size:20px}
+.plan .best{font-size:13px;font-weight:500;color:var(--teal);margin:8px 0 8px}
+.plan .sub{color:var(--muted);font-size:14px;margin:0 0 14px}
+.plan .p-now{font-size:30px;font-weight:600;font-family:"IBM Plex Sans",sans-serif;font-variant-numeric:tabular-nums}
+.plan .p-was{font-size:14px;color:var(--muted);text-decoration:line-through}
+.plan ul{list-style:none;margin:14px 0 16px;padding:0;font-size:14px;color:var(--muted)}
+.plan li{padding-left:20px;position:relative;margin-bottom:6px}
+.plan li::before{content:"";position:absolute;left:0;top:8px;width:9px;height:9px;border-radius:2px;background:var(--teal)}
+.plan li.no{color:var(--muted)}
+.plan li.no::before{background:var(--rule)}
+.plan .why{font-size:13.5px;color:var(--muted);border-left:3px solid var(--gold);padding-left:10px;margin-bottom:16px}
+.plan button.choose{
+  margin-top:auto;font:inherit;font-weight:600;font-size:15px;cursor:pointer;
+  background:var(--teal-fill);color:#FFFFFF;border:0;border-radius:8px;padding:12px 14px;width:100%;
+}
+.plan button.choose:hover{background:var(--teal-fill-hover)}
+.plan button.choose:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.plan.selected{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft)}
+.plan.selected button.choose{background:var(--gold);color:#17233F}
+.plan.muted{opacity:.45}
+.plan.muted .tag{background:var(--dim)}
+.state{font-size:13px;font-weight:600;color:var(--gold-text);margin-top:10px;min-height:18px;text-align:center}
+.plan.muted .state{color:var(--muted)}
+
+/* option blocks */
+.opt-list{display:grid;gap:10px;grid-template-columns:1fr}
+@media (min-width:700px){.opt-list.two{grid-template-columns:1fr 1fr}}
+.opt{
+  display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1.5px solid var(--rule);
+  border-radius:10px;padding:16px 16px;cursor:pointer;
+}
+.opt:has(input:checked){border-color:var(--gold);background:var(--gold-soft)}
+.opt:has(input:focus-visible){outline:2px solid var(--teal);outline-offset:2px}
+.opt input{margin-top:4px;width:18px;height:18px;accent-color:var(--teal);flex:none}
+.opt .txt{display:block;min-width:0}
+.opt .t{display:block;font-weight:600;font-size:15px}
+.opt .x{display:block;font-size:13px;font-weight:500;color:var(--teal);margin:6px 0 6px}
+.opt .d{display:block;font-size:13.5px;color:var(--muted)}
+.opt .amt{margin-left:auto;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums;padding-left:10px}
+.disabled-note{font-size:14px;color:var(--muted);background:var(--card);border:1px dashed var(--rule);border-radius:10px;padding:14px}
+
+/* form */
+.field{margin-bottom:14px}
+label.lbl{display:block;font-weight:600;font-size:14px;margin-bottom:6px}
+input[type=text],input[type=tel],textarea{
+  width:100%;font:inherit;padding:11px 12px;border:1.5px solid var(--rule);border-radius:8px;
+  background:var(--card);color:var(--ink);
+}
+input:focus,textarea:focus{outline:2px solid var(--teal);outline-offset:1px;border-color:var(--teal)}
+.form-grid{display:grid;gap:14px;grid-template-columns:1fr}
+@media (min-width:700px){.form-grid{grid-template-columns:1fr 1fr}}
+
+/* summary */
+.summary{background:var(--card);border:1.5px solid var(--rule);border-radius:12px;padding:16px 18px;margin-top:18px}
+.line{display:flex;justify-content:space-between;gap:14px;padding:7px 0;border-bottom:1px dashed var(--rule);font-size:14.5px}
+.line:last-of-type{border-bottom:0}
+.line span:last-child{font-variant-numeric:tabular-nums;white-space:nowrap}
+.line.total{font-size:18px;font-weight:600;border-top:2px solid var(--ink);border-bottom:0;margin-top:8px;padding-top:12px}
+.line.rec{color:var(--muted);font-size:14px}
+
+/* sticky bar */
+.bar{
+  position:fixed;left:0;right:0;bottom:0;background:var(--panel);color:var(--on-panel);
+  padding:12px 18px calc(12px + env(safe-area-inset-bottom));z-index:20;
+  box-shadow:0 -6px 20px rgba(0,0,0,.18);
+}
+.bar-in{max-width:1040px;margin:0 auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.bar .label{font-size:12.5px;color:var(--on-panel-2)}
+.bar .total{font-size:24px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.1}
+.bar .rec{font-size:12.5px;color:var(--on-panel-2)}
+.bar .send{
+  margin-left:auto;font:inherit;font-weight:600;font-size:16px;cursor:pointer;border:0;border-radius:9px;
+  padding:13px 20px;background:#25D366;color:#0A2E17;display:inline-flex;align-items:center;gap:9px;
+}
+.bar .send[disabled]{background:#4B5563;color:#E5E9F0;cursor:not-allowed}
+.bar .send:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media (max-width:560px){
+  .bar .send{width:100%;justify-content:center;margin-left:0}
+  .bar-in{gap:10px}
+}
+.err{color:#B3261E;font-size:13.5px;margin-top:8px;min-height:18px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .err{color:#FF8A80}}
+
+footer{margin-top:34px}
+footer p{margin:0;background:var(--card);color:var(--foot-text);border:1px solid var(--rule);border-radius:10px;padding:16px 18px;font-size:14px;line-height:1.6}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+/* ======================= MOTION ======================= */
+html{scroll-behavior:smooth}
+
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.09)}100%{transform:scale(1)}}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(37,211,102,.75)}100%{box-shadow:0 0 0 18px rgba(37,211,102,0)}}
+@keyframes shake{0%,100%{transform:none}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+@keyframes flashAmt{0%{transform:scale(1.2);color:var(--teal)}100%{transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* page load: header settles in, one line after another */
+.js header h1{animation:rise .8s cubic-bezier(.2,.7,.2,1) backwards}
+.js header p{animation:rise .8s cubic-bezier(.2,.7,.2,1) .14s backwards}
+.js .toggle-row{animation:rise .8s cubic-bezier(.2,.7,.2,1) .28s backwards}
+
+/* scroll reveal */
+.js .reveal:not(.seen){opacity:0;transform:translateY(22px)}
+.reveal.seen{animation:rise .7s cubic-bezier(.2,.7,.2,1) var(--d,0s) backwards}
+
+/* sliding pill behind the price toggle */
+.toggle{position:relative}
+.toggle .pill{position:absolute;top:4px;bottom:4px;left:4px;width:var(--w,0px);transform:translateX(var(--x,0px));background:var(--gold);border-radius:999px}
+.toggle.ready .pill{transition:transform .38s cubic-bezier(.3,.8,.2,1),width .38s cubic-bezier(.3,.8,.2,1)}
+.toggle button{position:relative;z-index:1;font-weight:600;transition:color .25s ease}
+.toggle button[aria-pressed="true"]{background:none;color:#17233F}
+
+/* plan cards */
+.plan{transition:transform .3s cubic-bezier(.2,.7,.2,1),opacity .3s ease,border-color .25s ease,box-shadow .3s ease}
+.plan.selected{transform:translateY(-5px);box-shadow:0 10px 26px rgba(23,35,63,.14),0 0 0 3px var(--gold-soft)}
+.plan.muted{transform:scale(.985)}
+@media (hover:hover){.plan:not(.muted):not(.selected):hover{transform:translateY(-3px);border-color:var(--teal)}}
+.plan button.choose{transition:background-color .2s ease,transform .15s ease}
+.plan button.choose:active{transform:scale(.97)}
+.plan.selected button.choose::before{content:"";display:inline-block;width:.32em;height:.62em;border:solid currentColor;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-2px);margin-right:.75em;animation:pop .38s cubic-bezier(.3,.8,.2,1)}
+
+/* option boxes */
+.opt{transition:border-color .2s ease,background-color .2s ease,transform .15s ease}
+.opt:active{transform:scale(.992)}
+.opt.wait{opacity:.6;cursor:not-allowed}
+.opt input:checked{animation:pop .32s cubic-bezier(.3,.8,.2,1)}
+.opt-list.enter .opt{animation:rise .55s cubic-bezier(.2,.7,.2,1) backwards}
+.opt-list.enter .opt:nth-child(2){animation-delay:.09s}
+.opt-list.enter .opt:nth-child(3){animation-delay:.18s}
+.amt{display:inline-block}
+.amt.flash,.flash{animation:flashAmt .6s cubic-bezier(.2,.7,.2,1)}
+.was.flash,.p-was.flash{animation:fadeIn .5s ease}
+
+/* summary and bottom bar */
+.line.enter{animation:slideIn .42s cubic-bezier(.2,.7,.2,1) backwards}
+.bar .total{display:block;transform-origin:left center}
+.bar .total.bump{animation:bump .38s ease}
+.bar .send{transition:background-color .25s ease,transform .15s ease,color .25s ease}
+.bar .send:not([disabled]):hover{transform:translateY(-1px)}
+.bar .send:not([disabled]):active{transform:scale(.97)}
+.bar .send.ready{animation:ring 1.1s ease-out 2}
+
+/* small confirmation above the bar */
+.toast{
+  position:fixed;left:50%;bottom:calc(var(--bar-h,120px) + 14px);z-index:30;max-width:calc(100vw - 32px);
+  background:var(--panel);color:var(--on-panel);font-size:14px;padding:10px 16px;border-radius:999px;
+  box-shadow:0 8px 24px rgba(0,0,0,.25);
+  opacity:0;transform:translate(-50%,12px);pointer-events:none;
+  transition:opacity .3s ease,transform .35s cubic-bezier(.2,.7,.2,1);
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* missing name */
+input.shake{animation:shake .45s ease;border-color:#B3261E}
+
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .js .reveal:not(.seen){opacity:1;transform:none}
+  .toast{transition:none}
+}
+
+/* ======================= WARM PROFESSIONAL COLOUR =======================
+   Navy = trust and competence. Ivory and sand = approachable, calm.
+   Amber = value and the recommended choice. Burnt orange = the action to take.
+   WhatsApp green stays as it is, because people already read it as "safe to tap". */
+header{border-bottom:4px solid var(--gold)}
+thead th.pop{background:var(--gold);color:#1B2A41}
+.plan li::before{background:var(--gold)}
+.plan .tag{background:var(--panel);color:var(--on-panel)}
+#card-plus{background:var(--gold-soft);border-color:var(--gold)}
+#card-plus .tag{background:var(--gold);color:#1B2A41}
+.plan.muted .tag{background:var(--muted);color:#FFFFFF}
+.plan.selected{box-shadow:0 10px 26px rgba(70,45,10,.16),0 0 0 3px var(--gold-soft)}
+.plan.selected button.choose{background:var(--panel);color:var(--on-panel)}
+.opt input{accent-color:var(--teal-fill)}
+.bar{border-top:3px solid var(--gold)}
+.bar .total{color:#FFD98A}
+.save{
+  display:inline-block;margin-left:8px;padding:2px 10px;border-radius:999px;vertical-align:middle;
+  background:var(--gold-soft);color:var(--gold-text);border:1px solid var(--gold);
+  font-size:12.5px;font-weight:600;
+}
+.save:empty{display:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>Pick your website plan</h1>
+    <p>Choose a plan, add any extras, and send your choices to me on WhatsApp. Nothing is charged here — this only prepares your enquiry.</p>
+    <div class="toggle-row">
+      <div class="toggle" id="toggle" role="group" aria-label="Which prices to show">
+        <span class="pill" id="pill" aria-hidden="true"></span>
+        <button type="button" id="btnLaunch" aria-pressed="true">Launch price</button>
+        <button type="button" id="btnNormal" aria-pressed="false">Normal price</button>
+      </div>
+      <span class="toggle-note" id="toggleNote">Launch price is for my first few clients.</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="compare">
+    <h2>Compare the three plans</h2>
+    <p class="lede">Every plan includes a WhatsApp button, scroll animations and a design that fits phones. The difference is what the site can hold, and who updates it.</p>
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr><th scope="col">&nbsp;</th><th scope="col">Pro</th><th scope="col" class="pop">Plus &middot; most popular</th><th scope="col">Starter</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Type of site</th><td>React site, backend and admin login</td><td class="pop">React site, content from one file</td><td>Single HTML page</td></tr>
+          <tr><th scope="row">Price</th>
+            <td class="price-cell"><span class="was cmp-was" data-plan="pro"></span> <span class="cmp-now num" data-plan="pro"></span></td>
+            <td class="pop price-cell"><span class="was cmp-was" data-plan="plus"></span> <span class="cmp-now num" data-plan="plus"></span></td>
+            <td class="price-cell"><span class="was cmp-was" data-plan="starter"></span> <span class="cmp-now num" data-plan="starter"></span></td></tr>
+          <tr><th scope="row">WhatsApp button</th><td>Yes</td><td class="pop">Yes</td><td>Yes</td></tr>
+          <tr><th scope="row">Photo gallery</th><td>Yes</td><td class="pop">Yes</td><td>&mdash;</td></tr>
+          <tr><th scope="row">Notices</th><td>Yes, you add them</td><td class="pop">Yes, I add them</td><td>&mdash;</td></tr>
+          <tr><th scope="row">Blog</th><td>Yes, you write them</td><td class="pop">Yes, I add them</td><td>&mdash;</td></tr>
+          <tr><th scope="row">Timings and highlights</th><td>You edit them</td><td class="pop">I edit them</td><td>Fixed text</td></tr>
+          <tr><th scope="row">Admin login</th><td>Yes</td><td class="pop">&mdash;</td><td>&mdash;</td></tr>
+          <tr><th scope="row">Who updates content</th><td>You, anytime</td><td class="pop">Me, on request</td><td>Me, on request</td></tr>
+          <tr><th scope="row">Ready in</th><td>4 to 5 weeks</td><td class="pop">2 weeks</td><td>1 week</td></tr>
+          <tr><th scope="row">Care Plan</th>
+            <td><span class="care-m num" data-plan="pro"></span> a month</td>
+            <td class="pop"><span class="care-m num" data-plan="plus"></span> a month</td>
+            <td><span class="care-m num" data-plan="starter"></span> a month</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="hint">Scroll the table sideways on a small screen.</p>
+  </section>
+
+  <section id="choose">
+    <h2>Choose one plan</h2>
+    <p class="lede">Pick the one that matches how often you want to change things on your site. Choosing one sets the other two aside — tap your choice again to undo it.</p>
+    <div class="plans" id="plans"></div>
+  </section>
+
+  <section id="care">
+    <h2>Care Plan</h2>
+    <p class="lede">Optional monthly upkeep: backups, fixes and content updates. The first month is free and you can stop anytime.</p>
+    <div id="careBox"></div>
+  </section>
+
+  <section id="addons">
+    <h2>Add anything extra</h2>
+    <p class="lede">Tick only what you want. Everything here is optional.</p>
+    <div class="opt-list two" id="addonList"></div>
+  </section>
+
+  <section id="details">
+    <h2>Your details</h2>
+    <p class="lede">I need your name so I know who the enquiry is from. Your phone number is optional.</p>
+    <div class="form-grid">
+      <div class="field">
+        <label class="lbl" for="name">Your name</label>
+        <input type="text" id="name" autocomplete="name" placeholder="Your full name">
+      </div>
+      <div class="field">
+        <label class="lbl" for="phone">Your phone number (optional)</label>
+        <input type="tel" id="phone" autocomplete="tel" placeholder="10-digit number">
+      </div>
+    </div>
+    <div class="field">
+      <label class="lbl" for="note">Anything you want to tell me (optional)</label>
+      <textarea id="note" rows="3" placeholder="For example: I want the site ready before the end of next month."></textarea>
+    </div>
+
+    <div class="summary" id="summary"></div>
+    <div class="err" id="err" role="status"></div>
+  </section>
+
+  <footer>
+    <p>Prices are in Indian Rupees. The domain is registered in your name. Free hosting is used at the start; if the site later needs paid hosting, that is paid separately to the hosting company. Anything not listed in a plan is quoted separately and agreed in writing first.</p>
+  </footer>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="bar">
+  <div class="bar-in">
+    <div>
+      <div class="label" id="barLabel">Nothing selected yet</div>
+      <div class="total num" id="barTotal">&#8377;0</div>
+      <div class="rec" id="barRec"></div>
+    </div>
+    <button class="send" id="send" type="button" disabled>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.5 0-9.97 4.47-9.97 9.97 0 1.76.46 3.48 1.34 5L2 22l5.2-1.36a9.9 9.9 0 004.84 1.24h.01c5.5 0 9.97-4.47 9.97-9.97S17.54 2 12.04 2zm0 18.15a8.2 8.2 0 01-4.19-1.15l-.3-.18-3.1.81.83-3.02-.2-.31a8.18 8.18 0 0112.6-10.2 8.18 8.18 0 01-5.64 14.05zm4.5-6.13c-.25-.12-1.46-.72-1.69-.8-.22-.09-.39-.13-.55.12-.16.25-.63.8-.77.96-.14.16-.28.19-.53.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.71-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.55-1.33-.76-1.82-.2-.48-.4-.41-.55-.42h-.47c-.16 0-.43.06-.65.31-.22.25-.85.84-.85 2.03 0 1.2.87 2.35.99 2.51.12.16 1.7 2.6 4.13 3.65.58.25 1.03.4 1.38.51.58.19 1.11.16 1.53.1.47-.07 1.46-.6 1.66-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29z"/></svg>
+      <span id="sendText">Send on WhatsApp</span>
+    </button>
+  </div>
+</div>
+
+<script>
+/* ==========================================================================
+   EDIT THIS: your own WhatsApp number, with country code, digits only.
+   India = 91 + your 10-digit number. Example: "919812345678"
+   ========================================================================== */
+const MY_WHATSAPP = "919123924645";
+
+const PLANS = [
+  {
+    id:"pro", name:"Pro", tag:"Most control",
+    sub:"You log in and update the site yourself.",
+    normal:39599, launch:29999, careM:959, careY:9599, bundleSave:1199,
+    weeks:"4 to 5 weeks",
+    best:"You update your site most weeks",
+    has:["Everything visitors see: gallery, notices, blog, timings, highlights, reviews",
+         "Your own admin login",
+         "Add or edit notices, timings, highlights and blog posts yourself",
+         "Database that keeps all your content safely",
+         "Training session and a short written guide"],
+    hasnt:[],
+    why:"Worth it if you will change something on the site most weeks. You never wait for anyone and never pay per change."
+  },
+  {
+    id:"plus", name:"Plus", tag:"Most popular",
+    sub:"A full site with a gallery, notices and a blog. I keep it updated.",
+    normal:19199, launch:14399, careM:599, careY:5999, bundleSave:1199,
+    weeks:"2 weeks",
+    best:"You want an active site without learning software",
+    has:["Photo gallery of your work and events",
+         "Notices with dates, newest first",
+         "Blog articles, each on its own page",
+         "Timings, highlights and reviews",
+         "All content kept in one file that is easy to refresh"],
+    hasnt:["No login for you — I make the changes"],
+    why:"Worth it if you want an active site but would rather send me a message than learn any software."
+  },
+  {
+    id:"starter", name:"Starter", tag:"Lowest price",
+    sub:"One clean scrolling page with a WhatsApp button.",
+    normal:10799, launch:7199, careM:359, careY:3599, bundleSave:599,
+    weeks:"1 week",
+    best:"You mainly need people to find and contact you",
+    has:["About you, what you offer and your highlights",
+         "Reviews from your customers or clients",
+         "WhatsApp button that opens a chat with you",
+         "Loads fast, works on every phone"],
+    hasnt:["No gallery, notices or blog","No login for you"],
+    why:"Worth it if you mainly need people to find you, read about you and message you."
+  }
+];
+
+const ADDONS = [
+  {id:"page",  name:"Extra page",              price:1199, best:"You need something beyond the plan, like a fees or services page", desc:"One more page, designed and tested like the rest of the site."},
+  {id:"maps",  name:"Google Maps and Business profile", price:1199, best:"People search for you near where they live", desc:"Helps nearby people find you, call you and read reviews on Google."},
+  {id:"logo",  name:"Logo or banner design",   price:1799, best:"You do not have a logo yet", desc:"Gives your site and printed material one consistent look."},
+  {id:"rev",   name:"Extra round of changes",  price:599,  best:"You expect more changes than the two included rounds", desc:"Two rounds are already included in every plan."},
+  {id:"rush",  name:"Rush delivery, in 3 days",price:null, byPlan:{pro:3499, plus:2399, starter:1599}, best:"You need the site live within days", desc:"Your project goes ahead of other work. The price depends on your plan: Pro \u20B93,499, Plus \u20B92,399, Starter \u20B91,599."}
+];
+
+const DOMAIN = {id:"domain", name:"Domain name for 1 year", price:960, best:"You do not have a web address yet", desc:"Your own web address, registered in your name so you own it."};
+
+
+/* ---------- motion helpers ---------- */
+const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const io = ("IntersectionObserver" in window)
+  ? new IntersectionObserver(entries => {
+      entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add("seen"); io.unobserve(e.target); } });
+    }, {threshold:0.12, rootMargin:"0px 0px -6% 0px"})
+  : null;
+function watch(el, delay){
+  if(!el) return;
+  el.classList.add("reveal");
+  if(delay) el.style.setProperty("--d", delay + "s");
+  if(io) io.observe(el); else el.classList.add("seen");
+}
+function flash(el){ el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
+function setMoney(el, to, fromOverride){
+  if(!el) return;
+  const from = fromOverride !== undefined ? fromOverride : (el._v === undefined ? to : el._v);
+  el._v = to;
+  cancelAnimationFrame(el._raf);
+  if(reduceMotion || from === to){ el.textContent = rupee(to); return; }
+  const t0 = performance.now(), dur = 480;
+  const step = now => {
+    const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+    el.textContent = rupee(Math.round(from + (to - from) * e));
+    if(k < 1) el._raf = requestAnimationFrame(step);
+  };
+  el._raf = requestAnimationFrame(step);
+}
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2400);
+}
+function setBarH(){
+  document.documentElement.style.setProperty("--bar-h", document.querySelector(".bar").offsetHeight + "px");
+}
+function movePill(){
+  const pill = document.getElementById("pill");
+  const on = document.querySelector('.toggle button[aria-pressed="true"]');
+  if(!pill || !on) return;
+  pill.style.setProperty("--x", (on.offsetLeft - 4) + "px");
+  pill.style.setProperty("--w", on.offsetWidth + "px");
+}
+
+const state = {mode:"launch", plan:null, care:"none", addons:new Set(), domain:false};
+
+const rupee = n => "\u20B9" + n.toLocaleString("en-IN");
+const planById = id => PLANS.find(p => p.id === id);
+const buildPrice = p => state.mode === "launch" ? p.launch : p.normal;
+const addonPrice = a => a.byPlan ? (state.plan ? a.byPlan[state.plan] : null) : a.price;
+
+/* ---------- render plan cards ---------- */
+function renderPlans(){
+  const host = document.getElementById("plans");
+  host.innerHTML = "";
+  PLANS.forEach(p => {
+    const card = document.createElement("article");
+    card.className = "plan";
+    card.id = "card-" + p.id;
+    const items = p.has.map(t => `<li>${t}</li>`).join("") + p.hasnt.map(t => `<li class="no">${t}</li>`).join("");
+    card.innerHTML = `
+      <span class="tag">${p.tag}</span>
+      <h3>${p.name}</h3>
+      <p class="best">Best for: ${p.best}</p>
+      <p class="sub">${p.sub}</p>
+      <div><span class="p-was" data-was="${p.id}"></span><span class="save" data-save="${p.id}"></span></div>
+      <div class="p-now" data-now="${p.id}"></div>
+      <p class="sub" style="margin:4px 0 0">Ready in about ${p.weeks}</p>
+      <ul>${items}</ul>
+      <p class="why">${p.why}</p>
+      <button class="choose" type="button" data-pick="${p.id}">Choose ${p.name}</button>
+      <div class="state" data-state="${p.id}"></div>`;
+    host.appendChild(card);
+    watch(card, PLANS.indexOf(p) * 0.12);
+  });
+  host.querySelectorAll("[data-pick]").forEach(b => {
+    b.addEventListener("click", () => pickPlan(b.dataset.pick));
+  });
+}
+
+function pickPlan(id){
+  state.plan = (state.plan === id) ? null : id;
+  if(!state.plan){
+    state.care = "none"; state.addons.delete("rush");
+    toast("Plan cleared. Choose one to continue.");
+  } else {
+    toast(planById(id).name + " plan selected. The other two are set aside.");
+  }
+  render();
+}
+
+/* ---------- care plan ---------- */
+let careFor = "__init__";
+function renderCare(){
+  const box = document.getElementById("careBox");
+  if(state.plan){
+    const p = planById(state.plan);
+    const hint = document.getElementById("careHint");
+    if(hint) hint.textContent = "With one year of care taken together, your one-time total for " + p.name + " becomes " + rupee(buildPrice(p) + p.careY - p.bundleSave) + ".";
+  }
+  if(careFor === state.plan) return;
+  careFor = state.plan;
+  if(!state.plan){
+    box.innerHTML = `<p class="disabled-note">Choose a plan above and the Care Plan options for it will appear here.</p>`;
+    return;
+  }
+  const p = planById(state.plan);
+  const opts = [
+    {v:"none",   t:"No Care Plan",  x:"You rarely change anything", d:"You pay only when you want a change later.", a:rupee(0)},
+    {v:"monthly",t:"Monthly care",  x:"You want changes and fixes handled for you", d:`Billed every month, first month free. Stop anytime.`, a:rupee(p.careM) + " / month"},
+    {v:"yearly", t:"One year of care, paid with the build", x:"You want the best value", d:`About 2 months free, and ${rupee(p.bundleSave)} off for taking it together.`, a:rupee(p.careY)}
+  ];
+  box.innerHTML = `<div class="opt-list enter">` + opts.map(o => `
+    <label class="opt">
+      <input type="radio" name="care" value="${o.v}" ${state.care===o.v?"checked":""}>
+      <span class="txt"><span class="t">${o.t}</span><span class="x">Good if: ${o.x}</span><span class="d">${o.d}</span></span>
+      <span class="amt">${o.a}</span>
+    </label>`).join("") + `</div>
+    <p class="hint" id="careHint"></p>`;
+  const hint = document.getElementById("careHint");
+  hint.textContent = "With one year of care taken together, your one-time total for " + p.name + " becomes " + rupee(buildPrice(p) + p.careY - p.bundleSave) + ".";
+  box.querySelectorAll('input[name="care"]').forEach(r => {
+    r.addEventListener("change", () => { state.care = r.value; render(); });
+  });
+}
+
+/* ---------- add-ons ---------- */
+let addonsBuilt = false;
+function renderAddons(){
+  const host = document.getElementById("addonList");
+  const all = ADDONS.concat([DOMAIN]);
+  if(!addonsBuilt){
+    host.innerHTML = all.map(a => `
+    <label class="opt" data-opt="${a.id}">
+      <input type="checkbox" data-add="${a.id}">
+      <span class="txt"><span class="t">${a.name}</span><span class="x">Good if: ${a.best}</span><span class="d">${a.desc}</span></span>
+      <span class="amt" data-amt="${a.id}"></span>
+    </label>`).join("");
+    host.querySelectorAll("[data-add]").forEach(c => {
+      c.addEventListener("change", () => {
+        const id = c.dataset.add;
+        if(id === "domain"){ state.domain = c.checked; }
+        else { c.checked ? state.addons.add(id) : state.addons.delete(id); }
+        render();
+      });
+    });
+    host.querySelectorAll(".opt").forEach((el, i) => watch(el, (i % 2) * 0.07 + Math.floor(i / 2) * 0.05));
+    addonsBuilt = true;
+  }
+  all.forEach(a => {
+    const pr = addonPrice(a);
+    const waiting = pr === null;
+    const label = host.querySelector('[data-opt="' + a.id + '"]');
+    const input = label.querySelector("input");
+    const amt = label.querySelector(".amt");
+    input.disabled = waiting;
+    input.checked = a.id === "domain" ? state.domain : state.addons.has(a.id);
+    label.classList.toggle("wait", waiting);
+    const txt = waiting ? "Choose a plan" : rupee(pr);
+    if(amt.textContent !== txt){
+      const had = amt.textContent !== "";
+      amt.textContent = txt;
+      if(had && !waiting) flash(amt);
+    }
+  });
+}
+
+/* ---------- totals ---------- */
+function compute(){
+  let once = 0, monthly = 0;
+  const lines = [];
+  if(state.plan){
+    const p = planById(state.plan);
+    const b = buildPrice(p);
+    once += b;
+    lines.push([`${p.name} plan (${state.mode === "launch" ? "launch price" : "normal price"})`, rupee(b)]);
+    if(state.care === "yearly"){
+      once += p.careY - p.bundleSave;
+      lines.push(["One year of Care Plan", rupee(p.careY)]);
+      lines.push([`Saving for taking care together`, "\u2212" + rupee(p.bundleSave)]);
+    } else if(state.care === "monthly"){
+      monthly = p.careM;
+    }
+  }
+  ADDONS.forEach(a => {
+    const pr = addonPrice(a);
+    if(state.addons.has(a.id) && pr !== null){ once += pr; lines.push([a.name, rupee(pr)]); }
+  });
+  if(state.domain){ once += DOMAIN.price; lines.push([DOMAIN.name, rupee(DOMAIN.price)]); }
+  return {once, monthly, lines};
+}
+
+let prevLines = new Set();
+let lastOnce = 0;
+let wasSendDisabled = true;
+function renderSummary(){
+  const {once, monthly, lines} = compute();
+  const host = document.getElementById("summary");
+  if(!state.plan && lines.length === 0){
+    host.innerHTML = `<p class="disabled-note" style="border:0;padding:0">Your quote will build up here as you choose things above.</p>`;
+  } else {
+    host.innerHTML = lines.map(l => `<div class="line${prevLines.has(l[0]) ? "" : " enter"}"><span>${l[0]}</span><span>${l[1]}</span></div>`).join("")
+      + `<div class="line total"><span>Total to pay once</span><span class="tv">${rupee(lastOnce)}</span></div>`
+      + (monthly ? `<div class="line rec"><span>Then Care Plan every month (first month free)</span><span>${rupee(monthly)}</span></div>` : "");
+    setMoney(host.querySelector(".tv"), once, lastOnce);
+  }
+  prevLines = new Set(lines.map(l => l[0]));
+
+  const barTotal = document.getElementById("barTotal");
+  setMoney(barTotal, once);
+  if(once !== lastOnce){
+    barTotal.classList.remove("bump"); void barTotal.offsetWidth; barTotal.classList.add("bump");
+  }
+  lastOnce = once;
+
+  document.getElementById("barLabel").textContent = state.plan
+    ? planById(state.plan).name + " plan selected"
+    : "No plan selected yet";
+  document.getElementById("barRec").textContent = monthly ? "plus " + rupee(monthly) + " a month for care" : "";
+  const send = document.getElementById("send");
+  send.disabled = !state.plan;
+  if(wasSendDisabled && state.plan){ send.classList.add("ready"); }
+  wasSendDisabled = !state.plan;
+  setBarH();
+}
+
+/* ---------- prices shown in table and cards ---------- */
+function setWas(el, show, value){
+  if(show){
+    const empty = el.textContent === "";
+    setMoney(el, value);
+    if(empty) flash(el);
+  } else { el.textContent = ""; el._v = undefined; }
+}
+function renderPrices(){
+  const launch = state.mode === "launch";
+  PLANS.forEach(p => {
+    document.querySelectorAll(`[data-now="${p.id}"]`).forEach(el => setMoney(el, buildPrice(p)));
+    document.querySelectorAll(`[data-was="${p.id}"]`).forEach(el => setWas(el, launch, p.normal));
+    document.querySelectorAll(`[data-save="${p.id}"]`).forEach(el => {
+      const t = launch ? "You save " + rupee(p.normal - p.launch) : "";
+      if(el.textContent !== t){ el.textContent = t; if(t) flash(el); }
+    });
+    document.querySelectorAll(`.cmp-now[data-plan="${p.id}"]`).forEach(el => setMoney(el, buildPrice(p)));
+    document.querySelectorAll(`.cmp-was[data-plan="${p.id}"]`).forEach(el => setWas(el, launch, p.normal));
+    document.querySelectorAll(`.care-m[data-plan="${p.id}"]`).forEach(el => el.textContent = rupee(p.careM));
+  });
+  document.getElementById("btnLaunch").setAttribute("aria-pressed", launch);
+  document.getElementById("btnNormal").setAttribute("aria-pressed", !launch);
+  document.getElementById("toggleNote").textContent = launch
+    ? "Launch price is for my first few clients."
+    : "Normal price is what I charge after the launch offer ends.";
+  movePill();
+}
+
+function renderCardStates(){
+  PLANS.forEach(p => {
+    const card = document.getElementById("card-" + p.id);
+    const st = card.querySelector(`[data-state="${p.id}"]`);
+    const btn = card.querySelector("[data-pick]");
+    card.classList.toggle("selected", state.plan === p.id);
+    card.classList.toggle("muted", state.plan !== null && state.plan !== p.id);
+    if(state.plan === p.id){ st.textContent = "Selected \u2014 tap again to undo"; btn.textContent = "Selected"; }
+    else if(state.plan){ st.textContent = "Not selected"; btn.textContent = "Choose " + p.name + " instead"; }
+    else { st.textContent = ""; btn.textContent = "Choose " + p.name; }
+  });
+}
+
+function render(){
+  renderPrices();
+  renderCardStates();
+  renderCare();
+  renderAddons();
+  renderSummary();
+}
+
+/* ---------- WhatsApp message ---------- */
+function buildMessage(){
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const note = document.getElementById("note").value.trim();
+  const p = planById(state.plan);
+  const {once, monthly} = compute();
+  const notChosen = PLANS.filter(x => x.id !== state.plan).map(x => x.name).join(", ");
+  const addOn = ADDONS.filter(a => state.addons.has(a.id) && addonPrice(a) !== null).map(a => a.name + " " + rupee(addonPrice(a)));
+  if(state.domain) addOn.push(DOMAIN.name + " " + rupee(DOMAIN.price));
+  const addOff = ADDONS.filter(a => !state.addons.has(a.id) || addonPrice(a) === null).map(a => a.name);
+  if(!state.domain) addOff.push(DOMAIN.name);
+
+  const careText = state.care === "yearly"
+      ? "One year, paid with the build \u2014 " + rupee(p.careY) + " (less " + rupee(p.bundleSave) + " saving)"
+      : state.care === "monthly"
+        ? rupee(p.careM) + " a month, first month free"
+        : "Not taken";
+
+  const L = [];
+  L.push("New website enquiry");
+  L.push("");
+  L.push("Name: " + (name || "(not given)"));
+  if(phone) L.push("Phone: " + phone);
+  L.push("");
+  L.push("Plan chosen: " + p.name + " \u2014 " + rupee(buildPrice(p)));
+  L.push("Prices shown: " + (state.mode === "launch" ? "Launch price" : "Normal price"));
+  L.push("Plans not chosen: " + notChosen);
+  L.push("");
+  L.push("Care Plan: " + careText);
+  L.push("Extras chosen: " + (addOn.length ? addOn.join(", ") : "None"));
+  L.push("Extras not chosen: " + (addOff.length ? addOff.join(", ") : "None"));
+  L.push("");
+  L.push("Total to pay once: " + rupee(once));
+  if(monthly) L.push("Then every month: " + rupee(monthly) + " for care");
+  if(note){ L.push(""); L.push("Message: " + note); }
+  return L.join("\n");
+}
+
+document.getElementById("send").addEventListener("click", () => {
+  const err = document.getElementById("err");
+  const nameEl = document.getElementById("name");
+  if(!state.plan){ err.textContent = "Choose a plan first."; return; }
+  if(!nameEl.value.trim()){
+    err.textContent = "Add your name so I know who the enquiry is from.";
+    nameEl.scrollIntoView({block:"center", behavior:"smooth"});
+    nameEl.focus({preventScroll:true});
+    nameEl.classList.remove("shake"); void nameEl.offsetWidth; nameEl.classList.add("shake");
+    nameEl.addEventListener("animationend", () => nameEl.classList.remove("shake"), {once:true});
+    return;
+  }
+  err.textContent = "";
+  const url = "https://wa.me/" + MY_WHATSAPP + "?text=" + encodeURIComponent(buildMessage());
+  window.open(url, "_blank", "noopener");
+  const st = document.getElementById("sendText");
+  st.textContent = "Opening WhatsApp\u2026";
+  setTimeout(() => { st.textContent = "Send on WhatsApp"; }, 1800);
+});
+document.getElementById("send").addEventListener("animationend", e => e.currentTarget.classList.remove("ready"));
+
+document.getElementById("btnLaunch").addEventListener("click", () => { state.mode = "launch"; render(); });
+document.getElementById("btnNormal").addEventListener("click", () => { state.mode = "normal"; render(); });
+
+renderPlans();
+render();
+
+/* reveal the static blocks as they scroll into view */
+document.querySelectorAll("main section > h2, main section > .lede, #compare .scroller, #compare .hint, #careBox, #details .form-grid, #details .field, #summary, footer p")
+  .forEach(el => watch(el, 0));
+
+/* toggle pill: place it first without animating, then allow animation */
+movePill();
+requestAnimationFrame(() => document.getElementById("toggle").classList.add("ready"));
+window.addEventListener("resize", () => { movePill(); setBarH(); });
+if(document.fonts && document.fonts.ready){ document.fonts.ready.then(() => { movePill(); setBarH(); }); }
+setBarH();
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { ShopContext } from "../context/ShopContext";
 import { SITE } from "../config/site";
-import { productUrl } from "../utils/format";
+import { imageUrl, productUrl } from "../utils/format";
 import SectionHeading from "./SectionHeading";
 import Stars from "./Stars";
 
@@ -35,8 +35,18 @@ const Testimonials = () => {
               <figure key={r._id} className="card flex flex-col p-6">
                 <Stars value={r.rating} />
                 <blockquote className="mt-3 flex-1 text-stone-700">“{r.comment}”</blockquote>
+                {r.images?.length > 0 && (
+                  <div className="mt-3 flex gap-2">
+                    {r.images.slice(0, 3).map((src) => (
+                      <a key={src} href={src} target="_blank" rel="noopener noreferrer">
+                        <img src={imageUrl(src, 160)} alt={`Photo from ${r.userName}`} loading="lazy" className="h-16 w-16 rounded-md object-cover" />
+                      </a>
+                    ))}
+                  </div>
+                )}
                 <figcaption className="mt-4 text-sm">
                   <span className="font-medium text-stone-900">{r.userName}</span>
+                  {r.verified && <span className="ml-1 text-xs text-green-700">✓ Verified buyer</span>}
                   {r.product && (
                     <>
                       {" "}on{" "}

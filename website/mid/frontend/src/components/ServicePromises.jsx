@@ -8,7 +8,12 @@ const ServicePromises = () => {
     { icon: "ruler", title: "Custom sizes & fabrics", text: "Get any sofa or bed made to fit your room.", to: "/custom-furniture" },
     { icon: "shield", title: SITE.warrantyText.replace(/ against.*/, ""), text: "Against manufacturing defects.", to: "/warranty" },
     { icon: "wallet", title: "Cash, UPI & cards", text: SITE.emiAvailable ? "Easy EMI on credit cards." : "Pay on delivery or online.", to: "/faq" },
-    { icon: "store", title: "Visit our showroom", text: `${SITE.address.line1}, ${SITE.address.locality}`, to: "/showroom" },
+    {
+      icon: "store",
+      title: SITE.establishedYear ? `Showroom since ${SITE.establishedYear}` : "Visit our showroom",
+      text: `${SITE.address.line1}, ${SITE.address.locality}`,
+      to: "/showroom",
+    },
   ];
 
   return (

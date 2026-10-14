@@ -20,7 +20,7 @@ const Badge = ({ children, tone = "light" }) => (
 Badge.propTypes = { children: PropTypes.node, tone: PropTypes.string };
 
 const ProductCard = ({ product, sizes = "(min-width: 1024px) 25vw, 50vw" }) => {
-  const { toggleWishlist, isWishlisted } = useContext(ShopContext);
+  const { toggleWishlist, isWishlisted, addToCart } = useContext(ShopContext);
   const dimKey = dimensionsToKey(product.dimensions);
   const saved = dimKey && isWishlisted(product._id, dimKey);
   const off = discountPercent(product.price, product.mrp);
@@ -49,6 +49,7 @@ const ProductCard = ({ product, sizes = "(min-width: 1024px) 25vw, 50vw" }) => {
         )}
         <div className="absolute left-2 top-2 flex flex-wrap gap-1">
           {outOfStock && <Badge tone="dark">Out of stock</Badge>}
+          {product.badge && <Badge tone="dark">{product.badge}</Badge>}
           {off > 0 && <Badge tone="gold">{off}% off</Badge>}
           {product.bestseller && <Badge>Bestseller</Badge>}
           {!product.bestseller && isNewProduct(product) && <Badge>New</Badge>}
@@ -80,10 +81,23 @@ const ProductCard = ({ product, sizes = "(min-width: 1024px) 25vw, 50vw" }) => {
             <Stars value={product.avgRating} className="h-3.5 w-3.5" /> ({product.reviewCount})
           </div>
         )}
-        <p className="mt-1.5 flex flex-wrap items-baseline gap-x-2">
-          <span className="text-base font-semibold text-stone-900">{formatPrice(product.price)}</span>
-          {off > 0 && <span className="text-sm text-stone-500 line-through">{formatPrice(product.mrp)}</span>}
-        </p>
+        <div className="mt-1.5 flex items-end justify-between gap-2">
+          <p className="flex flex-wrap items-baseline gap-x-2">
+            <span className="text-base font-semibold text-stone-900">{formatPrice(product.price)}</span>
+            {off > 0 && <span className="text-sm text-stone-500 line-through">{formatPrice(product.mrp)}</span>}
+          </p>
+          {!outOfStock && dimKey && (
+            <button
+              type="button"
+              onClick={() => addToCart(product._id, dimKey)}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-stone-300 text-stone-800 transition-colors hover:border-stone-900 hover:bg-stone-900 hover:text-white"
+              aria-label={`Add ${product.name} to cart`}
+              title="Add to cart"
+            >
+              <Icon name="plus" className="h-4 w-4" />
+            </button>
+          )}
+        </div>
       </div>
     </article>
   );

@@ -22,6 +22,8 @@ export const SITE = {
     pincode: "700124",
     country: "IN",
   },
+  // TODO(owner): a well-known nearby place, e.g. "Near Barasat Stadium"
+  landmark: "",
   geo: { lat: 22.7180601, lng: 88.4907312 },
   mapsUrl:
     "https://www.google.com/maps/place/Loknath+Sofa+Center/@22.7179621,88.4911163,19.6z/data=!4m6!3m5!1s0x39f8a300549ab59f:0xcaabd02a4a58e490!8m2!3d22.7180601!4d88.4907312!16s%2Fg%2F11vzy_2ywh",
@@ -61,7 +63,14 @@ export const SITE = {
     "Cash, UPI and cards accepted",
     "Home delivery & installation",
     "Custom sizes made to order",
+    // TODO(owner): add if true, e.g. "Parking nearby", "Step-free entrance"
   ],
+
+  // TODO(owner): real photos of the showroom, e.g. "/showroom/1.webp" (put files in frontend/public/showroom/)
+  showroomPhotos: [],
+
+  // Careers page: set to false to hide it from the footer and sitemap
+  careersOpen: true,
 
   deliveryAreas: [
     "Barasat",
@@ -109,6 +118,46 @@ export const ROOMS = [
   { label: "Bedroom", category: "Bedroom", photoOf: "Beds", blurb: "Beds, wardrobes, side tables" },
   { label: "Dining Room", category: "Dining Room", photoOf: "Tables", blurb: "Dining sets, chairs, sideboards" },
   { label: "Home Office", category: "Office", photoOf: "Desks", blurb: "Desks, chairs, bookshelves" },
+];
+
+// Short intro under the heading on category pages (also helps local search)
+export const CATEGORY_COPY = {
+  Sofas: "Sofas, sectionals and recliners for every living room — fabric, velvet and leather finishes, ready-made or built to your size at our Barasat showroom.",
+  Beds: "Solid wood, upholstered and storage beds in single, queen and king sizes, delivered and assembled across Kolkata.",
+  Wardrobes: "Sliding, hinged and mirror wardrobes in sheesham, engineered wood and laminate — made to fit your bedroom wall.",
+  Tables: "Coffee, side, console and dining tables in solid wood, marble and glass.",
+  Chairs: "Dining, accent, office and lounge chairs that are comfortable for long hours.",
+  Storage: "Cabinets, shoe racks, trunks and chests of drawers to keep every room tidy.",
+  Shelving: "Bookshelves, wall shelves, TV units and display units for living rooms and studies.",
+  Desks: "Study, writing, computer and standing desks for home offices and students.",
+  Lighting: "Chandeliers, pendant lights, floor and table lamps to finish your room.",
+  "Living Room": "Everything for the living room — sofas, coffee tables, TV units, shelving and lighting.",
+  Bedroom: "Beds, wardrobes, side tables and storage for a calmer bedroom.",
+  "Dining Room": "Dining tables, chairs and sideboards for family meals.",
+  Office: "Desks, office chairs and bookshelves for productive home offices.",
+  Outdoor: "Furniture for balconies, terraces and gardens.",
+};
+
+// Footer keyword links to useful listing pages
+export const POPULAR_SEARCHES = [
+  ["Sofa shop in Barasat", "/collection?subCategory=Sofas"],
+  ["L-shaped sofas", "/collection?q=L-Shape"],
+  ["Recliner sofas", "/collection?q=Recliner"],
+  ["King size beds", "/collection?q=King"],
+  ["Storage beds", "/collection?q=Storage%20Bed"],
+  ["Sliding wardrobes", "/collection?q=Sliding"],
+  ["Sheesham wood furniture", "/collection?q=Sheesham"],
+  ["Dining tables", "/collection?q=Dining"],
+  ["Study desks", "/collection?subCategory=Desks"],
+  ["Furniture store near Madhyamgram", "/showroom"],
+  ["Custom furniture Kolkata", "/custom-furniture"],
+];
+
+// "Shop the look" — one room photo plus a few pieces from that room
+export const LOOKS = [
+  { title: "The easy living room", category: "Living Room", photoOf: "Sofas", picks: ["Sofas", "Tables", "Lighting", "Shelving"] },
+  { title: "A calm bedroom", category: "Bedroom", photoOf: "Beds", picks: ["Beds", "Wardrobes", "Lighting", "Storage"] },
+  { title: "A focused home office", category: "Office", photoOf: "Desks", picks: ["Desks", "Chairs", "Shelving", "Lighting"] },
 ];
 
 export const TRENDING_SEARCHES = ["Sofa", "Bed", "Wardrobe", "Dining table", "Recliner", "Bookshelf"];

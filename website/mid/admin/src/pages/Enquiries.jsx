@@ -15,10 +15,10 @@ const TYPES = {
 const STATUSES = ["New", "Contacted", "Converted", "Closed"];
 
 const STATUS_STYLE = {
-  New: "bg-gold-500 text-ink-900",
-  Contacted: "bg-sky-500/20 text-sky-300",
-  Converted: "bg-green-500/20 text-green-300",
-  Closed: "bg-ink-200 text-ivory-400",
+  New: "bg-gold-500 text-stone-900",
+  Contacted: "bg-sky-100 text-sky-800",
+  Converted: "bg-green-100 text-green-700",
+  Closed: "bg-cream-200 text-stone-500",
 };
 
 const waLink = (phone) => {
@@ -87,8 +87,8 @@ const Enquiries = ({ token }) => {
   return (
     <>
       <p className="eyebrow-gold text-xs mb-1">INBOX</p>
-      <h2 className="font-display text-3xl text-ivory-50 mb-4">Enquiries</h2>
-      <p className="mb-6 text-sm text-ivory-400">Showroom bookings, custom-order requests, call-backs, product questions and newsletter sign-ups from the website.</p>
+      <h2 className="font-display text-3xl text-stone-900 mb-4">Enquiries</h2>
+      <p className="mb-6 text-sm text-stone-500">Showroom bookings, custom-order requests, call-backs, product questions and newsletter sign-ups from the website.</p>
 
       <div className="mb-6 flex flex-wrap items-center gap-3">
         <select value={type} onChange={(e) => setType(e.target.value)} className="px-3 py-2 rounded-md">
@@ -103,9 +103,9 @@ const Enquiries = ({ token }) => {
       </div>
 
       {loading ? (
-        <p className="text-ivory-400">Loading…</p>
+        <p className="text-stone-500">Loading…</p>
       ) : leads.length === 0 ? (
-        <div className="card-luxury rounded p-8 text-center text-ivory-400">No enquiries yet.</div>
+        <div className="card-luxury rounded p-8 text-center text-stone-500">No enquiries yet.</div>
       ) : (
         <div className="space-y-3">
           {leads.map((l) => (
@@ -114,33 +114,42 @@ const Enquiries = ({ token }) => {
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <span className={`rounded px-2 py-0.5 text-xs font-medium ${STATUS_STYLE[l.status] || ""}`}>{l.status}</span>
-                    <span className="text-xs uppercase tracking-wider text-ivory-400">{TYPES[l.type] || l.type}</span>
-                    <span className="text-xs text-ivory-500">{new Date(l.createdAt).toLocaleString("en-IN")}</span>
+                    <span className="text-xs uppercase tracking-wider text-stone-500">{TYPES[l.type] || l.type}</span>
+                    <span className="text-xs text-stone-400">{new Date(l.createdAt).toLocaleString("en-IN")}</span>
                   </div>
-                  <p className="mt-2 text-ivory-100">
+                  <p className="mt-2 text-stone-900">
                     {l.name || l.email}
                     {l.phone && (
                       <>
                         {" · "}
-                        <a href={`tel:${l.phone}`} className="text-gold-300 hover:underline">{l.phone}</a>
+                        <a href={`tel:${l.phone}`} className="text-gold-800 hover:underline">{l.phone}</a>
                         {" · "}
-                        <a href={waLink(l.phone)} target="_blank" rel="noopener noreferrer" className="text-green-300 hover:underline">WhatsApp</a>
+                        <a href={waLink(l.phone)} target="_blank" rel="noopener noreferrer" className="text-green-700 hover:underline">WhatsApp</a>
                       </>
                     )}
-                    {l.email && l.name && <> · <a href={`mailto:${l.email}`} className="text-gold-300 hover:underline">{l.email}</a></>}
+                    {l.email && l.name && <> · <a href={`mailto:${l.email}`} className="text-gold-800 hover:underline">{l.email}</a></>}
                   </p>
-                  {l.productName && <p className="mt-1 text-sm text-ivory-300">Product: {l.productName}</p>}
+                  {l.productName && <p className="mt-1 text-sm text-stone-700">Product: {l.productName}</p>}
                   {(l.preferredDate || l.preferredTime) && (
-                    <p className="mt-1 text-sm text-ivory-300">Visit: {l.preferredDate} {l.preferredTime}</p>
+                    <p className="mt-1 text-sm text-stone-700">Visit: {l.preferredDate} {l.preferredTime}</p>
                   )}
-                  {l.budget && <p className="mt-1 text-sm text-ivory-300">Budget: {l.budget}</p>}
-                  {l.message && <p className="mt-2 whitespace-pre-wrap text-sm text-ivory-200">{l.message}</p>}
+                  {l.budget && <p className="mt-1 text-sm text-stone-700">Budget: {l.budget}</p>}
+                  {l.message && <p className="mt-2 whitespace-pre-wrap text-sm text-stone-800">{l.message}</p>}
+                  {l.images?.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {l.images.map((src) => (
+                        <a key={src} href={src} target="_blank" rel="noopener noreferrer">
+                          <img src={src} alt="Customer photo" className="h-20 w-20 rounded-md border border-cream-300 object-cover" />
+                        </a>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   <select value={l.status} onChange={(e) => updateStatus(l._id, e.target.value)} className="px-2 py-1 rounded-md text-sm" aria-label="Status">
                     {STATUSES.map((s) => <option key={s}>{s}</option>)}
                   </select>
-                  <button type="button" onClick={() => remove(l._id)} className="px-2 text-lg text-ivory-400 hover:text-red-400" aria-label="Delete enquiry">×</button>
+                  <button type="button" onClick={() => remove(l._id)} className="px-2 text-lg text-stone-500 hover:text-red-700" aria-label="Delete enquiry">×</button>
                 </div>
               </div>
             </div>

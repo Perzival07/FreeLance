@@ -12,6 +12,8 @@ import ShowroomBlock from "../components/ShowroomBlock";
 import MaterialGuide from "../components/MaterialGuide";
 import NewsletterBox from "../components/NewsletterBox";
 import SectionHeading from "../components/SectionHeading";
+import ShopTheLook from "../components/ShopTheLook";
+import FollowUs from "../components/FollowUs";
 import useSeo from "../hooks/useSeo";
 import { localBusinessSchema } from "../utils/schema";
 import { SITE } from "../config/site";
@@ -20,10 +22,13 @@ const TABS = [
   { key: "new", label: "New arrivals", params: { sort: "new" }, link: "/collection?sort=new" },
   { key: "best", label: "Bestsellers", params: { bestseller: "true" }, link: "/collection?sort=bestseller" },
   { key: "budget", label: "Under ₹10,000", params: { maxPrice: 10000, sort: "price-desc" }, link: "/collection?maxPrice=10000" },
+  // only shown when at least one product has an MRP above its price
+  { key: "sale", label: "On sale", params: { onSale: "true" }, link: "/collection?onSale=true", needsSale: true },
 ];
 
 const ProductTabs = () => {
-  const { fetchProducts } = useContext(ShopContext);
+  const { fetchProducts, facets } = useContext(ShopContext);
+  const tabs = TABS.filter((t) => !t.needsSale || facets.saleCount > 0);
   const [active, setActive] = useState(TABS[0].key);
   const [lists, setLists] = useState({});
   const tab = TABS.find((t) => t.key === active);
@@ -43,7 +48,7 @@ const ProductTabs = () => {
     <section className="section container-site">
       <SectionHeading eyebrow="Our picks" title="Popular right now" link={tab.link} />
       <div className="no-scrollbar -mt-2 mb-6 flex gap-2 overflow-x-auto" role="tablist" aria-label="Product lists">
-        {TABS.map((t) => (
+        {tabs.map((t) => (
           <button
             key={t.key}
             type="button"
@@ -88,6 +93,8 @@ const Home = () => {
       text: "Solid wood and engineered wood beds, sliding and hinged wardrobes in every size.",
       cta: { label: "Shop bedroom", to: "/collection?category=Bedroom" },
       image: imageFor("Beds"),
+      // product photos are framed for the card; aim the banner at the furniture
+      position: "center 80%",
       alt: "Wooden bed in a styled bedroom",
     },
     imageFor("Sofas") && {
@@ -97,6 +104,7 @@ const Home = () => {
       cta: { label: "Request a custom sofa", to: "/custom-furniture" },
       secondary: { label: "Book a showroom visit", to: "/book-visit" },
       image: imageFor("Sofas"),
+      position: "center 70%",
       alt: "Sofa in a living room",
     },
   ].filter(Boolean);
@@ -108,10 +116,12 @@ const Home = () => {
       <CategoryTiles />
       <ProductTabs />
       <RoomTiles />
+      <ShopTheLook />
       <CustomBanner />
       <Testimonials />
       <ShowroomBlock />
       <MaterialGuide />
+      <FollowUs />
       <NewsletterBox />
     </>
   );

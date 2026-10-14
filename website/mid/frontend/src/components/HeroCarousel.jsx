@@ -15,6 +15,8 @@ const HeroCarousel = ({ slides }) => {
     typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
   );
   const count = slides.length;
+  // slides can arrive later (photos from the catalogue), so keep the index in range
+  const slide = slides[Math.min(index, count - 1)];
 
   const go = useCallback((i) => setIndex(((i % count) + count) % count), [count]);
 
@@ -34,53 +36,50 @@ const HeroCarousel = ({ slides }) => {
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
     >
-      <div className="relative min-h-[560px] sm:min-h-[580px] lg:min-h-[560px]">
-        {slides.map((s, i) => (
-          <div
-            key={s.title}
-            role="group"
-            aria-roledescription="slide"
-            aria-label={`${i + 1} of ${count}`}
-            aria-hidden={i !== index}
-            className={`absolute inset-0 grid transition-opacity duration-700 lg:grid-cols-2 ${i === index ? "opacity-100" : "pointer-events-none opacity-0"}`}
-          >
-            <div className="order-2 flex items-center lg:order-1">
-              <div className="container-site lg:ml-auto lg:mr-0 lg:max-w-[660px] lg:pr-12">
-                <div className="py-8 lg:py-0">
-                  {s.eyebrow && <p className="eyebrow mb-3">{s.eyebrow}</p>}
-                  {i === 0 ? (
-                    <h1 className="text-4xl font-semibold leading-[1.05] sm:text-5xl lg:text-6xl">{s.title}</h1>
-                  ) : (
-                    <h2 className="text-4xl font-semibold leading-[1.05] sm:text-5xl lg:text-6xl">{s.title}</h2>
-                  )}
-                  <p className="mt-4 max-w-md text-base text-stone-600 sm:text-lg">{s.text}</p>
-                  <div className="mt-7 flex flex-wrap gap-3">
-                    <Link to={s.cta.to} className="btn-primary" tabIndex={i === index ? 0 : -1}>
-                      {s.cta.label} <Icon name="arrowRight" className="h-4 w-4" />
-                    </Link>
-                    {s.secondary && (
-                      <Link to={s.secondary.to} className="btn-outline" tabIndex={i === index ? 0 : -1}>
-                        {s.secondary.label}
-                      </Link>
-                    )}
-                  </div>
-                </div>
+      <div className="relative grid min-h-[560px] sm:min-h-[580px] lg:min-h-[600px] lg:grid-cols-2">
+        {/* Photos: fixed-size layer that cross-fades; never affects the text layout */}
+        <div className="relative order-1 h-[240px] sm:h-[280px] lg:order-2 lg:h-auto">
+          {slides.map((s, i) => (
+            <img
+              key={s.title}
+              src={typeof s.image === "string" && s.image.includes("cloudinary") ? imageUrl(s.image, 1400) : s.image}
+              srcSet={s.imageSmall ? `${s.imageSmall} 960w, ${s.image} 1920w` : undefined}
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              alt={i === index ? s.alt || "" : ""}
+              aria-hidden={i !== index}
+              // eslint-disable-next-line react/no-unknown-property -- React 18 needs the lowercase attribute
+              fetchpriority={i === 0 ? "high" : undefined}
+              loading={i === 0 ? "eager" : "lazy"}
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${i === index ? "opacity-100" : "opacity-0"}`}
+              style={s.position ? { objectPosition: s.position } : undefined}
+            />
+          ))}
+        </div>
+
+        {/* Text: only the current slide is rendered, so slides can't overlap */}
+        <div className="order-2 flex items-center lg:order-1">
+          <div className="container-site lg:ml-auto lg:mr-0 lg:max-w-[660px] lg:pr-12">
+            <div key={slide.title} className="animate-[heroIn_600ms_ease-out] py-8 lg:pb-24 lg:pt-12" role="group" aria-roledescription="slide" aria-label={`${index + 1} of ${count}`}>
+              {slide.eyebrow && <p className="eyebrow mb-3">{slide.eyebrow}</p>}
+              {index === 0 ? (
+                <h1 className="text-4xl font-semibold leading-[1.05] sm:text-5xl xl:text-6xl">{slide.title}</h1>
+              ) : (
+                <h2 className="text-4xl font-semibold leading-[1.05] sm:text-5xl xl:text-6xl">{slide.title}</h2>
+              )}
+              <p className="mt-4 max-w-md text-base text-stone-600 sm:text-lg">{slide.text}</p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Link to={slide.cta.to} className="btn-primary">
+                  {slide.cta.label} <Icon name="arrowRight" className="h-4 w-4" />
+                </Link>
+                {slide.secondary && (
+                  <Link to={slide.secondary.to} className="btn-outline">
+                    {slide.secondary.label}
+                  </Link>
+                )}
               </div>
             </div>
-            <div className="order-1 h-[240px] sm:h-[280px] lg:order-2 lg:h-auto">
-              <img
-                src={typeof s.image === "string" && s.image.includes("cloudinary") ? imageUrl(s.image, 1400) : s.image}
-                srcSet={s.imageSmall ? `${s.imageSmall} 960w, ${s.image} 1920w` : undefined}
-                sizes="(min-width: 1024px) 50vw, 100vw"
-                alt={s.alt || ""}
-                // eslint-disable-next-line react/no-unknown-property -- React 18 needs the lowercase attribute
-                fetchpriority={i === 0 ? "high" : undefined}
-                loading={i === 0 ? "eager" : "lazy"}
-                className="h-full w-full object-cover"
-              />
-            </div>
           </div>
-        ))}
+        </div>
       </div>
 
       {count > 1 && (

@@ -113,17 +113,17 @@ const Orders = ({ token }) => {
   return (
     <div>
       <p className="eyebrow-gold text-xs mb-1">FULFILLMENT</p>
-      <h3 className="font-display text-3xl text-ivory-50 mb-6">Orders</h3>
+      <h3 className="font-display text-3xl text-stone-900 mb-6">Orders</h3>
       <div>
         {orders.map((order, index) => (
-          <div className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2fr_1fr_1fr_1fr] gap-3 items-start card-luxury rounded p-5 md:p-8 my-3 md:my-4 text-xs sm:text-sm text-ivory-200 hover:border-gold-400/40 transition-colors" key={index}>
-            <img className="w-12 rounded ring-1 ring-gold-500/30" src={assets.parcel_icon} alt="parcel_icon" />
+          <div className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2fr_1fr_1fr_1fr] gap-3 items-start card-luxury rounded p-5 md:p-8 my-3 md:my-4 text-xs sm:text-sm text-stone-800 hover:border-stone-400 transition-colors" key={index}>
+            <img className="w-12 rounded ring-1 ring-cream-300" src={assets.parcel_icon} alt="parcel_icon" />
             <div>
               <div>
                 {order.items.map((item, idx) => (
                   <p className="py-0.5" key={idx}>
                     {item.name} × {item.quantity}{" "}
-                    <span className="text-ivory-400">
+                    <span className="text-stone-500">
                       ({formatDimensions(item.dimensions)})
                     </span>
                   </p>
@@ -157,7 +157,7 @@ const Orders = ({ token }) => {
                     className={`px-3 py-1 text-xs font-semibold rounded transition-colors ${
                       order.payment 
                         ? 'bg-green-500 text-white hover:bg-green-600' 
-                        : 'bg-ink-300 text-ivory-200 hover:bg-ink-200'
+                        : 'bg-cream-200 text-stone-800 hover:bg-cream-200'
                     }`}
                   >
                     {order.payment ? 'Done' : 'Mark as Done'}
@@ -168,7 +168,7 @@ const Orders = ({ token }) => {
 
 
               <div className="flex flex-col gap-3">
-                <p className="text-sm sm:text-[15px] text-gold-300 font-display text-lg">{currency}{order.amount}</p>
+                <p className="text-sm sm:text-[15px] text-gold-800 font-display text-lg">{currency}{order.amount}</p>
                 <select onChange={(event)=>statusHandler(event, order._id)} value={order.status} className="p-2 rounded-md font-semibold">
                   <option value="Order Placed">Order Placed</option>
                   <option value="Packing">Packing</option>
@@ -178,7 +178,7 @@ const Orders = ({ token }) => {
                 </select>
                 <button
                   onClick={() => removeOrderHandler(order._id)}
-                  className="px-4 py-2 border border-red-500/50 text-red-400 text-sm font-semibold rounded hover:bg-red-500/10 hover:border-red-400 transition-colors"
+                  className="px-4 py-2 border border-red-500/50 text-red-700 text-sm font-semibold rounded hover:bg-red-500/10 hover:border-red-400 transition-colors"
                 >
                   Remove Order
                 </button>

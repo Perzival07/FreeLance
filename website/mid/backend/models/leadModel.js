@@ -15,6 +15,7 @@ const leadSchema = new mongoose.Schema({
     budget: { type: String, trim: true, maxlength: 50 },
     productId: { type: String, trim: true, maxlength: 50 },
     productName: { type: String, trim: true, maxlength: 200 },
+    images: { type: [String], default: [] },
     status: { type: String, enum: LEAD_STATUSES, default: 'New' },
     createdAt: { type: Date, default: Date.now, index: true },
 });

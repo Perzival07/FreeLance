@@ -30,23 +30,23 @@ const Dashboard = ({ token }) => {
   }, [token]);
 
   if (loading) {
-    return <p className="text-ivory-400">Loading dashboard…</p>;
+    return <p className="text-stone-500">Loading dashboard…</p>;
   }
 
   if (!stats) {
-    return <p className="text-ivory-400">Could not load statistics.</p>;
+    return <p className="text-stone-500">Could not load statistics.</p>;
   }
 
   return (
     <div>
       <p className="eyebrow-gold text-xs mb-1">OVERVIEW</p>
-      <h2 className="font-display text-3xl text-ivory-50 mb-8">Dashboard</h2>
+      <h2 className="font-display text-3xl text-stone-900 mb-8">Dashboard</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-12">
-        <div className="card-luxury p-6 rounded hover:border-gold-400/50 hover:shadow-gold transition-all">
+        <div className="card-luxury p-6 rounded hover:border-stone-400 hover:shadow-md transition-all">
           <p className="eyebrow-gold text-xs">TOTAL ORDERS</p>
           <p className="font-display text-4xl text-gold-gradient font-semibold mt-2">{stats.totalOrders}</p>
         </div>
-        <div className="card-luxury p-6 rounded hover:border-gold-400/50 hover:shadow-gold transition-all">
+        <div className="card-luxury p-6 rounded hover:border-stone-400 hover:shadow-md transition-all">
           <p className="eyebrow-gold text-xs">TOTAL SALES</p>
           <p className="font-display text-4xl text-gold-gradient font-semibold mt-2">
             {currency}
@@ -57,37 +57,37 @@ const Dashboard = ({ token }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div>
-          <h3 className="font-display text-xl text-ivory-100 mb-3">Orders by status</h3>
-          <ul className="card-luxury rounded divide-y divide-gold-500/10">
+          <h3 className="font-display text-xl text-stone-900 mb-3">Orders by status</h3>
+          <ul className="card-luxury rounded divide-y divide-cream-300">
             {(stats.ordersByStatus || []).map((row) => (
               <li
                 key={row._id || "unknown"}
-                className="flex justify-between px-4 py-3 text-sm text-ivory-300"
+                className="flex justify-between px-4 py-3 text-sm text-stone-700"
               >
                 <span>{row._id || "—"}</span>
-                <span className="font-medium text-gold-300">{row.count}</span>
+                <span className="font-medium text-gold-800">{row.count}</span>
               </li>
             ))}
             {(!stats.ordersByStatus || stats.ordersByStatus.length === 0) && (
-              <li className="px-4 py-3 text-sm text-ivory-400">No order data</li>
+              <li className="px-4 py-3 text-sm text-stone-500">No order data</li>
             )}
           </ul>
         </div>
 
         <div>
-          <h3 className="font-display text-xl text-ivory-100 mb-3">Recent orders</h3>
-          <ul className="card-luxury rounded divide-y divide-gold-500/10 text-sm">
+          <h3 className="font-display text-xl text-stone-900 mb-3">Recent orders</h3>
+          <ul className="card-luxury rounded divide-y divide-cream-300 text-sm">
             {(stats.recentOrders || []).map((o) => (
               <li key={o._id} className="px-4 py-3 flex flex-col gap-0.5">
-                <span className="font-medium text-ivory-100">
+                <span className="font-medium text-stone-900">
                   {currency}
                   {o.amount} · {o.status}
                 </span>
-                <span className="text-ivory-500 text-xs">{String(o.date)}</span>
+                <span className="text-stone-400 text-xs">{String(o.date)}</span>
               </li>
             ))}
             {(!stats.recentOrders || stats.recentOrders.length === 0) && (
-              <li className="px-4 py-3 text-ivory-400">No recent orders</li>
+              <li className="px-4 py-3 text-stone-500">No recent orders</li>
             )}
           </ul>
         </div>

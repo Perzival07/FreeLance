@@ -34,12 +34,13 @@ const CustomFurniture = () => {
         <div className="mt-12 grid gap-10 lg:grid-cols-[1.5fr_1fr]">
           <div className="card p-6 sm:p-8">
             <h2 className="section-title">Request a quote</h2>
-            <p className="mb-6 mt-2 text-stone-600">Describe the piece and we&apos;ll call you back with options and a price.</p>
+            <p className="mb-6 mt-2 text-stone-600">Describe the piece, attach a photo if you have one, and we&apos;ll call you back with options and a price.</p>
             <LeadForm
               type="custom"
               fields={["email", "budget", "message"]}
               submitLabel="Request a quote"
               messageRequired
+              allowPhotos
               messageLabel="What would you like made? *"
               messagePlaceholder="e.g. L-shaped sofa, 9 ft × 6 ft, dark grey fabric, wooden legs"
             />

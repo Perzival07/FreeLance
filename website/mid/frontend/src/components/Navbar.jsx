@@ -5,7 +5,8 @@ import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import Icon, { WhatsAppIcon } from "./Icons";
 import { NAV_CATEGORIES, ROOMS, SITE, TRENDING_SEARCHES, whatsappLink } from "../config/site";
-import { showroomStatus } from "../utils/format";
+import { formatPrice, imageUrl, productUrl, showroomStatus } from "../utils/format";
+import { getRecentlyViewed } from "../utils/recentlyViewed";
 
 const RECENT_KEY = "recentSearches";
 
@@ -29,12 +30,19 @@ const saveRecentSearch = (term) => {
 const collectionLink = (params) => `/collection?${new URLSearchParams(params)}`;
 
 const SearchBox = ({ onDone, autoFocus = false, id }) => {
-  const { navigate } = useContext(ShopContext);
+  const { navigate, productCache, ensureProducts } = useContext(ShopContext);
   const [searchParams] = useSearchParams();
   const [term, setTerm] = useState(searchParams.get("q") || "");
   const [open, setOpen] = useState(false);
   const boxRef = useRef(null);
   const recent = open ? readRecentSearches() : [];
+  const viewedIds = open ? getRecentlyViewed().slice(0, 4) : [];
+  const viewed = viewedIds.map((pid) => productCache[pid]).filter(Boolean);
+
+  useEffect(() => {
+    if (open && viewedIds.length) ensureProducts(viewedIds);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   useEffect(() => {
     setTerm(searchParams.get("q") || "");
@@ -100,6 +108,24 @@ const SearchBox = ({ onDone, autoFocus = false, id }) => {
               </div>
             </div>
           )}
+          {viewed.length > 0 && (
+            <div className="mb-4">
+              <p className="mb-2 text-xs font-medium uppercase tracking-wider text-stone-500">Recently viewed</p>
+              <ul className="grid gap-2 sm:grid-cols-2">
+                {viewed.map((p) => (
+                  <li key={p._id}>
+                    <Link to={productUrl(p)} onClick={() => { setOpen(false); onDone?.(); }} className="flex items-center gap-3 rounded-md p-1 hover:bg-cream-100">
+                      <img src={imageUrl(p.image?.[0], 120)} alt="" className="h-11 w-14 shrink-0 rounded object-cover" />
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm text-stone-900">{p.name}</span>
+                        <span className="text-xs text-stone-600">{formatPrice(p.price)}</span>
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           <p className="mb-2 text-xs font-medium uppercase tracking-wider text-stone-500">Trending</p>
           <div className="flex flex-wrap gap-2">
             {TRENDING_SEARCHES.map((t) => (
@@ -133,11 +159,12 @@ function Navbar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [roomsOpen, setRoomsOpen] = useState(false);
+  const [megaOpen, setMegaOpen] = useState(false);
   const accountRef = useRef(null);
   const location = useLocation();
   const status = showroomStatus();
 
-  const { getCartCount, navigate, token, setToken, setCartItems, wishlist } = useContext(ShopContext);
+  const { getCartCount, navigate, token, setToken, setCartItems, wishlist, facets } = useContext(ShopContext);
   const cartCount = getCartCount();
 
   // Close menus on navigation
@@ -145,6 +172,7 @@ function Navbar() {
     setDrawerOpen(false);
     setAccountOpen(false);
     setRoomsOpen(false);
+    setMegaOpen(false);
   }, [location.pathname, location.search]);
 
   useEffect(() => {
@@ -163,6 +191,7 @@ function Navbar() {
         setAccountOpen(false);
         setDrawerOpen(false);
         setRoomsOpen(false);
+        setMegaOpen(false);
       }
     };
     document.addEventListener("mousedown", onClick);
@@ -271,12 +300,45 @@ function Navbar() {
 
         {/* Category row (desktop) */}
         <nav aria-label="Product categories" className="hidden border-t border-cream-200 lg:block">
-          <div className="container-site flex items-center gap-7">
-            <NavLink to="/collection" end className={navLinkClass}>
-              All Furniture
-            </NavLink>
-            {NAV_CATEGORIES.map((c) => (
-              <Link key={c.label} to={collectionLink({ subCategory: c.subCategory })} className="whitespace-nowrap py-3 text-sm text-stone-700 hover:text-gold-800">
+          <div className="container-site flex items-center gap-6 xl:gap-7">
+            <div className="relative" onMouseLeave={() => setMegaOpen(false)}>
+              <button
+                type="button"
+                onClick={() => setMegaOpen((o) => !o)}
+                onMouseEnter={() => setMegaOpen(true)}
+                className="flex items-center gap-1 py-3 text-sm font-medium text-stone-900 hover:text-gold-800"
+                aria-expanded={megaOpen}
+              >
+                All Furniture <Icon name="chevronDown" className="h-4 w-4" />
+              </button>
+              {megaOpen && (
+                <div className="absolute left-0 top-full z-50 w-[720px] rounded-md border border-cream-300 bg-white p-5 shadow-lg">
+                  <div className="grid grid-cols-5 gap-3">
+                    {NAV_CATEGORIES.map((c) => {
+                      const facet = facets.subCategories.find((f) => f.name === c.subCategory);
+                      return (
+                        <Link key={c.label} to={collectionLink({ subCategory: c.subCategory })} className="group block">
+                          <div className="aspect-square overflow-hidden rounded-md bg-cream-200">
+                            {facet?.image && <img src={imageUrl(facet.image, 200)} alt="" loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />}
+                          </div>
+                          <p className="mt-1.5 text-sm text-stone-800 group-hover:text-gold-800">{c.label}</p>
+                        </Link>
+                      );
+                    })}
+                    <Link to="/collection" className="flex aspect-square flex-col items-center justify-center rounded-md border border-stone-300 text-center text-sm font-medium text-stone-900 hover:border-stone-900">
+                      View all
+                      <Icon name="arrowRight" className="mt-1 h-4 w-4" />
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+            {NAV_CATEGORIES.slice(0, 7).map((c, i) => (
+              <Link
+                key={c.label}
+                to={collectionLink({ subCategory: c.subCategory })}
+                className={`whitespace-nowrap py-3 text-sm text-stone-700 hover:text-gold-800 ${i >= 5 ? "hidden xl:block" : ""}`}
+              >
                 {c.label}
               </Link>
             ))}
@@ -285,7 +347,7 @@ function Navbar() {
                 type="button"
                 onClick={() => setRoomsOpen((o) => !o)}
                 onMouseEnter={() => setRoomsOpen(true)}
-                className="flex items-center gap-1 py-3 text-sm text-stone-700 hover:text-gold-800"
+                className="flex items-center gap-1 whitespace-nowrap py-3 text-sm text-stone-700 hover:text-gold-800"
                 aria-expanded={roomsOpen}
               >
                 Shop by Room <Icon name="chevronDown" className="h-4 w-4" />
@@ -301,6 +363,14 @@ function Navbar() {
                 </div>
               )}
             </div>
+            <Link to="/collection?sort=new" className="whitespace-nowrap py-3 text-sm text-stone-700 hover:text-gold-800">
+              New Arrivals
+            </Link>
+            {facets.saleCount > 0 && (
+              <Link to="/collection?onSale=true" className="whitespace-nowrap py-3 text-sm font-medium text-red-700 hover:text-red-800">
+                Sale
+              </Link>
+            )}
             <div className="ml-auto flex items-center gap-6">
               <NavLink to="/custom-furniture" className={navLinkClass}>
                 Custom Furniture
@@ -328,6 +398,8 @@ function Navbar() {
             <nav className="flex-1 px-4 py-4" aria-label="Mobile">
               <p className="eyebrow mb-2">Shop</p>
               <Link to="/collection" className="block py-2.5 text-stone-900">All Furniture</Link>
+              <Link to="/collection?sort=new" className="block py-2.5 text-stone-800">New Arrivals</Link>
+              {facets.saleCount > 0 && <Link to="/collection?onSale=true" className="block py-2.5 font-medium text-red-700">Sale</Link>}
               {NAV_CATEGORIES.map((c) => (
                 <Link key={c.label} to={collectionLink({ subCategory: c.subCategory })} className="block py-2.5 text-stone-800">
                   {c.label}

@@ -7,7 +7,7 @@ const sitemapRouter = express.Router();
 const STATIC_PATHS = [
     '/', '/collection', '/showroom', '/about', '/contact', '/custom-furniture', '/book-visit',
     '/bulk-orders', '/track-order', '/faq', '/shipping-policy', '/return-policy', '/warranty',
-    '/terms', '/privacy-policy', '/care-guide',
+    '/terms', '/privacy-policy', '/care-guide', '/careers',
 ];
 
 const slugify = (str) =>
@@ -18,12 +18,12 @@ const escapeXml = (str) => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt
 sitemapRouter.get('/sitemap.xml', async (req, res) => {
     try {
         const origin = process.env.FRONTEND_URL || `https://${req.headers.host}`;
-        const products = await productModel.find({}, { name: 1, date: 1 }).lean();
+        const products = await productModel.find({}, { name: 1, date: 1, slug: 1 }).lean();
         const urls = [
             ...STATIC_PATHS.map((path) => `<url><loc>${escapeXml(origin + path)}</loc></url>`),
             ...products.map((p) => {
                 const lastmod = p.date ? `<lastmod>${new Date(p.date).toISOString().slice(0, 10)}</lastmod>` : '';
-                return `<url><loc>${escapeXml(`${origin}/product/${slugify(p.name)}-${p._id}`)}</loc>${lastmod}</url>`;
+                return `<url><loc>${escapeXml(`${origin}/product/${p.slug || slugify(p.name)}-${p._id}`)}</loc>${lastmod}</url>`;
             }),
         ];
         res.set('Content-Type', 'application/xml');

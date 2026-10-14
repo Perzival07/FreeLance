@@ -1,18 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Prata&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&display=swap');
 
 @import "tailwindcss";
 
+/* Same palette as the storefront (frontend/tailwind.config.js) */
 @theme {
-    --color-primary-50: #fbf6e9;
-    --color-primary-100: #f5ead0;
-    --color-primary-200: #ecd8a3;
-    --color-primary-300: #e0c073;
-    --color-primary-400: #d4a94e;
-    --color-primary-500: #C9A24B;
-    --color-primary-600: #ad8636;
-    --color-primary-700: #8a6a2b;
-    --color-primary-800: #6b5122;
-    --color-primary-900: #4f3c1a;
+    --color-cream-50: #FFFDF9;
+    --color-cream-100: #FAF6EF;
+    --color-cream-200: #F3ECE0;
+    --color-cream-300: #E7DCCB;
+    --color-cream-400: #D6C7AF;
 
     --color-gold-50: #fbf6e9;
     --color-gold-100: #f5ead0;
@@ -25,137 +21,84 @@
     --color-gold-800: #6b5122;
     --color-gold-900: #4f3c1a;
 
-    --color-ink-50: #f3f2f1;
-    --color-ink-100: #e2ddd8;
-    --color-ink-200: #3a332e;
-    --color-ink-300: #272220;
-    --color-ink-400: #1c1916;
-    --color-ink-500: #161311;
-    --color-ink-600: #141210;
-    --color-ink-700: #100e0c;
-    --color-ink-800: #0d0b09;
-    --color-ink-900: #0a0908;
-    --color-ink-950: #070605;
+    --color-ink-700: #2a2520;
+    --color-ink-800: #1f1b17;
+    --color-ink-900: #171411;
 
-    --color-ivory-50: #FFFDF9;
-    --color-ivory-100: #FBF7EF;
-    --color-ivory-200: #F5EFE6;
-    --color-ivory-300: #E8DFCF;
-    --color-ivory-400: #D3C6AE;
-    --color-ivory-500: #B7A688;
-    --color-ivory-600: #8f8064;
-
-    --font-display: "Cormorant Garamond", "Prata", serif;
-
-    --shadow-gold: 0 0 0 1px rgba(201,162,75,0.35), 0 8px 30px -8px rgba(201,162,75,0.35);
-    --shadow-gold-lg: 0 0 0 1px rgba(201,162,75,0.4), 0 20px 60px -12px rgba(201,162,75,0.45);
+    --font-sans: "Outfit", system-ui, sans-serif;
+    --font-display: "Cormorant Garamond", Georgia, serif;
 }
 
-* {
-    font-family: 'Outfit', sans-serif;
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply min-h-screen bg-cream-100 font-sans text-stone-800 antialiased;
+    }
+
+    h1, h2, h3 {
+        @apply font-display text-stone-900;
+    }
+
+    ::selection {
+        @apply bg-gold-200 text-stone-900;
+    }
+
+    input[type="checkbox"],
+    input[type="radio"] {
+        accent-color: #8a6a2b;
+    }
+
+    /* Form fields look the same everywhere without extra classes */
+    select, input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), textarea {
+        @apply rounded-md border border-stone-300 bg-white text-sm text-stone-900 placeholder-stone-400 transition-colors;
+    }
+
+    select:focus, input:focus, textarea:focus {
+        @apply border-stone-900 outline-none;
+    }
+
+    :focus-visible {
+        @apply outline-none ring-2 ring-gold-600 ring-offset-2 ring-offset-cream-100;
+    }
+
+    button {
+        cursor: pointer;
+    }
 }
 
-html {
-    scroll-behavior: smooth;
-}
+@layer components {
+    .font-display {
+        font-family: var(--font-display);
+    }
 
-body {
-    background-color: #0d0b09;
-    background-image:
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(201, 162, 75, 0.10), transparent),
-        linear-gradient(180deg, #0d0b09 0%, #100e0c 100%);
-    color: #F5EFE6;
-    min-height: 100vh;
-}
+    .card-luxury {
+        @apply rounded-lg border border-cream-300 bg-white;
+    }
 
-::selection {
-    background-color: #C9A24B;
-    color: #0d0b09;
-}
+    .btn-gold {
+        @apply inline-flex items-center justify-center gap-2 rounded-md bg-stone-900 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gold-800 disabled:cursor-not-allowed disabled:opacity-50;
+    }
 
-input[type="checkbox"],
-input[type="radio"] {
-    accent-color: #C9A24B;
-}
+    .btn-gold-outline {
+        @apply inline-flex items-center justify-center gap-2 rounded-md border border-stone-300 bg-white px-5 py-2.5 text-sm font-medium text-stone-800 transition-colors hover:border-stone-900 disabled:cursor-not-allowed disabled:opacity-50;
+    }
 
-.font-display {
-    font-family: "Cormorant Garamond", "Prata", serif;
-}
+    .eyebrow-gold {
+        @apply font-medium uppercase tracking-[0.2em] text-gold-700;
+    }
 
-select, input, textarea {
-    background-color: #161311;
-    border: 1px solid rgba(201, 162, 75, 0.25);
-    color: #F5EFE6;
-    outline-color: #C9A24B;
-    border-radius: 4px;
-}
+    .divider-gold {
+        @apply h-px bg-cream-300;
+    }
 
-select:focus, input:focus, textarea:focus {
-    border-color: #C9A24B;
-}
+    .text-gold-gradient {
+        @apply text-stone-900;
+    }
 
-::placeholder {
-    color: #8f8064;
-}
-
-.active {
-    background-color: rgba(201, 162, 75, 0.12);
-    border-color: #C9A24B;
-    color: #ecd8a3;
-}
-
-/* Recolors flat black/gray line-art PNG & SVG icons to ivory so they read on the dark canvas */
-.icon-luxury {
-    filter: brightness(0) invert(1) opacity(0.88);
-    transition: filter 0.2s ease, opacity 0.2s ease;
-}
-
-.icon-luxury:hover {
-    filter: brightness(0) invert(1) opacity(1) drop-shadow(0 0 6px rgba(201, 162, 75, 0.6));
-}
-
-/* ---- Shared luxury utility classes (mirrors frontend) ---- */
-
-.eyebrow-gold {
-    letter-spacing: 0.25em;
-    color: #C9A24B;
-}
-
-.divider-gold {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(201, 162, 75, 0.7), transparent);
-}
-
-.card-luxury {
-    background-color: #161311;
-    border: 1px solid rgba(201, 162, 75, 0.18);
-}
-
-.text-gold-gradient {
-    background-image: linear-gradient(135deg, #ecd8a3 0%, #C9A24B 55%, #8a6a2b 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
-
-.btn-gold {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.75rem;
-    background-image: linear-gradient(135deg, #E0C073 0%, #C9A24B 45%, #8a6a2b 100%);
-    color: #0d0b09;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    font-size: 0.85rem;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
-    box-shadow: 0 10px 30px -10px rgba(201, 162, 75, 0.55);
-    border-radius: 4px;
-}
-
-.btn-gold:hover {
-    filter: brightness(1.08);
-    transform: translateY(-1px);
-    box-shadow: 0 16px 40px -10px rgba(201, 162, 75, 0.7);
+    .icon-luxury {
+        @apply opacity-80;
+    }
 }

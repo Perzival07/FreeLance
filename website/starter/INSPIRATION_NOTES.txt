@@ -1,0 +1,379 @@
+================================================================================
+ LUNE & CRUMB — INSPIRATION NOTES FROM 10 REFERENCE RESTAURANT / CAFE SITES
+ Compiled: 15 Oct 2026
+================================================================================
+
+PURPOSE
+-------
+Ideas worth borrowing from ten reference sites, filtered so they fit the
+existing Lune & Crumb look. Anything that would clash with that look is listed
+in section 4 ("Do not adopt").
+
+
+--------------------------------------------------------------------------------
+0. THE AESTHETIC WE ARE PROTECTING (do not break these)
+--------------------------------------------------------------------------------
+- Palette: white / warm cream surfaces (#FFFFFF, #FAF7F1, #FBF9F4), muted gold
+  (#D4AF7E, #8C7350), terracotta accent (#B5654A), deep teal WhatsApp
+  (#0d655f). Dark mode is supported, so every new block must use the CSS tokens
+  in assets/styles.css. No new hard-coded colours.
+- Type: Cormorant Garamond (display, italics for emphasis, e.g. "Lune &
+  <em>Crumb</em>") + Jost (body, light weights, generous 1.85 line-height).
+- Tone: quiet, editorial, artisan, unhurried. Copy is specific and sensory
+  ("27-layer cultured butter", "Ovens hot from 06:30"), never shouty.
+- Structure: static HTML (index, about, menu, breads, gallery, contact, 404),
+  a single WhatsApp conversion path ("Reserve"), no cart or checkout.
+- Existing components to reuse before adding new ones: eyebrow + section-title
+  + gold-line, highlight-card, review-card track, marquee, live-status-pill,
+  rotating-badge, timeline, team-card, stats-grid (count-up), menu-tabs
+  (scroll-spy), bread-card + bread-filter, gallery-filter + lightbox, faq-item,
+  cta-banner, sticky-bar, scroll-progress, scroll-top-btn, page-hero--photo.
+
+Rule of thumb: borrow the structure, write the copy in the Lune & Crumb voice,
+and style it with the existing tokens and components.
+
+
+--------------------------------------------------------------------------------
+1. SITE-BY-SITE NOTES
+--------------------------------------------------------------------------------
+
+[1] 6 BALLYGUNGE PLACE: https://www.6ballygungeplace.in/
+    Heritage Bengali restaurant group (est. 2003).
+    What they do well:
+    - Pioneer framing: the story opens with the gap they filled ("the city had
+      no standalone Bengali restaurant until 2003"). A strong origin hook.
+    - A named food philosophy section ("Rasana Charitamrito") that names two
+      signature dishes and links to the menu.
+    - Swappable seasonal hero (e.g. Mother's Day thali, "Place Order").
+    - Awards wall from 2012 to 2026, used as a trust signal.
+    - Catering block with a "Get Quote For Custom Menu" CTA.
+    - Blog cards on food history, spices and etiquette.
+    - Celebrity testimonials with portraits.
+    Take for Lune & Crumb:
+    -> Open About with a pioneer or "why we exist" hook, e.g. "Walcot Street
+       had no long-fermentation bakery until..." The existing about.html
+       timeline already supports this.
+    -> Give the baking approach a short name, used as a recurring motif such as
+       "The 48-Hour Rule" or "Slow Bread". Use it on index, breads and menu.
+    -> Seasonal hero line: keep the video, but swap the live-status-pill text
+       and the tagline by season ("Hot cross buns from Good Friday",
+       "Stollen now baking"). Change only the copy; the layout stays.
+    -> Celebration and wholesale orders: a small "Large orders & celebration
+       bakes" block with a WhatsApp CTA carrying a prefilled message (for
+       example "I'd like a quote for 40 rolls for an event on __"). This works
+       like their catering quote, without needing a form.
+    -> Recognition strip: a single, quiet row of press or award mentions in
+       Cormorant italics with thin gold dividers. Avoid a dense badge wall.
+
+[2] BOHO THE CAFE: https://bohothecafe.com/
+    Instagram-led Kolkata cafe chain, single page.
+    What they do well:
+    - A three-beat hero line: "Sip, snap, and savour."
+    - Alternating image and text blocks ("Awesome vibes" / "Great Food").
+    - Location blocks with a wayfinding note ("near the metro station").
+    Take for Lune & Crumb:
+    -> A three-beat rhythm for a section intro or the marquee:
+       "Proof. Bake. Break bread." Set it in Cormorant with italics on one word.
+    -> Add a wayfinding line to contact.html, e.g. "Two minutes' walk from
+       Bath Spa station, opposite the Saturday artisan market." This is small
+       and genuinely useful.
+    -> Encourage photos: a gentle "Tag us #LuneAndCrumb" line under the
+       gallery. Do not reshape the brand around Instagram.
+    Avoid: their vague copy, missing menu, and lack of a clear CTA.
+
+[3] THE MIDTOWN BISTRO: https://themidtownbistro.com/
+    Two-location Kolkata bistro.
+    What they do well:
+    - Stacked, short-line headline with a decorative rule beneath it ("Where
+      Every Flavour / Tells A Story"). Our gold-line already does this.
+    - A sub-tagline built as two contrasting halves: "Continental Elegance. Pan
+      Asian Soul."
+    - Three feature pillars directly under the hero (Ambience / Cuisine /
+      Coffee).
+    - Menu highlights: name, one-line description and price. Five items only,
+      then "View Full Menu".
+    - Booking runs through WhatsApp with a prefilled message, the same model as
+      ours. This confirms our approach works for this kind of business.
+    - Closing CTA band with a warm line: "Good food is better when shared with
+      good people", plus hours and phone.
+    - "Parties & Celebrations" gets its own page.
+    Take for Lune & Crumb:
+    -> Two-half tagline idea: "French Technique. Somerset Flour." or
+       "Slow Dough. Early Mornings."
+    -> On index, cap the menu preview at about five signature items, each with
+       name, one line and price, then "See the full menu". Check this against
+       the existing 4 menu-item rows.
+    -> Put hours and phone inside the final cta-banner itself so the reader
+       doesn't have to scroll to the footer.
+    -> Closing line inspiration: "Bread is better broken together."
+    -> Use a distinct prefilled WhatsApp message for each CTA context (reserve
+       loaves, celebration cake, wholesale). buildWhatsAppUrl() in
+       assets/main.js already centralises this.
+
+[4] I MISS MY CAFE: https://imissmycafe.com/
+    Not a restaurant. It is a "virtual cafe" (by Reagan Henke and Evan Cook):
+    illustrated cafe scene, ambient-sound sliders (barista chatter, clinking
+    cups, rain on windows), an embedded Spotify playlist, dark mode and a
+    Pomodoro timer. Body font is "new-spirit" (a warm soft serif).
+    (Page is a JS app, so these notes come from its HTML shell and published
+    write-ups.)
+    Take for Lune & Crumb:
+    -> Ambience as content: an optional, muted-by-default "Sounds of the
+       bakery" toggle on the gallery video block (oven door, crackling crust,
+       espresso grinder). Never autoplay sound.
+    -> A curated "What's playing at the counter" Spotify playlist link in the
+       footer or the about page "A Morning in..." section. This adds
+       personality at no design cost.
+    -> Nostalgic, personal copy ("Take a seat and stay awhile") matches our
+       unhurried voice. Use it for the 404 page or newsletter blurb.
+    Avoid: illustration-heavy UI and Material-style controls. Both clash with
+    our photographic, editorial look.
+
+[5] INDIA RESTAURANT: https://indiarestaurant.co.in/
+    Four-decade Mughlai restaurant, Kolkata.
+    What they do well:
+    - Every section header follows one pattern: small kicker ("People Talk",
+      "Book Your Table"), then a large heading, then a decorative ornament.
+      This is the same system as our eyebrow, section-title and gold-line,
+      which confirms our approach.
+    - Hero slides each carry one CTA, alternating "View Menu" / "Book A
+      Table".
+    - "Our Speciality" category cards with photos.
+    - Longevity framing ("four decades") and memorable short lines ("We Create
+      Delicious Memories", "Eat Good Feel Good").
+    - Footer: two addresses with map links, phone per location, weekly hours.
+    - Notes that lunch bookings are available.
+    Take for Lune & Crumb:
+    -> Make eyebrow kickers more conversational and human: "People talk",
+       "From the oven", "Come early", "Before it sells out".
+    -> Category teaser cards on index (Breads / Pastries / Cakes & Buns /
+       Savoury), each linking to its anchor in menu.html#tab. Reuse the
+       highlight-card or about-photo-figure style.
+    -> Small practical notes near CTAs, e.g. "Reservations held until 11:00"
+       or "Sunday stock is limited, so reserve by Saturday".
+    -> Add a "Get directions" (Google Maps) link next to the address in the
+       footer.
+
+[6] CHOWMAN: https://chowman.net/
+    Large Chinese restaurant chain.
+    What they do well:
+    - Minimal text-led hero with one CTA.
+    - Food gallery with each dish photo labelled by name.
+    - Stat callouts (4.5/5 rating, 1M+ downloads).
+    - "Foodie's Corner / Food Facts" blog cards with tags and dates.
+    - Testimonials labelled "What Our Eaters Say", mixing diners and public
+      figures.
+    - Opening hours in the footer and a back-to-top link.
+    Take for Lune & Crumb:
+    -> Label every gallery photo with the bake's name (gallery-caption
+       already exists, so make sure none are generic).
+    -> Use real numbers in the stats-grid: "48h ferment", "27 layers",
+       "06:30 first bake", "4.9 Google rating". We already have count-up.
+    -> "Baker's Notes": an occasional journal or food-facts strip (why
+       sourdough is easier to digest, how to revive a stale loaf, storing
+       bread). Good for SEO and fits the editorial tone. Could live as a
+       section on breads.html before adding a full blog.
+    -> A playful testimonial heading: "Words from Our Regulars" or "Overheard
+       at the Counter".
+    Avoid: auto-opening promo popups and loud deal banners.
+
+[7] BARBEQUE NATION: https://www.barbequenation.com/
+    National buffet chain, conversion-heavy.
+    What they do well:
+    - "Celebrate an occasion?" with icon tiles (Birthday / Anniversary /
+      Family / Office Lunch).
+    - Card hierarchy of title, description and short tagline ("Big Feast.
+      Small Bill.").
+    - Quick-action icon cards (Book / Gift Card / Catering / Takeaway).
+    - Takeaway benefits shown as three icons (No Minimum Order, etc.).
+    - Nutrition information offered as a download in the footer.
+    - Gift or prepaid cards ("Happiness Card").
+    Take for Lune & Crumb (refined, not loud):
+    -> "Baking for an occasion?" A row of 4 minimal line-icon tiles:
+       Birthday cake / Weekend brunch box / Office pastry platter / Gift
+       hamper. Each opens WhatsApp with a matching prefilled message. Use the
+       same 1.75 stroke icon style as the nav SVGs.
+    -> Add a short italic tagline to each bread-card or menu category
+       ("Crisp crust. Open crumb.").
+    -> Three trust icons under the reserve CTA: "Held for you until 11:00",
+       "No deposit", "Collect in 2 minutes".
+    -> Allergen and ingredient info: a downloadable or linkable allergen
+       sheet in the footer. Useful, and a UK legal expectation (Natasha's
+       Law for pre-packed items).
+    -> Gift vouchers: a "Bread Club / Gift a Loaf" card bought through
+       WhatsApp. This only needs a section, no commerce.
+    Avoid: dense promo banners, location selectors, "#1" claims, and
+       duplicated CTAs on every card.
+
+[8] PIZZERIA DE CALCUTTA (DotPe storefront):
+    https://pizzeriadecalcutta.dotpe.in/store/1/pickup
+    A JS-rendered online-ordering storefront, so live content could not be
+    captured. Its HTML shell loads Instrument Serif and Playfair together
+    with Figtree, a serif-and-sans pairing that mirrors our Cormorant + Jost.
+    The general DotPe template uses a pickup/delivery toggle, a sticky category
+    bar, item cards (photo, veg marker, price, description, "Add" button), a
+    search box and a floating cart summary.
+    Take for Lune & Crumb (no cart needed):
+    -> A sticky category bar on menu.html: make the menu-tabs stick under the
+       navbar while scrolling. Scroll-spy already exists.
+    -> Dietary markers: small token-coloured dots or chips (V / VG / GF /
+       contains nuts) on menu-item and bread-card. The menu-tag class exists,
+       so standardise it.
+    -> "Build a reservation": tap items in the menu to add them to a WhatsApp
+       message ("2x Country Sourdough, 4x Croissant"), then one button sends
+       it. This gives ordering convenience without a cart backend. It would be
+       a progressive enhancement in main.js, with localStorage wrapped in
+       try/catch.
+    -> Mark items as "Sold out today" / "Back tomorrow" (muted style). This
+       creates honest scarcity that suits an artisan bakery.
+
+[9] BAYLEAF CAFE: https://bayleafcafe.in/
+    The site sits behind a Cloudflare bot challenge ("Just a moment...") and
+    returned 403 to automated fetches. No content could be reviewed, and web
+    search found no reliable description. Revisit manually in a browser and
+    append notes here.
+    Lesson anyway: aggressive bot protection can also block Google, social
+    link previews and accessibility tools. Keep our static site openly
+    crawlable (robots.txt and sitemap.xml are already in place).
+
+[10] OPENHOUSE CAFE: https://openhousecafe.in/
+    Kolkata cafe with live events.
+    What they do well:
+    - Utility bar: click-to-call | centred logo | "Reservation" button.
+    - Three info cards right under the hero: Locate Us / Open Hours /
+      Reservation. The key facts appear immediately.
+    - Story section with a pull quote and a founder signature.
+    - Chef profile with portrait and bio.
+    - Gallery split into Food / Drinks / Ambience tiles.
+    - Events (acoustic nights, etc.) and a blog.
+    - Instagram grid (4 square tiles) before the footer.
+    - Footer mailing-list signup.
+    Things to avoid: blog posts dated 2022 under a 2026 footer (stale), and a
+    heading typo. Keep dated content fresh or don't date it.
+    Take for Lune & Crumb:
+    -> Three slim info cards right below the hero video: "Find us: 14 Walcot
+       St" / "Open today: 06:30 to 15:00" (computed by day in JS) / "Reserve:
+       WhatsApp". This is the single highest-value addition.
+    -> A founder signature: an SVG or script-style signature under the about
+       story, plus one pull quote in large Cormorant italics with gold
+       quotation marks.
+    -> Make the head baker the "chef" figure: a bigger team-card or a short bio
+       block ("Our Head Baker").
+    -> Community events: "Saturday Sourdough Class", "Starter Swap",
+       "Laminating Workshop". This could be a small section on about.html with
+       date chips and a WhatsApp "Ask about a place" CTA.
+    -> An Instagram strip: 4 to 6 square images from assets/img linking to the
+       profile, placed just above the footer. Use the same grid gap as the
+       gallery.
+    -> The footer-newsletter exists. Keep its copy specific: "Tomorrow's bake
+       list, every evening at 6".
+
+
+--------------------------------------------------------------------------------
+2. CROSS-SITE PATTERNS (things most of them share)
+--------------------------------------------------------------------------------
+ a. Kicker, then heading, then ornament for section headers. We already
+    have this, so keep it consistent on every page.
+ b. Key facts (location, hours, reserve) surface in the first screen or right
+    below it.
+ c. The menu teaser on the homepage stays short, with a full menu on its own
+    page.
+ d. Every section ends with one clear next action.
+ e. A closing CTA band before the footer, with hours and contact repeated
+    inside it.
+ f. People behind the food (founder or chef) are shown with names and faces.
+ g. Celebrations and large orders get their own path.
+ h. Social proof comes in several forms: quotes, numbers, awards, Instagram.
+ i. The footer carries full practical info: address with map link, phone,
+    hours, socials, legal.
+
+
+--------------------------------------------------------------------------------
+3. PRIORITISED SHORTLIST FOR LUNE & CRUMB
+--------------------------------------------------------------------------------
+ HIGH (low effort, high value, zero aesthetic risk)
+  1. Three info cards under the hero (Find us / Open today / Reserve), with
+     "open today" computed in main.js.                       [Openhouse]
+  2. Sticky menu-tabs on menu.html, plus standardised dietary chips
+     (V / VG / GF / Nuts).                                    [DotPe]
+  3. Context-specific prefilled WhatsApp messages for reserve, occasion and
+     wholesale CTAs.                                          [Midtown, 6BP]
+  4. Hours and phone inside the final cta-banner, plus a "Get directions"
+     link.                                                    [Midtown, India]
+  5. Wayfinding line on contact.html.                         [Boho]
+  6. Real numbers in the stats-grid, and a name on every gallery
+     caption.                                                 [Chowman]
+
+ MEDIUM (one new section each)
+  7. "Baking for an occasion?" 4-tile row with line icons.    [BBQ Nation]
+  8. Founder pull quote and signature on about.html, plus a head baker
+     spotlight.                                               [Openhouse]
+  9. Instagram strip above the footer.                        [Openhouse, Boho]
+ 10. Quiet recognition or press row in Cormorant italics.     [6BP, India]
+ 11. Allergen sheet link in the footer.                       [BBQ Nation]
+ 12. Seasonal copy swap for the hero pill and tagline.        [6BP, Chowman]
+
+ LATER (more build, still on-brand)
+ 13. "Build your reservation" tap-to-add items, sent as one WhatsApp
+     message.                                                 [DotPe]
+ 14. "Sold out today" states on menu items.                   [DotPe]
+ 15. Workshops and events section (sourdough classes).        [Openhouse]
+ 16. "Baker's Notes" journal or bread-facts section.          [Chowman, 6BP]
+ 17. Gift a Loaf / Bread Club voucher section.                [BBQ Nation]
+ 18. Optional muted "Sounds of the bakery" toggle and a counter
+     playlist.                                                [I Miss My Cafe]
+
+
+--------------------------------------------------------------------------------
+4. DO NOT ADOPT (would break the aesthetic or the UX)
+--------------------------------------------------------------------------------
+ x Auto-opening promo popups or modals (Chowman).
+ x Loud discount banners, "#1" claims, or "Big Feast. Small Bill." value
+   messaging (BBQ Nation).
+ x Dense multi-row award badge walls with mismatched logo colours (6BP).
+   Use one restrained text row instead.
+ x Rotating hero carousels/sliders (India Restaurant). Keep the single calm
+   hero video.
+ x Third-party delivery buttons (Zomato/Swiggy-style). Keep the single
+   WhatsApp path.
+ x Full cart and checkout UI (DotPe). It is too transactional for this brand.
+ x Material-Design controls, illustrated UI, or purple/red UI colours
+   (I Miss My Cafe internals).
+ x Mega-menus or a long nav with 10+ items (6BP, BBQ Nation). Keep 6 links.
+ x Vague mood copy without specifics (Boho). Stay concrete and sensory.
+ x Dated blog content that goes stale (Openhouse).
+ x Placeholder "#" links for Privacy and Terms (Midtown). Link to real pages
+   or omit them.
+ x Auto-playing sound of any kind.
+ x Any colour or font outside the existing tokens. New sections must work
+   in both light and dark mode.
+
+
+--------------------------------------------------------------------------------
+5. COPY SNIPPETS (written in the Lune & Crumb voice, ready to adapt)
+--------------------------------------------------------------------------------
+ - "Proof. Bake. Break bread."
+ - "French technique. Somerset flour."
+ - "Bread is better broken together."
+ - "Baking for an occasion?"
+ - "Words from our regulars" / "Overheard at the counter"
+ - "Before it sells out": eyebrow for the reserve section
+ - "Sunday batches are small, so reserve by Saturday evening."
+ - "Take a seat and stay awhile." (404 or newsletter)
+ - "Tomorrow's bake list, every evening at six." (newsletter)
+ - "Two minutes from Bath Spa station, opposite the Saturday market."
+   (verify the real wayfinding before publishing)
+
+
+--------------------------------------------------------------------------------
+6. SOURCE / ACCESS NOTES
+--------------------------------------------------------------------------------
+ - Fully read: 6ballygungeplace.in, bohothecafe.com, themidtownbistro.com,
+   indiarestaurant.co.in, chowman.net, barbequenation.com, openhousecafe.in.
+ - Partially read (JS app, so only the shell and public write-ups were
+   available): imissmycafe.com, pizzeriadecalcutta.dotpe.in.
+ - Not accessible (Cloudflare 403): bayleafcafe.in. Review manually.
+ - Fonts and colours of most sites were not in the extracted text. Visual
+   claims marked "inferred" in the research should be checked in a browser
+   before copying any specific styling.
+================================================================================

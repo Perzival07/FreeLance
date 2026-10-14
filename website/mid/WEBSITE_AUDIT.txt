@@ -319,18 +319,65 @@ New finding fixed: the backend trusted the order total sent by the browser
 delivery fee is recalculated on the server.
 
 DONE
-  A1 all bugs · A2 all · A3 all · A4 all · A5 all except slugs-in-DB (product
-  URLs now /product/<name>-<id>) · A6 all
-  B1 · B2 1–8, 10, 11 · B3 · B4 (except variant picker, AR) · B5 visit, custom,
-  WhatsApp, call-back, bulk · B6 · B7 · B8 all pages · B9 order timeline ·
-  B10 product fields + edit, enquiries inbox (with CSV export)
+  A1 all · A2 all · A3 all except "quick add" button on product cards ·
+  A4 all · A6 all · A5 all except slugs stored in the DB (URLs are now
+  /product/<name>-<id>) and keyword-rich text on category pages
+  B1 top bar, category menu, Shop-by-Room dropdown, search with trending +
+  recent searches, Track order link · B2 1–8, 10, 11 · B3 category URLs (as
+  /collection?subCategory=Sofas), type/room/price/in-stock filters, cards,
+  count + chips, mobile filter bar · B4 gallery, price/MRP, area delivery
+  estimate, specs, WhatsApp/call/showroom, policy accordion, rating breakdown,
+  related + recently viewed, sticky mobile bar · B5 visit, custom, call-back,
+  bulk, floating WhatsApp · B6 (see gaps) · B7 (see gaps) · B8 all ·
+  B9 order timeline · B10 product fields + edit, enquiries inbox (CSV export)
+  Admin panel restyled to match the storefront.
+
+GAPS FOUND ON RE-CHECK — NOW BUILT
+  - B1: "All Furniture" mega menu with photos; New Arrivals link; Sale link
+    (appears once any product has an MRP above its price); recently viewed
+    products in the search dropdown
+  - B2: Sale tab (same rule); "Shop the look" section; review photos and
+    "Verified buyer" tag on homepage reviews
+  - B3: material / seating / colour / on-sale filters (each appears once
+    products have that data); intro text on category pages; quick add-to-cart
+    button on product cards
+  - B4: "expected between <date> and <date>" delivery window; frame, foam,
+    finish and weight specs; review photo upload + verified-buyer tag;
+    "Complete the room" products
+  - B5: photo upload on the custom-furniture form; admin email has the photos
+    and one-tap WhatsApp / call links to the customer
+  - B6: landmark, email, Google rating and photo gallery on the showroom page
+    (fill landmark, googleRating, showroomPhotos in config/site.js)
+  - B7: Get-directions link, Careers page + link, payment marks, popular-search
+    links in the footer
+  - B10: admin fields for badge, custom URL text, SEO title/description and
+    the new specs; Reviews moderation page (hide / show / delete)
+  Still limited by data: EMI line stays hidden while Razorpay is disabled;
+  delivery estimate is by area, not exact pincode.
+
+SECOND RE-CHECK — ALSO BUILT
+  - B2.3: promise strip shows "Showroom since <year>" once establishedYear is set
+  - B3: friendly category links (/collection/sofas, /collection/living-room)
+  - B2.12: "Follow us on Instagram" strip (appears once the Instagram link is
+    set; a live photo feed still needs Instagram's API — see NOT DONE)
+  - B5: visit form now offers "free design consultation" / "custom order"
+  - A5: remaining placeholder alt texts fixed
+
+DELIBERATELY DIFFERENT FROM THE AUDIT
+  - B1/B2.3 "Free delivery" message: not used — checkout always charges for
+    delivery. Shows "Delivery & installation by our team" until the owner decides.
+  - B2.4 "On Sale" tab, Sale menu link and on-sale filter appear automatically
+    once a product has an MRP above its price (none do yet).
+  - B3 material / seating / colour filters, B6 parking & wheelchair amenities,
+    landmark, showroom photos, Google rating, social links: built, but hidden
+    until the data is entered (admin product fields / config/site.js).
 
 NOT DONE (needs a decision, a paid service or the owner's content)
   - Guest checkout with phone OTP (needs an SMS provider)
   - WhatsApp/SMS order notifications (needs WhatsApp Business API / SMS provider)
-  - Coupons, loyalty points, gift cards, AR "view in room", blog, Instagram feed
+  - Coupons, loyalty points, gift cards, AR "view in room", blog, live
+    Instagram photo feed (needs Instagram API access)
   - Homepage banners editable from admin (they're in frontend/src/pages/Home.jsx)
-  - Review moderation in admin
   - Colour/fabric picker that goes into the cart (colours are shown; customer
     mentions choice on WhatsApp / order notes)
   - Server-side rendering / prerendering (Google renders JS; other crawlers

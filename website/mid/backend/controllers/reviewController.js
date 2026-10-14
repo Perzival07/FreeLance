@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import reviewModel from "../models/reviewModel.js";
 import productModel from "../models/productModel.js";
 import userModel from "../models/userModel.js";
+import orderModel from "../models/orderModel.js";
+import { uploadToCloudinary } from "../utils/uploadImages.js";
 
 const addReview = async (req, res) => {
     try {
@@ -41,12 +43,21 @@ const addReview = async (req, res) => {
             });
         }
 
+        const bought = await orderModel.exists({
+            userId: String(userId),
+            "items._id": String(productId),
+            status: { $ne: "Cancelled" },
+        });
+        const images = req.files?.length ? await uploadToCloudinary(req.files, "reviews") : [];
+
         await reviewModel.create({
             productId: String(productId),
             userId: String(userId),
             userName,
             rating: r,
             comment: text,
+            images,
+            verified: Boolean(bought),
         });
 
         res.json({ success: true, message: "Review added" });
@@ -64,7 +75,7 @@ const getProductReviews = async (req, res) => {
         }
 
         const reviews = await reviewModel
-            .find({ productId: String(productId) })
+            .find({ productId: String(productId), hidden: { $ne: true } })
             .sort({ createdAt: -1 })
             .lean();
 
@@ -91,7 +102,7 @@ const getLatestReviews = async (req, res) => {
     try {
         const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 6, 1), 12);
         const reviews = await reviewModel
-            .find({ rating: { $gte: 4 }, comment: { $exists: true } })
+            .find({ rating: { $gte: 4 }, comment: { $exists: true }, hidden: { $ne: true } })
             .sort({ createdAt: -1 })
             .limit(limit)
             .lean();
@@ -109,6 +120,8 @@ const getLatestReviews = async (req, res) => {
                     rating: r.rating,
                     comment: r.comment,
                     createdAt: r.createdAt,
+                    images: r.images || [],
+                    verified: Boolean(r.verified),
                     product: p ? { _id: p._id, name: p.name, image: p.image?.[0] } : null,
                 };
             }),
@@ -119,4 +132,45 @@ const getLatestReviews = async (req, res) => {
     }
 };
 
-export { addReview, getProductReviews, getLatestReviews };
+// Admin: all reviews with product names, newest first
+const listAllReviews = async (req, res) => {
+    try {
+        const reviews = await reviewModel.find({}).sort({ createdAt: -1 }).limit(500).lean();
+        const ids = [...new Set(reviews.map((r) => r.productId))].filter((id) => mongoose.Types.ObjectId.isValid(id));
+        const products = await productModel.find({ _id: { $in: ids } }, { name: 1, image: 1 }).lean();
+        const byId = new Map(products.map((p) => [String(p._id), p]));
+        res.json({
+            success: true,
+            reviews: reviews.map((r) => ({ ...r, product: byId.get(r.productId) || null })),
+        });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+const setReviewHidden = async (req, res) => {
+    try {
+        const { id, hidden } = req.body;
+        if (!mongoose.Types.ObjectId.isValid(id)) return res.json({ success: false, message: "Invalid review" });
+        await reviewModel.findByIdAndUpdate(id, { hidden: hidden === true || hidden === "true" });
+        res.json({ success: true, message: hidden ? "Review hidden" : "Review visible" });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+const removeReview = async (req, res) => {
+    try {
+        const { id } = req.body;
+        if (!mongoose.Types.ObjectId.isValid(id)) return res.json({ success: false, message: "Invalid review" });
+        await reviewModel.findByIdAndDelete(id);
+        res.json({ success: true, message: "Review deleted" });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+export { addReview, getProductReviews, getLatestReviews, listAllReviews, setReviewHidden, removeReview };

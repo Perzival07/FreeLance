@@ -24,6 +24,20 @@ import {
   stockLabel,
 } from "../utils/format";
 import { addRecentlyViewed, getRecentlyViewed } from "../utils/recentlyViewed";
+import PhotoPicker from "../components/PhotoPicker";
+import { compressImage } from "../utils/compressImage";
+
+// Business days from today, skipping Sundays — a rough delivery window
+const addWorkingDays = (days) => {
+  const d = new Date();
+  let added = 0;
+  while (added < days) {
+    d.setDate(d.getDate() + 1);
+    if (d.getDay() !== 0) added += 1;
+  }
+  return d;
+};
+const shortDate = (d) => d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
 
 const STOCK_TONE = {
   good: "text-green-700",
@@ -138,7 +152,7 @@ const Gallery = ({ images, name }) => {
 
 Gallery.propTypes = { images: PropTypes.arrayOf(PropTypes.string).isRequired, name: PropTypes.string.isRequired };
 
-const DeliveryEstimate = ({ backendUrl }) => {
+const DeliveryEstimate = ({ backendUrl, madeToOrder }) => {
   const [area, setArea] = useState("");
   const [fee, setFee] = useState(null);
 
@@ -175,12 +189,21 @@ const DeliveryEstimate = ({ backendUrl }) => {
           About <strong>{formatPrice(fee)}</strong> for delivery, carrying and installation (ground floor / lift). Exact charge is shown at checkout.
         </p>
       )}
-      <p className="mt-2 text-xs text-stone-500">Usually delivered in 3–7 days in Kolkata. Made-to-order pieces take longer — we&apos;ll confirm the date.</p>
+      <p className="mt-3 flex items-start gap-2 text-sm text-stone-800">
+        <Icon name="calendar" className="mt-0.5 h-4 w-4 shrink-0 text-gold-800" />
+        {madeToOrder ? (
+          <span>Made to order — usually ready in 2–4 weeks. We&apos;ll confirm the exact date when you order.</span>
+        ) : (
+          <span>
+            Order today, expected between <strong>{shortDate(addWorkingDays(3))}</strong> and <strong>{shortDate(addWorkingDays(7))}</strong> in Kolkata.
+          </span>
+        )}
+      </p>
     </div>
   );
 };
 
-DeliveryEstimate.propTypes = { backendUrl: PropTypes.string.isRequired };
+DeliveryEstimate.propTypes = { backendUrl: PropTypes.string.isRequired, madeToOrder: PropTypes.bool };
 
 const RatingBreakdown = ({ reviews }) => {
   const counts = [5, 4, 3, 2, 1].map((n) => ({ n, c: reviews.filter((r) => r.rating === n).length }));
@@ -215,6 +238,8 @@ const Product = () => {
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState("");
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewPhotos, setReviewPhotos] = useState([]);
+  const [roomPicks, setRoomPicks] = useState(null);
   const [related, setRelated] = useState(null);
   const [recentIds, setRecentIds] = useState([]);
 
@@ -287,6 +312,23 @@ const Product = () => {
     };
   }, [product?._id, product?.subCategory, fetchProducts]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    if (!product) return;
+    let cancelled = false;
+    setRoomPicks(null);
+    fetchProducts({ category: product.category, exclude: product._id, sort: "bestseller", limit: 24 })
+      .then(({ products }) => {
+        if (cancelled) return;
+        // one per type, skipping this product's own type
+        const seen = new Set([product.subCategory]);
+        setRoomPicks(products.filter((p) => !seen.has(p.subCategory) && seen.add(p.subCategory)).slice(0, 8));
+      })
+      .catch(() => !cancelled && setRoomPicks([]));
+    return () => {
+      cancelled = true;
+    };
+  }, [product?._id, product?.category, product?.subCategory, fetchProducts]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const submitReview = async (e) => {
     e.preventDefault();
     const text = reviewComment.trim();
@@ -296,10 +338,16 @@ const Product = () => {
     }
     setReviewSubmitting(true);
     try {
-      const { data } = await axios.post(`${backendUrl}/review/add`, { productId, rating: reviewRating, comment: text }, { headers: { token } });
+      const body = new FormData();
+      body.append("productId", productId);
+      body.append("rating", reviewRating);
+      body.append("comment", text);
+      for (const file of await Promise.all(reviewPhotos.map((f) => compressImage(f)))) body.append("images", file);
+      const { data } = await axios.post(`${backendUrl}/review/add`, body, { headers: { token } });
       if (data.success) {
         toast.success(data.message);
         setReviewComment("");
+        setReviewPhotos([]);
         loadReviews();
       } else {
         toast.error(data.message);
@@ -314,9 +362,9 @@ const Product = () => {
   const off = product ? discountPercent(product.price, product.mrp) : 0;
 
   useSeo({
-    title: product?.name || (loading ? "" : "Product not found"),
+    title: product?.seoTitle || product?.name || (loading ? "" : "Product not found"),
     description: product
-      ? `${product.name} — ${formatPrice(product.price)}. ${String(product.description).slice(0, 140)}`
+      ? product.seoDescription || `${product.name} — ${formatPrice(product.price)}. ${String(product.description).slice(0, 140)}`
       : undefined,
     image: product?.image?.[0] ? imageUrl(product.image[0], 1200) : undefined,
     jsonLd: product
@@ -378,6 +426,10 @@ const Product = () => {
     dims && ["Dimensions (W × D × H)", `${dims.length.displayCm} × ${dims.breadth.displayCm} × ${dims.height.displayCm}`],
     dims && ["In feet / inches", `${dims.length.displayFeetInches} × ${dims.breadth.displayFeetInches} × ${dims.height.displayFeetInches}`],
     product.material && ["Material", product.material],
+    product.frame && ["Frame", product.frame],
+    product.foamDensity && ["Cushion foam", product.foamDensity],
+    product.finish && ["Finish", product.finish],
+    product.weight && ["Weight", product.weight],
     product.colors?.length > 0 && ["Available colours", product.colors.join(", ")],
     product.seating && ["Seating", product.seating],
     ["Room", product.category],
@@ -468,7 +520,7 @@ const Product = () => {
             </Link>
 
             <div className="mt-6">
-              <DeliveryEstimate backendUrl={backendUrl} />
+              <DeliveryEstimate backendUrl={backendUrl} madeToOrder={Boolean(product.madeToOrder)} />
             </div>
 
             <ul className="mt-6 grid grid-cols-2 gap-3 text-sm text-stone-700">
@@ -594,6 +646,7 @@ const Product = () => {
                   </fieldset>
                   <label className="label" htmlFor="review-comment">Your review</label>
                   <textarea id="review-comment" value={reviewComment} onChange={(e) => setReviewComment(e.target.value)} rows={4} maxLength={2000} className="input" placeholder="How is the comfort, finish and delivery?" />
+                  <PhotoPicker id="review-photos" files={reviewPhotos} onChange={setReviewPhotos} label="Add photo" />
                   <button type="submit" disabled={reviewSubmitting} className="btn-primary">
                     {reviewSubmitting ? "Submitting…" : "Submit review"}
                   </button>
@@ -609,11 +662,21 @@ const Product = () => {
                   <div className="flex items-center gap-3">
                     <Stars value={r.rating} />
                     <span className="text-sm font-medium text-stone-900">{r.userName}</span>
+                    {r.verified && <span className="rounded bg-green-50 px-1.5 py-0.5 text-xs text-green-800">✓ Verified buyer</span>}
                     <span className="text-xs text-stone-500">
                       {r.createdAt ? new Date(r.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : ""}
                     </span>
                   </div>
                   <p className="mt-2 whitespace-pre-wrap text-stone-700">{r.comment}</p>
+                  {r.images?.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {r.images.map((src) => (
+                        <a key={src} href={src} target="_blank" rel="noopener noreferrer">
+                          <img src={imageUrl(src, 200)} alt={`Customer photo from ${r.userName}`} loading="lazy" className="h-20 w-20 rounded-md object-cover" />
+                        </a>
+                      ))}
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
@@ -625,6 +688,13 @@ const Product = () => {
         <section className="section container-site">
           <SectionHeading title={`More ${product.subCategory.toLowerCase()}`} link={`/collection?subCategory=${encodeURIComponent(product.subCategory)}`} />
           <ProductRail products={related || []} loading={related === null} label={`More ${product.subCategory}`} />
+        </section>
+      )}
+
+      {roomPicks?.length > 0 && (
+        <section className="container-site pb-12">
+          <SectionHeading title="Complete the room" subtitle={`Pieces that go well in a ${product.category.toLowerCase()}`} link={`/collection?category=${encodeURIComponent(product.category)}`} />
+          <ProductRail products={roomPicks} label="Complete the room" />
         </section>
       )}
 
@@ -641,6 +711,9 @@ const Product = () => {
           <p className="truncate text-xs text-stone-500">{product.name}</p>
           <p className="font-semibold text-stone-900">{formatPrice(product.price)}</p>
         </div>
+        <a href={SITE.phoneHref} className="flex h-11 w-11 items-center justify-center rounded-md border border-stone-300 text-stone-900" aria-label={`Call us on ${SITE.phone}`}>
+          <Icon name="phone" className="h-5 w-5" />
+        </a>
         <a href={whatsappLink(waText)} target="_blank" rel="noopener noreferrer" className="flex h-11 w-11 items-center justify-center rounded-md bg-[#1f8f4e] text-white" aria-label="Ask on WhatsApp">
           <WhatsAppIcon className="h-5 w-5" />
         </a>

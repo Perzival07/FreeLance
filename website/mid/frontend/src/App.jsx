@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import WhatsAppButton from "./components/WhatsAppButton";
+import ContactButtons from "./components/ContactButtons";
 
 // Pages other than Home load on demand to keep the first download small
 const Collection = lazy(() => import("./pages/Collection"));
@@ -29,6 +29,8 @@ const BulkOrders = lazy(() => import("./pages/BulkOrders"));
 const TrackOrder = lazy(() => import("./pages/TrackOrder"));
 const Faq = lazy(() => import("./pages/Faq"));
 const PolicyPage = lazy(() => import("./pages/PolicyPage"));
+const Careers = lazy(() => import("./pages/Careers"));
+const CollectionAlias = lazy(() => import("./pages/CollectionAlias"));
 
 const POLICY_SLUGS = ["shipping-policy", "return-policy", "warranty", "terms", "care-guide", "privacy-policy"];
 
@@ -47,7 +49,7 @@ const App = () => {
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:shadow-lg">
         Skip to content
       </a>
-      <ToastContainer position="bottom-center" autoClose={2500} hideProgressBar theme="light" />
+      <ToastContainer position="bottom-center" autoClose={2500} hideProgressBar theme="light" style={{ marginBottom: "3.5rem" }} />
       <ScrollToTop />
       <Navbar />
       <main id="main" className="flex-1">
@@ -55,6 +57,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/collection" element={<Collection />} />
+          <Route path="/collection/:slug" element={<CollectionAlias />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/showroom" element={<Showroom />} />
@@ -63,6 +66,7 @@ const App = () => {
           <Route path="/bulk-orders" element={<BulkOrders />} />
           <Route path="/track-order" element={<TrackOrder />} />
           <Route path="/faq" element={<Faq />} />
+          <Route path="/careers" element={<Careers />} />
           {POLICY_SLUGS.map((slug) => (
             <Route key={slug} path={`/${slug}`} element={<PolicyPage slug={slug} />} />
           ))}
@@ -81,7 +85,7 @@ const App = () => {
         </Suspense>
       </main>
       <Footer />
-      <WhatsAppButton />
+      <ContactButtons />
     </div>
   );
 };

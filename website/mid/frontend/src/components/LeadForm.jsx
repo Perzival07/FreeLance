@@ -4,6 +4,8 @@ import axios from "axios";
 import { ShopContext } from "../context/ShopContext";
 import Icon, { WhatsAppIcon } from "./Icons";
 import { SITE, whatsappLink } from "../config/site";
+import PhotoPicker from "./PhotoPicker";
+import { compressImage } from "../utils/compressImage";
 
 const TIME_SLOTS = ["10 AM – 12 PM", "12 PM – 2 PM", "2 PM – 4 PM", "4 PM – 6 PM", "6 PM – 8 PM"];
 
@@ -27,10 +29,12 @@ const LeadForm = ({
   product,
   compact = false,
   messageRequired = false,
+  allowPhotos = false,
 }) => {
   const { backendUrl } = useContext(ShopContext);
-  const [values, setValues] = useState({ name: "", phone: "", email: "", preferredDate: "", preferredTime: "", budget: "", message: "", website: "" });
+  const [values, setValues] = useState({ name: "", phone: "", email: "", preferredDate: "", preferredTime: "", budget: "", message: "", website: "", purpose: "" });
   const [state, setState] = useState({ status: "idle", message: "" });
+  const [photos, setPhotos] = useState([]);
 
   const set = (key) => (e) => setValues((v) => ({ ...v, [key]: e.target.value }));
   const has = (f) => fields.includes(f);
@@ -39,12 +43,22 @@ const LeadForm = ({
     e.preventDefault();
     setState({ status: "sending", message: "" });
     try {
-      const payload = { type, ...values };
+      const { purpose, ...rest } = values;
+      const payload = { type, ...rest };
+      // the visit purpose travels with the message so it shows in the admin inbox
+      if (purpose) payload.message = `[${purpose}] ${rest.message}`.trim();
       if (product) {
         payload.productId = String(product._id);
         payload.productName = product.name;
       }
-      const { data } = await axios.post(`${backendUrl}/lead/create`, payload);
+      let body = payload;
+      if (photos.length) {
+        // multipart only when photos are attached
+        body = new FormData();
+        Object.entries(payload).forEach(([k, v]) => v !== "" && body.append(k, v));
+        for (const file of await Promise.all(photos.map((f) => compressImage(f)))) body.append("images", file);
+      }
+      const { data } = await axios.post(`${backendUrl}/lead/create`, body);
       if (data.success) {
         setState({ status: "done", message: data.message });
       } else {
@@ -100,6 +114,16 @@ const LeadForm = ({
             </select>
           </div>
         )}
+        {has("purpose") && (
+          <div className="sm:col-span-2">
+            <label className="label" htmlFor={`${type}-purpose`}>I&apos;d like to</label>
+            <select id={`${type}-purpose`} className="input" value={values.purpose} onChange={set("purpose")}>
+              <option value="">Visit the showroom</option>
+              <option value="Free design consultation">Get a free design consultation</option>
+              <option value="Custom order discussion">Discuss a custom order</option>
+            </select>
+          </div>
+        )}
         {has("preferredDate") && (
           <div>
             <label className="label" htmlFor={`${type}-date`}>Preferred date *</label>
@@ -123,6 +147,13 @@ const LeadForm = ({
         <div>
           <label className="label" htmlFor={`${type}-message`}>{messageLabel}</label>
           <textarea id={`${type}-message`} className="input min-h-[110px]" required={messageRequired} minLength={messageRequired ? 5 : undefined} maxLength={2000} placeholder={messagePlaceholder} value={values.message} onChange={set("message")} />
+        </div>
+      )}
+
+      {allowPhotos && (
+        <div>
+          <p className="label">Reference photos (optional)</p>
+          <PhotoPicker id={`${type}-photos`} files={photos} onChange={setPhotos} label="Add photo" />
         </div>
       )}
 
@@ -166,6 +197,7 @@ LeadForm.propTypes = {
   product: PropTypes.object,
   compact: PropTypes.bool,
   messageRequired: PropTypes.bool,
+  allowPhotos: PropTypes.bool,
 };
 
 export default LeadForm;

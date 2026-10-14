@@ -42,6 +42,12 @@ export default {
       maxWidth: {
         site: '1320px',
       },
+      keyframes: {
+        heroIn: {
+          '0%': { opacity: '0', transform: 'translateY(8px)' },
+          '100%': { opacity: '1', transform: 'none' },
+        },
+      },
     },
   },
   plugins: [],

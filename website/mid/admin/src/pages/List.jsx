@@ -112,7 +112,7 @@ const List = ({token}) => {
   return (
     <>
       <p className="eyebrow-gold text-xs mb-1">CATALOG</p>
-      <h2 className="font-display text-3xl text-ivory-50 mb-4">All Products</h2>
+      <h2 className="font-display text-3xl text-stone-900 mb-4">All Products</h2>
       <input
         type="search"
         value={query}
@@ -124,63 +124,63 @@ const List = ({token}) => {
       <div className="card-luxury rounded overflow-hidden">
         {/* ------ List Table Title--------- */}
 
-        <div className="hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr] items-center py-3 px-4 border-b border-gold-500/15 bg-ink-400 text-sm">
-          <b className="text-ivory-100">Image</b>
-          <b className="text-ivory-100">Name</b>
-          <b className="text-ivory-100">Category</b>
-          <b className="text-ivory-100">Price</b>
-          <b className="text-center text-ivory-100">Bestseller</b>
-          <b className="text-center text-ivory-100">Action</b>
+        <div className="hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr] items-center py-3 px-4 border-b border-cream-300 bg-cream-100 text-sm">
+          <b className="text-stone-900">Image</b>
+          <b className="text-stone-900">Name</b>
+          <b className="text-stone-900">Category</b>
+          <b className="text-stone-900">Price</b>
+          <b className="text-center text-stone-900">Bestseller</b>
+          <b className="text-center text-stone-900">Action</b>
         </div>
 
         {/* ------ Product List--------- */}
 
-        <div className="divide-y divide-gold-500/10">
+        <div className="divide-y divide-cream-300">
         {list
           .filter((item) => !query || `${item.name} ${item.category} ${item.subCategory}`.toLowerCase().includes(query.toLowerCase()))
           .map((item, index) => (
           <div
-            className="grid grid-cols-[1fr_2fr_1fr] md:grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr] items-center gap-2 py-3 px-4 text-sm hover:bg-gold-500/5 transition-colors"
+            className="grid grid-cols-[1fr_2fr_1fr] md:grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr] items-center gap-2 py-3 px-4 text-sm hover:bg-cream-100 transition-colors"
             key={item._id || index}
           >
-            <img className="w-12 rounded border border-gold-500/15" src={item.image[0]} alt="product_image" />
+            <img className="h-12 w-12 rounded border border-cream-300 object-cover" src={item.image[0]} alt="" />
             <div className="flex flex-col gap-1">
-              <p className="text-ivory-100">{item.name}</p>
-              <div className="flex items-center gap-2 text-xs text-ivory-400 md:hidden">
+              <p className="text-stone-900">{item.name}</p>
+              <div className="flex items-center gap-2 text-xs text-stone-500 md:hidden">
                 <span>{item.category}</span>
                 <span>•</span>
-                <span className="text-gold-300">{currency}{item.price}</span>
+                <span className="text-gold-800">{currency}{Number(item.price).toLocaleString("en-IN")}</span>
                 <span>•</span>
                 <label className="flex items-center gap-1 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={item.bestseller || false}
                     onChange={() => toggleBestseller(item._id, item.bestseller || false)}
-                    className="w-3 h-3 accent-gold-500 rounded cursor-pointer"
+                    className="w-3 h-3 accent-gold-700 rounded cursor-pointer"
                   />
                   <span>Bestseller</span>
                 </label>
               </div>
             </div>
-            <p className="hidden md:block text-ivory-300">{item.category}</p>
-            <p className="hidden md:block text-gold-300 font-medium">
+            <p className="hidden md:block text-stone-700">{item.category}</p>
+            <p className="hidden md:block text-gold-800 font-medium">
               {currency}
-              {item.price}
+              {Number(item.price).toLocaleString("en-IN")}
             </p>
             <div className="hidden md:flex justify-center items-center">
               <input
                 type="checkbox"
                 checked={item.bestseller || false}
                 onChange={() => toggleBestseller(item._id, item.bestseller || false)}
-                className="w-4 h-4 accent-gold-500 rounded cursor-pointer"
+                className="w-4 h-4 accent-gold-700 rounded cursor-pointer"
                 title="Mark as bestseller"
               />
             </div>
             <div className="flex items-center justify-end gap-3 md:justify-center">
-              <button type="button" onClick={() => setEditing(item)} className="text-xs text-gold-300 hover:underline">
+              <button type="button" onClick={() => setEditing(item)} className="text-xs text-gold-800 hover:underline">
                 Edit
               </button>
-              <button type="button" onClick={() => removeProduct(item._id)} className="text-lg text-ivory-400 hover:text-red-400 transition-colors" aria-label={`Delete ${item.name}`}>
+              <button type="button" onClick={() => removeProduct(item._id)} className="text-lg text-stone-500 hover:text-red-700 transition-colors" aria-label={`Delete ${item.name}`}>
                 ×
               </button>
             </div>

@@ -240,11 +240,20 @@ export const sendAdminLeadAlert = async (lead) => {
     .map(([k, v]) => `<p><strong>${k}:</strong> ${escapeHtml(v)}</p>`)
     .join("");
 
+  const digits = String(lead.phone || "").replace(/\D/g, "");
+  const intl = digits.length === 10 ? `91${digits}` : digits;
+  const actions = digits
+    ? `<p><a href="https://wa.me/${intl}">Reply on WhatsApp</a> · <a href="tel:${escapeHtml(lead.phone)}">Call ${escapeHtml(lead.phone)}</a></p>`
+    : "";
+  const photos = (lead.images || [])
+    .map((url) => `<a href="${escapeHtml(url)}"><img src="${escapeHtml(url)}" width="160" style="margin:4px;border-radius:6px" alt="Customer photo"></a>`)
+    .join("");
+
   const label = LEAD_LABELS[lead.type] || "New enquiry";
   await sendSafe({
     from: `"Store" <${process.env.EMAIL_USER}>`,
     to: adminTo,
     subject: `${label}${lead.name ? ` — ${lead.name}` : ""}`,
-    html: `<h2>${label}</h2>${rows}<p>See all enquiries in the admin panel.</p>`,
+    html: `<h2>${label}</h2>${rows}${photos ? `<p>${photos}</p>` : ""}${actions}<p>See all enquiries in the admin panel.</p>`,
   });
 };

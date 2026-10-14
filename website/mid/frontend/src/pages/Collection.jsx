@@ -6,7 +6,7 @@ import ProductCard, { ProductCardSkeleton } from "../components/ProductCard";
 import Breadcrumbs from "../components/Breadcrumbs";
 import Icon from "../components/Icons";
 import useSeo from "../hooks/useSeo";
-import { SITE } from "../config/site";
+import { CATEGORY_COPY, SITE } from "../config/site";
 import { formatPrice } from "../utils/format";
 
 const PAGE_SIZE = 24;
@@ -54,10 +54,26 @@ const Collection = () => {
   const minPrice = searchParams.get("minPrice") || "";
   const maxPrice = searchParams.get("maxPrice") || "";
   const inStock = searchParams.get("inStock") === "true";
+  const onSale = searchParams.get("onSale") === "true";
+  const materials = splitParam(searchParams.get("material"));
+  const seating = splitParam(searchParams.get("seating"));
+  const colors = splitParam(searchParams.get("color"));
   const sort = searchParams.get("sort") || "new";
 
   const query = useMemo(
-    () => ({ q, category: categories, subCategory: subCategories, minPrice, maxPrice, inStock: inStock ? "true" : "", sort }),
+    () => ({
+      q,
+      category: categories,
+      subCategory: subCategories,
+      minPrice,
+      maxPrice,
+      inStock: inStock ? "true" : "",
+      onSale: onSale ? "true" : "",
+      material: materials,
+      seating,
+      color: colors,
+      sort,
+    }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [searchParams.toString()]
   );
@@ -117,16 +133,24 @@ const Collection = () => {
   // Page title from the active filters
   const heading = q
     ? `Results for “${q}”`
+    : onSale && categories.length === 0 && subCategories.length === 0
+    ? "Sale"
     : subCategories.length > 0 && subCategories.length <= 3 && categories.length === 0
     ? subCategories.join(" & ")
     : categories.length === 1 && subCategories.length === 0
     ? `${categories[0]} furniture`
     : "All furniture";
 
+  // Intro copy when the page is a single type or room
+  const single = !q && subCategories.length + categories.length === 1 ? subCategories[0] || categories[0] : null;
+  const intro = single ? CATEGORY_COPY[single] : null;
+
   useSeo({
     title: q ? `Search: ${q}` : heading,
     description: q
       ? `Furniture matching “${q}” at ${SITE.name}, Barasat.`
+      : intro
+      ? `${intro} ${SITE.name}, Barasat.`
       : `Shop ${heading.toLowerCase()} at ${SITE.name} — showroom in ${SITE.address.locality}, Kolkata. Delivery & installation across Kolkata.`,
   });
 
@@ -140,6 +164,10 @@ const Collection = () => {
         }]
       : []),
     ...(inStock ? [{ label: "In stock", remove: () => update({ inStock: "" }) }] : []),
+    ...(onSale ? [{ label: "On sale", remove: () => update({ onSale: "" }) }] : []),
+    ...materials.map((m) => ({ label: m, remove: () => toggleIn("material", materials, m) })),
+    ...seating.map((m) => ({ label: m, remove: () => toggleIn("seating", seating, m) })),
+    ...colors.map((m) => ({ label: m, remove: () => toggleIn("color", colors, m) })),
   ];
 
   const filters = (
@@ -200,11 +228,37 @@ const Collection = () => {
           <button type="submit" className="rounded-md border border-stone-300 px-3 py-1.5 text-sm hover:border-stone-900">Go</button>
         </form>
       </FilterGroup>
-      <FilterGroup title="Availability">
-        <label className="flex cursor-pointer items-center gap-3 text-sm text-stone-700">
-          <input type="checkbox" className="h-4 w-4" checked={inStock} onChange={() => update({ inStock: inStock ? "" : "true" })} />
-          In stock / made to order only
-        </label>
+      {[
+        ["Material", "material", materials, facets.materials],
+        ["Seating", "seating", seating, facets.seating],
+        ["Colour", "color", colors, facets.colors],
+      ].map(([title, key, selected, options]) =>
+        options?.length ? (
+          <FilterGroup key={key} title={title}>
+            <div className="max-h-52 space-y-2 overflow-y-auto">
+              {options.map((o) => (
+                <label key={o} className="flex cursor-pointer items-center gap-3 text-sm text-stone-700">
+                  <input type="checkbox" className="h-4 w-4" checked={selected.includes(o)} onChange={() => toggleIn(key, selected, o)} />
+                  {o}
+                </label>
+              ))}
+            </div>
+          </FilterGroup>
+        ) : null
+      )}
+      <FilterGroup title="Availability & offers">
+        <div className="space-y-2">
+          <label className="flex cursor-pointer items-center gap-3 text-sm text-stone-700">
+            <input type="checkbox" className="h-4 w-4" checked={inStock} onChange={() => update({ inStock: inStock ? "" : "true" })} />
+            In stock / made to order only
+          </label>
+          {facets.saleCount > 0 && (
+            <label className="flex cursor-pointer items-center gap-3 text-sm text-stone-700">
+              <input type="checkbox" className="h-4 w-4" checked={onSale} onChange={() => update({ onSale: onSale ? "" : "true" })} />
+              On sale ({facets.saleCount})
+            </label>
+          )}
+        </div>
       </FilterGroup>
     </div>
   );
@@ -227,6 +281,7 @@ const Collection = () => {
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-4xl font-semibold sm:text-5xl">{heading}</h1>
+          {intro && <p className="mt-2 max-w-2xl text-stone-600">{intro}</p>}
           <p className="mt-2 text-sm text-stone-600" aria-live="polite">
             {loading ? "Loading…" : `${pagination.totalProducts} ${pagination.totalProducts === 1 ? "product" : "products"}`}
           </p>
@@ -293,7 +348,7 @@ const Collection = () => {
       </div>
 
       {/* Mobile filter / sort bar */}
-      <div className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-2 border-t border-cream-300 bg-white p-3 lg:hidden">
+      <div className="fixed inset-x-0 bottom-14 z-30 flex items-center gap-2 border-t border-cream-300 bg-white p-3 lg:hidden">
         <button type="button" onClick={() => setFiltersOpen(true)} className="btn-outline flex-1 py-2.5">
           <Icon name="filter" className="h-4 w-4" /> Filters{chips.length ? ` (${chips.length})` : ""}
         </button>

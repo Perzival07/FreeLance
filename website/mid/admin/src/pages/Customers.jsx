@@ -124,7 +124,7 @@ const Customers = ({ token }) => {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
-        <p className="text-ivory-400">Loading customers...</p>
+        <p className="text-stone-500">Loading customers...</p>
       </div>
     );
   }
@@ -132,12 +132,12 @@ const Customers = ({ token }) => {
   return (
     <>
       <p className="eyebrow-gold text-xs mb-1">CLIENTELE</p>
-      <h2 className="font-display text-3xl text-ivory-50 mb-2">All Customers</h2>
-      <p className="mb-6 text-sm text-ivory-400">Total Customers: {customers.length}</p>
+      <h2 className="font-display text-3xl text-stone-900 mb-2">All Customers</h2>
+      <p className="mb-6 text-sm text-stone-500">Total Customers: {customers.length}</p>
 
       <div className="card-luxury rounded overflow-hidden">
         {/* Table Header */}
-        <div className="hidden md:grid grid-cols-[2fr_1.5fr_2fr_2fr_1fr_1fr] items-center py-3 px-4 border-b border-gold-500/15 bg-ink-400 text-sm font-semibold text-ivory-100">
+        <div className="hidden md:grid grid-cols-[2fr_1.5fr_2fr_2fr_1fr_1fr] items-center py-3 px-4 border-b border-cream-300 bg-cream-100 text-sm font-semibold text-stone-900">
           <b>Name</b>
           <b>Email</b>
           <b>Phone</b>
@@ -148,28 +148,28 @@ const Customers = ({ token }) => {
 
         {/* Customers List */}
         {customers.length === 0 ? (
-          <div className="text-center py-10 text-ivory-400">
+          <div className="text-center py-10 text-stone-500">
             <p>No customers found.</p>
           </div>
         ) : (
-          <div className="divide-y divide-gold-500/10">
+          <div className="divide-y divide-cream-300">
           {customers.map((customer, index) => (
             <div
               key={customer._id || index}
-              className="grid grid-cols-1 md:grid-cols-[2fr_1.5fr_2fr_2fr_1fr_1fr] items-start gap-2 py-3 px-4 text-sm hover:bg-gold-500/5 transition-colors"
+              className="grid grid-cols-1 md:grid-cols-[2fr_1.5fr_2fr_2fr_1fr_1fr] items-start gap-2 py-3 px-4 text-sm hover:bg-cream-100 transition-colors"
             >
               {/* Name */}
               <div className="flex flex-col">
-                <p className="font-medium text-ivory-100">{customer.name || "N/A"}</p>
+                <p className="font-medium text-stone-900">{customer.name || "N/A"}</p>
                 {/* Mobile view: Show email, phone, address, and joined date */}
-                <div className="md:hidden mt-2 space-y-1 text-xs text-ivory-300">
+                <div className="md:hidden mt-2 space-y-1 text-xs text-stone-700">
                   <p><span className="font-medium">Email:</span> {customer.email || "N/A"}</p>
                   <p><span className="font-medium">Phone:</span> {customer.profile?.phone || "Not provided"}</p>
                   <p><span className="font-medium">Address:</span> {formatAddress(customer.profile)}</p>
                   <p><span className="font-medium">Joined:</span> {formatDate(customer.createdAt, customer._id)}</p>
                   <button
                     onClick={() => removeCustomer(customer._id, customer.name)}
-                    className="mt-2 text-red-400 hover:text-red-300 font-medium text-xs"
+                    className="mt-2 text-red-700 hover:text-red-700 font-medium text-xs"
                   >
                     Remove Customer
                   </button>
@@ -177,20 +177,20 @@ const Customers = ({ token }) => {
               </div>
 
               {/* Email - Desktop only */}
-              <p className="hidden md:block text-ivory-200">{customer.email || "N/A"}</p>
+              <p className="hidden md:block text-stone-800">{customer.email || "N/A"}</p>
 
               {/* Phone */}
-              <p className="hidden md:block text-ivory-200">
+              <p className="hidden md:block text-stone-800">
                 {customer.profile?.phone || "Not provided"}
               </p>
 
               {/* Address */}
-              <div className="hidden md:block text-ivory-200">
+              <div className="hidden md:block text-stone-800">
                 <p className="text-xs leading-relaxed">{formatAddress(customer.profile)}</p>
               </div>
 
               {/* Joined Date */}
-              <p className="hidden md:block text-ivory-200 text-xs">
+              <p className="hidden md:block text-stone-800 text-xs">
                 {formatDate(customer.createdAt, customer._id)}
               </p>
 
@@ -198,7 +198,7 @@ const Customers = ({ token }) => {
               <div className="hidden md:flex justify-center">
                 <button
                   onClick={() => removeCustomer(customer._id, customer.name)}
-                  className="text-red-400 hover:text-red-300 font-medium text-sm cursor-pointer"
+                  className="text-red-700 hover:text-red-700 font-medium text-sm cursor-pointer"
                   title="Remove customer"
                 >
                   Remove

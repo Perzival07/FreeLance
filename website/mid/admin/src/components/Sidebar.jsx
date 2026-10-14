@@ -1,55 +1,35 @@
-import React from 'react'
-import { NavLink } from 'react-router-dom';
-import { assets } from '../assets/assets';
+import { NavLink } from "react-router-dom";
+import { FiGrid, FiPlusSquare, FiList, FiPackage, FiInbox, FiStar, FiUsers } from "react-icons/fi";
+
+const LINKS = [
+  { to: "/", label: "Dashboard", icon: FiGrid, end: true },
+  { to: "/add", label: "Add product", icon: FiPlusSquare },
+  { to: "/list", label: "Products", icon: FiList },
+  { to: "/orders", label: "Orders", icon: FiPackage },
+  { to: "/enquiries", label: "Enquiries", icon: FiInbox },
+  { to: "/reviews", label: "Reviews", icon: FiStar },
+  { to: "/customers", label: "Customers", icon: FiUsers },
+];
 
 const Sidebar = () => {
   const linkClass = ({ isActive }) =>
-    `flex items-center gap-3 border-y border-l border-r-0 px-3 py-2.5 rounded-l transition-colors ${
-      isActive
-        ? "bg-gold-500/12 border-gold-500 text-gold-300"
-        : "border-gold-500/15 text-ivory-300 hover:bg-gold-500/5 hover:text-gold-300"
+    `flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors ${
+      isActive ? "bg-stone-900 text-white" : "text-stone-700 hover:bg-cream-200 hover:text-stone-900"
     }`;
 
   return (
-    <div className='w-[18%] min-h-screen bg-ink-900 border-r border-gold-500/15'>
-        <div className='flex flex-col gap-4 pt-8 pl-[20%] text-[15px]'>
-            <p className='hidden md:block eyebrow-gold text-[11px] mb-1'>MENU</p>
+    <nav aria-label="Admin" className="min-h-[calc(100vh-4rem)] shrink-0 border-r border-cream-300 bg-white md:w-56">
+      <div className="sticky top-16 flex flex-col gap-1 p-2 md:p-4">
+        <p className="mb-2 hidden px-3 text-[11px] font-medium uppercase tracking-[0.2em] text-stone-500 md:block">Menu</p>
+        {LINKS.map(({ to, label, icon: Icon, end }) => (
+          <NavLink key={to} to={to} end={end} className={linkClass} title={label}>
+            <Icon className="h-5 w-5 shrink-0" />
+            <span className="hidden md:inline">{label}</span>
+          </NavLink>
+        ))}
+      </div>
+    </nav>
+  );
+};
 
-            <NavLink className={linkClass} to="/" end>
-            <img className='icon-luxury w-5 h-5' src={assets.order_icon} alt="dashboard_icon" />
-            <p className='hidden md:block'>Dashboard</p>
-            </NavLink>
-
-            <NavLink className={linkClass} to="/add">
-            <img className='icon-luxury w-5 h-5' src={assets.add_icon} alt="add_icon" />
-            <p className='hidden md:block'>Add Items</p>
-            </NavLink>
-
-             <NavLink className={linkClass} to="/list">
-            <img className='icon-luxury w-5 h-5' src={assets.order_icon} alt="add_icon" />
-            <p className='hidden md:block'>List Items</p>
-            </NavLink>
-
-
-             <NavLink className={linkClass} to="/orders">
-            <img className='icon-luxury w-5 h-5' src={assets.order_icon} alt="add_icon" />
-            <p className='hidden md:block'>Orders</p>
-            </NavLink>
-
-             <NavLink className={linkClass} to="/enquiries">
-            <img className='icon-luxury w-5 h-5' src={assets.order_icon} alt="" />
-            <p className='hidden md:block'>Enquiries</p>
-            </NavLink>
-
-             <NavLink className={linkClass} to="/customers">
-            <img className='icon-luxury w-5 h-5' src={assets.order_icon} alt="customers_icon" />
-            <p className='hidden md:block'>Customers</p>
-            </NavLink>
-
-        </div>
-    </div>
-  )
-}
-
-
-export default Sidebar
+export default Sidebar;

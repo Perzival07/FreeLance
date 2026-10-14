@@ -63,6 +63,7 @@ const addProduct = async (req, res) => {
             stock: stockNum,
             ...parseOptionalFields(req.body),
         }
+        if (!productData.slug) delete productData.slug;
 
         const product = new productModel(productData);
         await product.save();
@@ -87,8 +88,11 @@ const parseOptionalFields = (body) => {
         const mrp = Number(body.mrp);
         if (Number.isFinite(mrp) && mrp > 0) out.mrp = mrp;
     }
-    for (const key of ['material', 'seating', 'warranty']) {
+    for (const key of ['material', 'seating', 'warranty', 'frame', 'foamDensity', 'finish', 'weight', 'badge', 'seoTitle', 'seoDescription']) {
         if (body[key] !== undefined) out[key] = String(body[key]).trim();
+    }
+    if (body.slug !== undefined) {
+        out.slug = String(body.slug).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
     }
     if (body.colors !== undefined) {
         const list = Array.isArray(body.colors) ? body.colors : String(body.colors).split(',');
@@ -164,9 +168,20 @@ const listProducts = async (req, res) => {
         if (Number.isFinite(maxPrice) && maxPrice > 0) filter.price = { ...filter.price, $lte: maxPrice };
 
         if (req.query.inStock === 'true') {
-            filter.$and = [{ $or: [{ stock: { $gt: 0 } }, { madeToOrder: true }] }];
+            filter.$and = [...(filter.$and || []), { $or: [{ stock: { $gt: 0 } }, { madeToOrder: true }] }];
         }
         if (req.query.bestseller === 'true') filter.bestseller = true;
+        if (req.query.onSale === 'true') {
+            filter.$expr = { $gt: [{ $ifNull: ['$mrp', 0] }, '$price'] };
+        }
+        const materials = listParam(req.query.material);
+        if (materials.length) {
+            filter.$and = [...(filter.$and || []), { $or: materials.map((m) => ({ material: new RegExp(escapeRegex(m), 'i') })) }];
+        }
+        const seating = listParam(req.query.seating);
+        if (seating.length) filter.seating = { $in: seating };
+        const colors = listParam(req.query.color);
+        if (colors.length) filter.colors = { $in: colors.map((c) => new RegExp(`^${escapeRegex(c)}$`, 'i')) };
         if (req.query.exclude && mongoose.Types.ObjectId.isValid(req.query.exclude)) {
             filter._id = { $ne: req.query.exclude };
         }
@@ -207,7 +222,7 @@ const listProducts = async (req, res) => {
 const productFacets = async (req, res) => {
     try {
         res.set('Cache-Control', 'public, max-age=300');
-        const [categories, subCategories, priceRange, combos] = await Promise.all([
+        const [categories, subCategories, priceRange, combos, materials, seating, colors, saleCount] = await Promise.all([
             productModel.aggregate([
                 { $sort: { bestseller: -1, date: -1 } },
                 { $group: { _id: '$category', count: { $sum: 1 }, image: { $first: { $arrayElemAt: ['$image', 0] } } } },
@@ -224,6 +239,15 @@ const productFacets = async (req, res) => {
                 { $sort: { bestseller: -1, date: -1 } },
                 { $group: { _id: { category: '$category', subCategory: '$subCategory' }, image: { $first: { $arrayElemAt: ['$image', 0] } } } },
             ]),
+            productModel.distinct('material', { material: { $nin: [null, ''] } }),
+            productModel.distinct('seating', { seating: { $nin: [null, ''] } }),
+            productModel.aggregate([
+                { $unwind: '$colors' },
+                { $group: { _id: { $toLower: '$colors' }, name: { $first: '$colors' }, count: { $sum: 1 } } },
+                { $sort: { count: -1 } },
+                { $limit: 30 },
+            ]),
+            productModel.countDocuments({ $expr: { $gt: [{ $ifNull: ['$mrp', 0] }, '$price'] } }),
         ]);
         res.json({
             success: true,
@@ -231,6 +255,10 @@ const productFacets = async (req, res) => {
             subCategories: subCategories.map((c) => ({ name: c._id, count: c.count, image: c.image })),
             price: { min: priceRange[0]?.min ?? 0, max: priceRange[0]?.max ?? 0 },
             combos: combos.map((c) => ({ category: c._id.category, subCategory: c._id.subCategory, image: c.image })),
+            materials: materials.sort(),
+            seating: seating.sort(),
+            colors: colors.map((c) => c.name),
+            saleCount,
         });
     } catch (error) {
         console.log(error);

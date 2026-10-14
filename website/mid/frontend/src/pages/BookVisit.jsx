@@ -6,14 +6,14 @@ import useSeo from "../hooks/useSeo";
 import { SITE, fullAddress } from "../config/site";
 
 const BookVisit = () => {
-  useSeo({ title: "Book a Showroom Visit", description: `Book a visit to ${SITE.name}, ${SITE.address.locality}. Pick a date and time and we'll keep pieces ready for you.` });
+  useSeo({ title: "Book a Showroom Visit or Design Consultation", description: `Book a visit or a free design consultation at ${SITE.name}, ${SITE.address.locality}. Pick a date and time and we'll keep pieces ready for you.` });
 
   return (
     <>
-      <PageHeader title="Book a showroom visit" subtitle="Pick a date and time. We'll call to confirm and keep the pieces you're interested in ready — plus fabric and finish samples." crumbs={[{ label: "Showroom", to: "/showroom" }, { label: "Book a visit" }]} />
+      <PageHeader title="Book a visit or free design consultation" subtitle="Pick a date and time. We'll call to confirm, keep the pieces you're interested in ready, and help plan your room — free of charge." crumbs={[{ label: "Showroom", to: "/showroom" }, { label: "Book a visit" }]} />
       <div className="container-site grid gap-10 py-10 lg:grid-cols-[1.5fr_1fr]">
         <div className="card p-6 sm:p-8">
-          <LeadForm type="visit" fields={["preferredDate", "preferredTime", "message"]} submitLabel="Book my visit" messageLabel="What are you looking for? (optional)" messagePlaceholder="e.g. 3-seater sofa in grey, king-size bed" />
+          <LeadForm type="visit" fields={["purpose", "preferredDate", "preferredTime", "message"]} submitLabel="Book my visit" messageLabel="What are you looking for? (optional)" messagePlaceholder="e.g. 3-seater sofa in grey, king-size bed" />
         </div>
         <aside className="space-y-6">
           <div className="card p-6">

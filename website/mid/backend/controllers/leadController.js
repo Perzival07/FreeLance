@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import leadModel, { LEAD_STATUSES, LEAD_TYPES } from '../models/leadModel.js';
 import { sendAdminLeadAlert } from '../services/emailService.js';
+import { uploadToCloudinary } from '../utils/uploadImages.js';
 
 const PUBLIC_FIELDS = ['type', 'name', 'phone', 'email', 'message', 'preferredDate', 'preferredTime', 'budget', 'productId', 'productName'];
 
@@ -17,6 +18,10 @@ const createLead = async (req, res) => {
             if (existing) {
                 return res.json({ success: true, message: "You're already subscribed — thank you!" });
             }
+        }
+
+        if (req.files?.length) {
+            data.images = await uploadToCloudinary(req.files, 'enquiries');
         }
 
         const lead = await leadModel.create(data);

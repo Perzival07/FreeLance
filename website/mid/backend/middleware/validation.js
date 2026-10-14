@@ -95,6 +95,14 @@ export const validateProduct = [
     body("seating").optional().isString().isLength({ max: 50 }),
     body("warranty").optional().isString().isLength({ max: 100 }),
     body("madeToOrder").optional().isIn([true, false, "true", "false"]),
+    body("frame").optional().isString().isLength({ max: 200 }),
+    body("foamDensity").optional().isString().isLength({ max: 100 }),
+    body("finish").optional().isString().isLength({ max: 200 }),
+    body("weight").optional().isString().isLength({ max: 50 }),
+    body("badge").optional().isString().isLength({ max: 30 }).withMessage("Badge must be 30 characters or fewer"),
+    body("slug").optional().isString().isLength({ max: 80 }),
+    body("seoTitle").optional().isString().isLength({ max: 70 }).withMessage("SEO title must be 70 characters or fewer"),
+    body("seoDescription").optional().isString().isLength({ max: 170 }).withMessage("SEO description must be 170 characters or fewer"),
     handleValidationErrors,
 ];
 
@@ -117,6 +125,14 @@ export const validateProductUpdate = [
     body("seating").optional().isString().isLength({ max: 50 }),
     body("warranty").optional().isString().isLength({ max: 100 }),
     body("madeToOrder").optional().isIn([true, false, "true", "false"]),
+    body("frame").optional().isString().isLength({ max: 200 }),
+    body("foamDensity").optional().isString().isLength({ max: 100 }),
+    body("finish").optional().isString().isLength({ max: 200 }),
+    body("weight").optional().isString().isLength({ max: 50 }),
+    body("badge").optional().isString().isLength({ max: 30 }).withMessage("Badge must be 30 characters or fewer"),
+    body("slug").optional().isString().isLength({ max: 80 }),
+    body("seoTitle").optional().isString().isLength({ max: 70 }).withMessage("SEO title must be 70 characters or fewer"),
+    body("seoDescription").optional().isString().isLength({ max: 170 }).withMessage("SEO description must be 170 characters or fewer"),
     handleValidationErrors,
 ];
 
