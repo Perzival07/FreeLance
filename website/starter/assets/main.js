@@ -244,7 +244,9 @@
           obs.unobserve(entry.target);
         }
       });
-    }, { root: null, rootMargin: '0px 0px -40px 0px', threshold: 0.12 });
+    // threshold 0: reveal as soon as the section's top edge is on screen. A ratio
+    // threshold never fires on load for very tall sections (e.g. the bread grid).
+    }, { root: null, rootMargin: '0px 0px -40px 0px', threshold: 0 });
 
     revealTargets.forEach(function (el) { observer.observe(el); });
   }
@@ -816,39 +818,123 @@
   setupAmbience();
 
   // ========================================================================
-  // Bread Directory: recipe & pairings panel. CSS shows it on hover for mouse
-  // users; this toggle covers touch screens and keyboards.
+  // Bread Directory: large recipe & pairings pop-up. Mouse users get it on
+  // hover (after a short pause); touch and keyboard users open it with the
+  // "Recipe & pairings" button, where it behaves as a modal dialog.
   // ========================================================================
-  function setupBreadMore() {
-    const toggles = document.querySelectorAll('.bread-more-toggle');
-    if (!toggles.length) return;
+  function setupBreadPopup() {
+    const cards = document.querySelectorAll('.bread-card');
+    if (!cards.length || !document.querySelector('.bread-card-more')) return;
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)');
 
-    function close(card, returnFocus) {
-      card.classList.remove('is-open');
-      const t = card.querySelector('.bread-more-toggle');
-      t?.setAttribute('aria-expanded', 'false');
-      if (returnFocus) t?.focus();
+    const backdrop = document.createElement('div');
+    backdrop.className = 'bread-pop-backdrop';
+    const pop = document.createElement('div');
+    pop.className = 'bread-pop';
+    pop.setAttribute('role', 'dialog');
+    pop.setAttribute('aria-labelledby', 'bread-pop-title');
+    pop.innerHTML =
+      '<button type="button" class="bread-pop-close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
+      '<div class="bread-pop-media"></div>' +
+      '<div class="bread-pop-body">' +
+        '<span class="bread-card-origin" data-pop="origin"></span>' +
+        '<h3 id="bread-pop-title" data-pop="title"></h3>' +
+        '<p class="bread-pop-desc" data-pop="desc"></p>' +
+        '<div class="bread-card-meta" data-pop="meta"></div>' +
+        '<div class="bread-pop-cols">' +
+          '<div class="bread-pop-col"><span class="bread-more-label">Bake it at home</span><p class="bread-more-ing" data-pop="ing"></p><ol class="bread-more-steps" data-pop="steps"></ol></div>' +
+          '<div class="bread-pop-col"><span class="bread-more-label">Made for</span><ul class="bread-more-uses" data-pop="uses"></ul></div>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(backdrop);
+    document.body.appendChild(pop);
+    const slot = function (name) { return pop.querySelector('[data-pop="' + name + '"]'); };
+    const closeBtn = pop.querySelector('.bread-pop-close');
+
+    let current = null;
+    let isModal = false;
+    let openTimer = null;
+    let closeTimer = null;
+
+    function fill(card) {
+      const media = pop.querySelector('.bread-pop-media');
+      media.innerHTML = '';
+      const picture = card.querySelector('.bread-card-media picture');
+      if (picture) {
+        const clone = picture.cloneNode(true);
+        const img = clone.querySelector('img');
+        if (img) { img.loading = 'eager'; img.classList.add('is-loaded'); }
+        media.appendChild(clone);
+      }
+      const more = card.querySelector('.bread-card-more');
+      const text = function (sel, root) { return (root || card).querySelector(sel)?.innerHTML || ''; };
+      slot('origin').innerHTML = text('.bread-card-origin');
+      slot('title').innerHTML = text('.bread-card-body h3');
+      slot('desc').innerHTML = text('.bread-card-desc');
+      slot('meta').innerHTML = text('.bread-card-meta');
+      slot('ing').innerHTML = text('.bread-more-ing', more);
+      slot('steps').innerHTML = text('.bread-more-steps', more);
+      slot('uses').innerHTML = text('.bread-more-uses', more);
+      closeBtn.setAttribute('aria-label', 'Close ' + slot('title').textContent);
     }
 
-    toggles.forEach(function (toggle) {
-      const card = toggle.closest('.bread-card');
-      toggle.addEventListener('click', function (e) {
-        e.stopPropagation();
-        document.querySelectorAll('.bread-card.is-open').forEach(function (c) { if (c !== card) close(c, false); });
-        card.classList.add('is-open');
-        toggle.setAttribute('aria-expanded', 'true');
-        card.querySelector('.bread-more-close')?.focus();
+    function open(card, modal) {
+      clearTimeout(closeTimer);
+      if (current !== card) fill(card);
+      current = card;
+      isModal = !!modal;
+      pop.setAttribute('aria-modal', String(isModal));
+      backdrop.classList.toggle('is-modal', isModal);
+      backdrop.classList.add('is-visible');
+      pop.classList.add('is-open');
+      if (isModal) closeBtn.focus();
+    }
+
+    function close() {
+      clearTimeout(openTimer);
+      if (!current) return;
+      const wasModal = isModal;
+      const card = current;
+      pop.classList.remove('is-open');
+      backdrop.classList.remove('is-visible', 'is-modal');
+      current = null;
+      isModal = false;
+      if (wasModal) card.querySelector('.bread-more-toggle')?.focus();
+    }
+
+    function scheduleClose() {
+      if (isModal) return;
+      clearTimeout(closeTimer);
+      closeTimer = setTimeout(close, 220);
+    }
+
+    cards.forEach(function (card) {
+      card.addEventListener('mouseenter', function () {
+        if (!canHover.matches || isModal) return;
+        clearTimeout(closeTimer);
+        clearTimeout(openTimer);
+        openTimer = setTimeout(function () { open(card, false); }, current ? 120 : 320);
       });
-      card.querySelector('.bread-more-close')?.addEventListener('click', function (e) {
+      card.addEventListener('mouseleave', function () {
+        if (!canHover.matches || isModal) return;
+        clearTimeout(openTimer);
+        scheduleClose();
+      });
+      card.querySelector('.bread-more-toggle')?.addEventListener('click', function (e) {
         e.stopPropagation();
-        close(card, true);
+        clearTimeout(openTimer);
+        open(card, true);
       });
     });
 
+    pop.addEventListener('mouseenter', function () { clearTimeout(closeTimer); });
+    pop.addEventListener('mouseleave', scheduleClose);
+    closeBtn.addEventListener('click', close);
+    backdrop.addEventListener('click', close);
     document.addEventListener('keydown', function (e) {
-      if (e.key !== 'Escape') return;
-      document.querySelectorAll('.bread-card.is-open').forEach(function (c) { close(c, true); });
+      if (e.key === 'Escape' && current) close();
     });
+    window.addEventListener('scroll', function () { if (current && !isModal) close(); }, { passive: true });
   }
-  setupBreadMore();
+  setupBreadPopup();
 })();
