@@ -67,7 +67,9 @@
 
   <header class="page-hero page-hero--photo">
     <!-- STOCK PHOTO — replace with client's own photo before launch -->
-    <picture><source srcset="assets/img/bakery-shelves-menu.webp" type="image/webp"><img class="page-hero-photo" src="assets/img/bakery-shelves-menu.jpg" alt="Artisan bakery shelves with freshly baked sourdough loaves, spelt breads, and baguettes" width="1600" height="1532" loading="eager" decoding="async"></picture>
+    <video class="page-hero-photo" data-hero-video autoplay muted loop playsinline preload="metadata" poster="assets/img/menu-hero-pastries-coffee.webp" aria-hidden="true">
+      <source src="assets/video/45086-720.mp4" type="video/mp4">
+    </video>
     <div class="page-hero-overlay" aria-hidden="true"></div>
     <div class="wrap">
       <span class="eyebrow eyebrow--flourish">Today's Bakes</span>
@@ -78,7 +80,7 @@
     </div>
   </header>
 
-  <main id="main" class="section" data-reveal>
+  <main id="main" class="section" data-reveal data-reservation-builder>
     <div class="wrap">
       <ul class="diet-key" aria-label="Dietary key">
         <li><span class="menu-tag menu-tag--vg">VG</span> Vegan</li>
@@ -86,6 +88,8 @@
         <li><span class="menu-tag menu-tag--gf">GF</span> Gluten-free</li>
         <li><span class="menu-tag menu-tag--nuts">Nuts</span> Contains nuts</li>
       </ul>
+
+      <p class="reserve-hint" data-reserve-hint hidden>Tap <span class="reserve-hint-plus" aria-hidden="true">+</span> beside anything you'd like held, then send the whole list in one WhatsApp message.</p>
 
       <div class="menu-tabs">
         <button type="button" class="menu-tab" data-target="cat-breads">Breads</button>
@@ -98,7 +102,7 @@
       <div class="menu-category" id="cat-breads">
         <div class="menu-category-title"><h3>Breads</h3><div class="gold-line"></div></div>
         <div class="menu-list">
-          <div class="menu-item">
+          <div class="menu-item" data-item="country-sourdough">
             <div class="menu-item-info">
               <h4>Country Sourdough</h4>
               <p>36-hour cold ferment, blistered crust, 800g</p>
@@ -106,7 +110,7 @@
             </div>
             <span class="menu-item-price">£6.50</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="somerset-rye-loaf">
             <div class="menu-item-info">
               <h4>Somerset Rye Loaf</h4>
               <p>Dark rye blend, caraway, 700g</p>
@@ -114,7 +118,7 @@
             </div>
             <span class="menu-item-price">£6.80</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="seeded-wholemeal">
             <div class="menu-item-info">
               <h4>Seeded Wholemeal</h4>
               <p>Sunflower, linseed, pumpkin seed crust</p>
@@ -122,7 +126,7 @@
             </div>
             <span class="menu-item-price">£6.90</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="focaccia-of-the-day">
             <div class="menu-item-info">
               <h4>Focaccia of the Day</h4>
               <p>Rosemary sea salt or roast tomato &amp; olive</p>
@@ -130,7 +134,7 @@
             </div>
             <span class="menu-item-price">£5.20</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="sourdough-baguette">
             <div class="menu-item-info">
               <h4>Sourdough Baguette</h4>
               <p>Crisp shell, open airy crumb</p>
@@ -138,7 +142,7 @@
             </div>
             <span class="menu-item-price">£3.90</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="gluten-free-seed-loaf">
             <div class="menu-item-info">
               <h4>Gluten-Free Seed Loaf</h4>
               <p>Buckwheat &amp; teff blend, dense and nutty</p>
@@ -152,7 +156,7 @@
       <div class="menu-category" id="cat-pastries">
         <div class="menu-category-title"><h3>Pastries</h3><div class="gold-line"></div></div>
         <div class="menu-list">
-          <div class="menu-item">
+          <div class="menu-item" data-item="cultured-butter-croissant">
             <div class="menu-item-info">
               <h4>Cultured Butter Croissant</h4>
               <p>27-layer lamination, sea-salted butter</p>
@@ -160,7 +164,7 @@
             </div>
             <span class="menu-item-price">£3.80</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="pain-au-chocolat">
             <div class="menu-item-info">
               <h4>Pain au Chocolat</h4>
               <p>Dark 70% chocolate batons</p>
@@ -168,7 +172,7 @@
             </div>
             <span class="menu-item-price">£3.95</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="almond-croissant">
             <div class="menu-item-info">
               <h4>Almond Croissant</h4>
               <p>Twice-baked, frangipane, toasted flakes</p>
@@ -176,7 +180,7 @@
             </div>
             <span class="menu-item-price">£4.30</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="escargot-raisin">
             <div class="menu-item-info">
               <h4>Escargot Raisin</h4>
               <p>Laminated dough, pastry cream, plump raisins</p>
@@ -184,7 +188,7 @@
             </div>
             <span class="menu-item-price">£4.10</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="kouign-amann">
             <div class="menu-item-info">
               <h4>Kouign-Amann</h4>
               <p>Caramelised, crisp-edged, buttery layers</p>
@@ -192,7 +196,7 @@
             </div>
             <span class="menu-item-price">£4.50</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="danish-of-the-day">
             <div class="menu-item-info">
               <h4>Danish of the Day</h4>
               <p>Seasonal fruit compote, vanilla custard</p>
@@ -206,14 +210,14 @@
       <div class="menu-category" id="cat-cakes">
         <div class="menu-category-title"><h3>Cakes &amp; Buns</h3><div class="gold-line"></div></div>
         <div class="menu-list">
-          <div class="menu-item">
+          <div class="menu-item" data-item="cardamom-cream-bun">
             <div class="menu-item-info">
               <h4>Cardamom Cream Bun</h4>
               <p>Slow-proofed brioche, spiced sugar</p>
             </div>
             <span class="menu-item-price">£4.20</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="cinnamon-swirl">
             <div class="menu-item-info">
               <h4>Cinnamon Swirl</h4>
               <p>Brown butter glaze, toasted pecan</p>
@@ -221,28 +225,28 @@
             </div>
             <span class="menu-item-price">£4.00</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="somerset-apple-cake">
             <div class="menu-item-info">
               <h4>Somerset Apple Cake</h4>
               <p>Slow-baked with local cider apples, per slice</p>
             </div>
             <span class="menu-item-price">£3.60</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="lemon-and-poppyseed-loaf-cake">
             <div class="menu-item-info">
               <h4>Lemon &amp; Poppyseed Loaf Cake</h4>
               <p>Citrus glaze, per slice</p>
             </div>
             <span class="menu-item-price">£3.60</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="sticky-toffee-bun">
             <div class="menu-item-info">
               <h4>Sticky Toffee Bun</h4>
               <p>Date caramel, sea salt flake</p>
             </div>
             <span class="menu-item-price">£4.10</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="weekend-celebration-cake" data-no-add>
             <div class="menu-item-info">
               <h4>Weekend Celebration Cake</h4>
               <p>Custom orders — ask in-store or via WhatsApp</p>
@@ -255,21 +259,21 @@
       <div class="menu-category" id="cat-savoury">
         <div class="menu-category-title"><h3>Savoury</h3><div class="gold-line"></div></div>
         <div class="menu-list">
-          <div class="menu-item">
+          <div class="menu-item" data-item="cheese-and-marmite-twist">
             <div class="menu-item-info">
               <h4>Cheese &amp; Marmite Twist</h4>
               <p>Laminated dough, aged cheddar</p>
             </div>
             <span class="menu-item-price">£4.00</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="ham-and-gruyere-croissant">
             <div class="menu-item-info">
               <h4>Ham &amp; Gruyère Croissant</h4>
               <p>Baked-in filling, savoury lamination</p>
             </div>
             <span class="menu-item-price">£4.60</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="spinach-and-feta-sausage-roll">
             <div class="menu-item-info">
               <h4>Spinach &amp; Feta Sausage Roll</h4>
               <p>Flaky pastry, hand-rolled</p>
@@ -277,7 +281,7 @@
             </div>
             <span class="menu-item-price">£4.30</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="sourdough-toastie">
             <div class="menu-item-info">
               <h4>Sourdough Toastie</h4>
               <p>Cheddar, caramelised onion, on our own loaf</p>
@@ -291,27 +295,27 @@
       <div class="menu-category" id="cat-drinks">
         <div class="menu-category-title"><h3>Coffee &amp; Drinks</h3><div class="gold-line"></div></div>
         <div class="menu-list">
-          <div class="menu-item">
+          <div class="menu-item" data-item="espresso" data-no-add>
             <div class="menu-item-info"><h4>Espresso</h4><p>Single-origin, seasonal roast</p></div>
             <span class="menu-item-price">£2.40</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="flat-white" data-no-add>
             <div class="menu-item-info"><h4>Flat White</h4><p>Oat or whole milk</p></div>
             <span class="menu-item-price">£3.40</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="cappuccino" data-no-add>
             <div class="menu-item-info"><h4>Cappuccino</h4><p>Double shot, light foam</p></div>
             <span class="menu-item-price">£3.30</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="pour-over" data-no-add>
             <div class="menu-item-info"><h4>Pour Over</h4><p>Rotating guest filter roast</p></div>
             <span class="menu-item-price">£3.80</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="chai-latte" data-no-add>
             <div class="menu-item-info"><h4>Chai Latte</h4><p>House-spiced, steamed milk</p></div>
             <span class="menu-item-price">£3.60</span>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" data-item="fresh-orange-juice" data-no-add>
             <div class="menu-item-info"><h4>Fresh Orange Juice</h4><p>Cold-pressed daily</p></div>
             <span class="menu-item-price">£3.20</span>
           </div>
@@ -324,6 +328,30 @@
       </div>
     </div>
   </main>
+
+  <!-- Bread Club & Gift a Loaf — arranged over WhatsApp, no checkout -->
+  <!-- VERIFY Bread Club terms with the client before launch -->
+  <section class="section section-alt" data-reveal>
+    <div class="wrap">
+      <div class="spotlight-grid">
+        <div class="spotlight-media">
+          <span class="spotlight-badge">Bread Club</span>
+          <picture><source srcset="assets/img/bread-country-sourdough.webp" type="image/webp"><img src="assets/img/bread-country-sourdough.jpg" alt="Country sourdough loaf on baker's linen, set aside for a Bread Club member" loading="lazy" decoding="async"></picture>
+        </div>
+        <div class="spotlight-content">
+          <span class="eyebrow eyebrow--flourish">Bread Club &amp; Gifts</span>
+          <h2 class="section-title">A Loaf, <em>Kept for You</em></h2>
+          <div class="gold-line"></div>
+          <p><strong>Bread Club.</strong> Choose a loaf and a collection day, and we'll set it aside for you every week, however busy the counter gets. Pay when you collect, and pause whenever you're away.</p>
+          <p><strong>Gift a Loaf.</strong> Message us a name and we'll send you a voucher to pass on. They can swap it for any loaf on the counter, on any morning we're open.</p>
+          <div class="hero-actions" style="margin-top: var(--space-lg);">
+            <a href="https://wa.me/447700900123?text=Hi%20Lune%20%26%20Crumb%2C%20I%27d%20like%20to%20join%20the%20Bread%20Club.%20Loaf%3A%20__%2C%20collection%20day%3A%20__" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp" data-whatsapp-button="bread-club">Join the Bread Club</a>
+            <a href="https://wa.me/447700900123?text=Hi%20Lune%20%26%20Crumb%2C%20I%27d%20like%20to%20gift%20a%20loaf%20to%20__.%20Please%20send%20me%20a%20voucher." target="_blank" rel="noopener noreferrer" class="btn btn-outline" data-whatsapp-button="gift-loaf">Gift a Loaf</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <section class="cta-banner" data-reveal>
     <div class="wrap">

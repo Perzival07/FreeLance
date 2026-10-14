@@ -66,7 +66,9 @@
   </div>
 
   <header class="page-hero page-hero--photo">
-    <picture><source srcset="assets/img/cafe-interior.webp" type="image/webp"><img class="page-hero-photo" src="assets/img/cafe-interior.jpg" alt="Warm, wood-toned interior of the Lune and Crumb bakery" width="1600" height="1097" loading="eager" decoding="async"></picture>
+    <video class="page-hero-photo" data-hero-video autoplay muted loop playsinline preload="metadata" poster="assets/img/gallery-hero-display.webp" aria-hidden="true">
+      <source src="assets/video/21927-720.mp4" type="video/mp4">
+    </video>
     <div class="page-hero-overlay" aria-hidden="true"></div>
     <div class="wrap">
       <span class="eyebrow eyebrow--flourish">A Look Inside</span>
@@ -168,6 +170,11 @@
         <h2 class="section-title">Watch Us <em class="text-gradient">Bake</em></h2>
         <div class="gold-line gold-line--center"></div>
         <p class="section-subtitle" style="margin-inline:auto;">A closer look at the mornings behind the counter.</p>
+        <!-- Appears only once assets/audio/bakery-ambience.mp3 exists (oven door, crackling crust, grinder). Muted by default. -->
+        <button type="button" class="ambience-toggle" data-ambience-src="assets/audio/bakery-ambience.mp3" aria-pressed="false" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path class="ambience-wave" d="M15.5 8.5a5 5 0 0 1 0 7"/><path class="ambience-wave" d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+          <span data-ambience-label>Sounds of the bakery</span>
+        </button>
       </div>
       <div class="video-grid">
         <div class="video-block glow-hover stagger-item">

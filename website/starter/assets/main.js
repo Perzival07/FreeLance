@@ -25,6 +25,8 @@
     'occasion-office': "Hi Lune & Crumb, I'd like a quote for an office pastry platter for __ people on __ (date).",
     'occasion-gift': "Hi Lune & Crumb, I'd like to put together a bread & pastry gift hamper for __ (date). Budget: __",
     'allergens': "Hi Lune & Crumb, could you send me the full allergen sheet for today's bakes?",
+    'bread-club': "Hi Lune & Crumb, I'd like to join the Bread Club. Loaf: __, collection day: __",
+    'gift-loaf': "Hi Lune & Crumb, I'd like to gift a loaf to __. Please send me a voucher.",
     'question': "Hi Lune & Crumb, I have a quick question: "
   };
 
@@ -481,8 +483,15 @@
   // Hero background video: pause when scrolled out of view (saves battery)
   // ========================================================================
   function setupHeroVideo() {
-    const heroVideo = document.querySelector('.hero-video-bg');
-    if (!heroVideo || !('IntersectionObserver' in window)) return;
+    const heroVideo = document.querySelector('.hero-video-bg, [data-hero-video]');
+    if (!heroVideo) return;
+    // Interior page heroes keep their poster still for reduced-motion visitors
+    if (heroVideo.hasAttribute('data-hero-video') && prefersReducedMotion.matches) {
+      heroVideo.removeAttribute('autoplay');
+      heroVideo.pause();
+      return;
+    }
+    if (!('IntersectionObserver' in window)) return;
     const observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
@@ -553,4 +562,293 @@
     });
   }
   setupImageFadeIn();
+
+  // ========================================================================
+  // Sold out today — edit `date` + `items` each morning (data-item slugs from
+  // menu.html). Entries only apply on their own date, so they never go stale.
+  // ========================================================================
+  const SOLD_OUT_TODAY = {
+    date: '',     // e.g. '2026-10-15' (UK date)
+    items: []     // e.g. ['kouign-amann', 'almond-croissant']
+  };
+
+  function getBathDateKey() {
+    try {
+      return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London' }).format(new Date());
+    } catch (e) {
+      return new Date().toISOString().slice(0, 10);
+    }
+  }
+
+  function setupSoldOut() {
+    if (!SOLD_OUT_TODAY.date || SOLD_OUT_TODAY.date !== getBathDateKey()) return;
+    SOLD_OUT_TODAY.items.forEach(function (slug) {
+      document.querySelectorAll('.menu-item[data-item="' + slug + '"]').forEach(function (item) {
+        item.classList.add('is-sold-out');
+        const info = item.querySelector('.menu-item-info');
+        if (info && !info.querySelector('.sold-out-note')) {
+          const note = document.createElement('span');
+          note.className = 'sold-out-note';
+          note.textContent = 'Sold out today · back tomorrow';
+          info.appendChild(note);
+        }
+      });
+    });
+  }
+  setupSoldOut();
+
+  // ========================================================================
+  // Menu: build a reservation — tap items to add them, send one WhatsApp
+  // message. Progressive enhancement: controls are injected by JS only.
+  // ========================================================================
+  const RESERVATION_KEY = 'lc-reservation';
+  const RESERVATION_MAX_AGE = 24 * 60 * 60 * 1000;
+
+  function loadReservation() {
+    try {
+      const saved = JSON.parse(window.localStorage.getItem(RESERVATION_KEY) || 'null');
+      if (saved && saved.items && Date.now() - saved.savedAt < RESERVATION_MAX_AGE) return saved.items;
+    } catch (e) { /* storage unavailable or corrupt — start empty */ }
+    return {};
+  }
+
+  function saveReservation(items) {
+    try {
+      if (Object.keys(items).length) {
+        window.localStorage.setItem(RESERVATION_KEY, JSON.stringify({ savedAt: Date.now(), items: items }));
+      } else {
+        window.localStorage.removeItem(RESERVATION_KEY);
+      }
+    } catch (e) { /* private mode etc. — the list still works for this visit */ }
+  }
+
+  function setupReservationBuilder() {
+    const root = document.querySelector('[data-reservation-builder]');
+    if (!root) return;
+    const stickyBar = document.querySelector('.sticky-bar');
+    const sendBtn = stickyBar?.querySelector('.btn-sticky');
+    const brand = stickyBar?.querySelector('.sticky-brand');
+    if (!stickyBar || !sendBtn || !brand) return;
+
+    const catalogue = {};
+    root.querySelectorAll('.menu-item[data-item]').forEach(function (item) {
+      if (item.hasAttribute('data-no-add')) return;
+      const slug = item.getAttribute('data-item');
+      const name = item.querySelector('h4')?.textContent.trim() || slug;
+      catalogue[slug] = { name: name, el: item };
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'menu-add';
+      btn.setAttribute('aria-label', 'Add ' + name + ' to your reservation list');
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span class="menu-add-count" aria-hidden="true"></span>';
+      btn.addEventListener('click', function () { change(slug, 1); });
+      item.appendChild(btn);
+      catalogue[slug].btn = btn;
+    });
+
+    root.querySelectorAll('[data-reserve-hint]').forEach(function (h) { h.hidden = false; });
+
+    let items = loadReservation();
+    Object.keys(items).forEach(function (slug) {
+      if (!catalogue[slug] || catalogue[slug].el.classList.contains('is-sold-out')) delete items[slug];
+    });
+
+    // Sticky bar: summary + review toggle, shown only while the list has items
+    const defaultBrandHtml = brand.innerHTML;
+    const defaultLabel = sendBtn.innerHTML;
+    const defaultHref = sendBtn.getAttribute('href');
+
+    const panel = document.createElement('div');
+    panel.className = 'reserve-panel';
+    panel.id = 'reserve-panel';
+    panel.hidden = true;
+    panel.innerHTML = '<div class="wrap"><div class="reserve-panel-head"><span class="eyebrow">Your reservation list</span><button type="button" class="reserve-clear">Clear list</button></div><ul class="reserve-list"></ul><p class="reserve-panel-note">We\'ll confirm availability and a pickup time on WhatsApp. Nothing is charged here.</p></div>';
+    stickyBar.parentNode.insertBefore(panel, stickyBar);
+    const list = panel.querySelector('.reserve-list');
+    panel.querySelector('.reserve-clear').addEventListener('click', function () {
+      items = {};
+      render();
+    });
+
+    const live = document.createElement('p');
+    live.className = 'visually-hidden';
+    live.setAttribute('aria-live', 'polite');
+    document.body.appendChild(live);
+
+    function change(slug, delta) {
+      if (catalogue[slug]?.el.classList.contains('is-sold-out')) return;
+      const next = (items[slug] || 0) + delta;
+      if (next > 0) items[slug] = Math.min(next, 24); else delete items[slug];
+      live.textContent = catalogue[slug].name + ': ' + (items[slug] || 0) + ' on your list';
+      render();
+    }
+
+    function buildMessage() {
+      const lines = Object.keys(items).map(function (slug) { return items[slug] + 'x ' + catalogue[slug].name; });
+      return "Hi Lune & Crumb, I'd like to reserve for pickup: " + lines.join(', ') + '. Pickup day/time: __';
+    }
+
+    function render() {
+      saveReservation(items);
+      const slugs = Object.keys(items);
+      const total = slugs.reduce(function (n, s) { return n + items[s]; }, 0);
+
+      Object.keys(catalogue).forEach(function (slug) {
+        const c = catalogue[slug];
+        const qty = items[slug] || 0;
+        c.btn.classList.toggle('has-items', qty > 0);
+        c.btn.querySelector('.menu-add-count').textContent = qty ? qty : '';
+        c.btn.disabled = c.el.classList.contains('is-sold-out');
+      });
+
+      list.innerHTML = '';
+      slugs.forEach(function (slug) {
+        const li = document.createElement('li');
+        li.className = 'reserve-row';
+        li.innerHTML = '<span class="reserve-row-name"></span><span class="reserve-stepper"><button type="button" data-delta="-1">−</button><span class="reserve-qty"></span><button type="button" data-delta="1">+</button></span>';
+        li.querySelector('.reserve-row-name').textContent = catalogue[slug].name;
+        li.querySelector('.reserve-qty').textContent = items[slug];
+        li.querySelectorAll('button').forEach(function (b) {
+          const d = Number(b.getAttribute('data-delta'));
+          b.setAttribute('aria-label', (d > 0 ? 'Add one ' : 'Remove one ') + catalogue[slug].name);
+          b.addEventListener('click', function () { change(slug, d); });
+        });
+        list.appendChild(li);
+      });
+
+      if (total) {
+        brand.innerHTML = '<button type="button" class="reserve-toggle" aria-controls="reserve-panel"></button>';
+        const toggle = brand.querySelector('.reserve-toggle');
+        toggle.textContent = total + (total === 1 ? ' item' : ' items') + ' on your list';
+        toggle.setAttribute('aria-expanded', String(!panel.hidden));
+        toggle.addEventListener('click', function () {
+          panel.hidden = !panel.hidden;
+          toggle.setAttribute('aria-expanded', String(!panel.hidden));
+        });
+        sendBtn.textContent = 'Send list on WhatsApp';
+        sendBtn.setAttribute('href', buildWhatsAppUrl(WHATSAPP_CONFIG.number, buildMessage()));
+      } else {
+        panel.hidden = true;
+        brand.innerHTML = defaultBrandHtml;
+        sendBtn.innerHTML = defaultLabel;
+        sendBtn.setAttribute('href', defaultHref);
+      }
+    }
+    render();
+  }
+  setupReservationBuilder();
+
+  // ========================================================================
+  // Classes: compute each class's next date from its monthly rule, and put
+  // that date into the "Ask about a place" WhatsApp message.
+  // data-week: 1–4 or "last"; data-weekday: 0 (Sun) – 6 (Sat)
+  // ========================================================================
+  function nthWeekdayOfMonth(year, month, week, weekday) {
+    if (week === 'last') {
+      const last = new Date(year, month + 1, 0);
+      last.setDate(last.getDate() - ((last.getDay() - weekday + 7) % 7));
+      return last;
+    }
+    const first = new Date(year, month, 1);
+    const offset = (weekday - first.getDay() + 7) % 7;
+    return new Date(year, month, 1 + offset + (Number(week) - 1) * 7);
+  }
+
+  function setupClasses() {
+    const cards = document.querySelectorAll('[data-class-rule]');
+    if (!cards.length) return;
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const fmt = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+
+    cards.forEach(function (card) {
+      const week = card.getAttribute('data-week');
+      const weekday = Number(card.getAttribute('data-weekday'));
+      let date = nthWeekdayOfMonth(today.getFullYear(), today.getMonth(), week, weekday);
+      if (date < today) date = nthWeekdayOfMonth(today.getFullYear(), today.getMonth() + 1, week, weekday);
+      const label = fmt.format(date);
+
+      const chip = card.querySelector('[data-class-next]');
+      if (chip) {
+        chip.textContent = 'Next: ' + label;
+        chip.hidden = false;
+      }
+      const cta = card.querySelector('[data-class-cta]');
+      if (cta) {
+        const name = card.querySelector('.highlight-title')?.textContent.trim() || 'class';
+        cta.setAttribute('href', buildWhatsAppUrl(WHATSAPP_CONFIG.number,
+          "Hi Lune & Crumb, I'd like to ask about a place: " + name + ', ' + label + '.'));
+      }
+    });
+  }
+  setupClasses();
+
+  // ========================================================================
+  // Optional "Sounds of the bakery" toggle — muted by default, never autoplays.
+  // Stays hidden until the audio file named in data-ambience-src exists.
+  // ========================================================================
+  function setupAmbience() {
+    const toggle = document.querySelector('[data-ambience-src]');
+    if (!toggle) return;
+    const audio = new Audio();
+    audio.loop = true;
+    audio.preload = 'none';
+    audio.volume = 0.5;
+
+    fetch(toggle.getAttribute('data-ambience-src'), { method: 'HEAD' }).then(function (res) {
+      if (!res.ok) return;
+      audio.src = toggle.getAttribute('data-ambience-src');
+      toggle.hidden = false;
+    }).catch(function () {});
+
+    toggle.addEventListener('click', function () {
+      const on = toggle.getAttribute('aria-pressed') !== 'true';
+      toggle.setAttribute('aria-pressed', String(on));
+      toggle.querySelector('[data-ambience-label]').textContent = on ? 'Sound on' : 'Sounds of the bakery';
+      if (on) audio.play().catch(function () {}); else audio.pause();
+    });
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) audio.pause();
+      else if (toggle.getAttribute('aria-pressed') === 'true') audio.play().catch(function () {});
+    });
+  }
+  setupAmbience();
+
+  // ========================================================================
+  // Bread Directory: recipe & pairings panel. CSS shows it on hover for mouse
+  // users; this toggle covers touch screens and keyboards.
+  // ========================================================================
+  function setupBreadMore() {
+    const toggles = document.querySelectorAll('.bread-more-toggle');
+    if (!toggles.length) return;
+
+    function close(card, returnFocus) {
+      card.classList.remove('is-open');
+      const t = card.querySelector('.bread-more-toggle');
+      t?.setAttribute('aria-expanded', 'false');
+      if (returnFocus) t?.focus();
+    }
+
+    toggles.forEach(function (toggle) {
+      const card = toggle.closest('.bread-card');
+      toggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        document.querySelectorAll('.bread-card.is-open').forEach(function (c) { if (c !== card) close(c, false); });
+        card.classList.add('is-open');
+        toggle.setAttribute('aria-expanded', 'true');
+        card.querySelector('.bread-more-close')?.focus();
+      });
+      card.querySelector('.bread-more-close')?.addEventListener('click', function (e) {
+        e.stopPropagation();
+        close(card, true);
+      });
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      document.querySelectorAll('.bread-card.is-open').forEach(function (c) { close(c, true); });
+    });
+  }
+  setupBreadMore();
 })();

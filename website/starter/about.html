@@ -66,7 +66,9 @@
   </div>
 
   <header class="page-hero page-hero--photo">
-    <picture><source srcset="assets/img/team-baker-kneading.webp" type="image/webp"><img class="page-hero-photo" src="assets/img/team-baker-kneading.jpg" alt="Baker kneading sourdough by hand on a floured bench" width="1600" height="1600" loading="eager" decoding="async"></picture>
+    <video class="page-hero-photo" data-hero-video autoplay muted loop playsinline preload="metadata" poster="assets/img/about-hero-pastries.webp" aria-hidden="true">
+      <source src="assets/video/29330-720.mp4" type="video/mp4">
+    </video>
     <div class="page-hero-overlay" aria-hidden="true"></div>
     <div class="wrap">
       <span class="eyebrow eyebrow--flourish">Our Story</span>
@@ -214,9 +216,51 @@
             <div class="video-block-caption"><span>Hand-Cutting Pastry Shapes</span></div>
           </div>
           <div class="video-block glow-hover stagger-item">
-            <video src="assets/video/50022-720.mp4" muted loop playsinline preload="metadata" poster="assets/img/team-baker-kneading.webp"></video>
+            <video class="video-face" src="assets/video/50022-720.mp4" muted loop playsinline preload="metadata" poster="assets/img/team-baker-kneading.webp"></video>
             <div class="video-play-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
             <div class="video-block-caption"><span>Preparing the Morning Batch</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Classes: dates are computed from each monthly rule in main.js, so they never go stale -->
+    <!-- VERIFY class days, times and group sizes with the client before launch -->
+    <section class="section section-alt" data-reveal>
+      <div class="wrap">
+        <div class="section-header section-header--center">
+          <span class="eyebrow">After the Ovens Cool</span>
+          <h2 class="section-title">Classes at the <em>Bakery</em></h2>
+          <div class="gold-line gold-line--center"></div>
+          <p class="section-subtitle">Small groups around our bench on Sunday afternoons, once the counter has closed. Places are arranged over WhatsApp.</p>
+        </div>
+        <div class="highlights-grid classes-grid">
+          <div class="highlight-card stagger-item" data-class-rule data-week="1" data-weekday="0">
+            <div class="highlight-icon-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V2"/><path d="M12 6.5C9.5 5 7 6.5 7 9c0 2 2.5 3 5 1.5"/><path d="M12 6.5c2.5-1.5 5 0 5 2.5 0 2-2.5 3-5 1.5"/><path d="M12 10.5C9.5 9 7 10.5 7 13c0 2 2.5 3 5 1.5"/><path d="M12 10.5c2.5-1.5 5 0 5 2.5 0 2-2.5 3-5 1.5"/></svg>
+            </div>
+            <div class="class-chips"><span class="bread-meta-chip">First Sunday · 14:00–17:00</span><span class="bread-meta-chip class-next" data-class-next hidden></span></div>
+            <h3 class="highlight-title">Sourdough Basics</h3>
+            <p class="highlight-desc">Feeding a starter, shaping, scoring and baking a loaf. You go home with dough and a jar of starter.</p>
+            <a class="highlight-cta" href="https://wa.me/447700900123?text=Hi%20Lune%20%26%20Crumb%2C%20I%27d%20like%20to%20ask%20about%20a%20place%3A%20Sourdough%20Basics." target="_blank" rel="noopener noreferrer" data-class-cta>Ask about a place →</a>
+          </div>
+          <div class="highlight-card stagger-item" data-class-rule data-week="3" data-weekday="0">
+            <div class="highlight-icon-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M4 11h16"/><path d="M4 15h16"/><path d="M4 19h16"/><path d="M4 3h16"/></svg>
+            </div>
+            <div class="class-chips"><span class="bread-meta-chip">Third Sunday · 14:00–17:00</span><span class="bread-meta-chip class-next" data-class-next hidden></span></div>
+            <h3 class="highlight-title">Laminating Workshop</h3>
+            <p class="highlight-desc">Folding cultured butter into dough, turn by turn, and shaping your own croissants and escargots.</p>
+            <a class="highlight-cta" href="https://wa.me/447700900123?text=Hi%20Lune%20%26%20Crumb%2C%20I%27d%20like%20to%20ask%20about%20a%20place%3A%20Laminating%20Workshop." target="_blank" rel="noopener noreferrer" data-class-cta>Ask about a place →</a>
+          </div>
+          <div class="highlight-card stagger-item" data-class-rule data-week="last" data-weekday="0">
+            <div class="highlight-icon-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10"/><path d="M8 3v3a4 4 0 0 1-2 3.5V19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9.5A4 4 0 0 1 16 6V3"/><path d="M6 13h12"/></svg>
+            </div>
+            <div class="class-chips"><span class="bread-meta-chip">Last Sunday · 13:30–14:30</span><span class="bread-meta-chip class-next" data-class-next hidden></span></div>
+            <h3 class="highlight-title">Starter Swap</h3>
+            <p class="highlight-desc">Bring a jar of your starter, take a spoon of Gladys. An informal hour of tips, troubleshooting and coffee.</p>
+            <a class="highlight-cta" href="https://wa.me/447700900123?text=Hi%20Lune%20%26%20Crumb%2C%20I%27d%20like%20to%20ask%20about%20a%20place%3A%20Starter%20Swap." target="_blank" rel="noopener noreferrer" data-class-cta>Ask about a place →</a>
           </div>
         </div>
       </div>
