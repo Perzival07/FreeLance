@@ -107,6 +107,8 @@
     </div>
   </div>
 
+  <!-- First screen: hero + marquee + info strip, sized together to fit the viewport -->
+  <div class="home-intro">
   <!-- Hero Section: full-bleed video backdrop -->
   <header class="hero-video-wrap">
     <video class="hero-video-bg" autoplay muted loop playsinline preload="metadata" poster="assets/img/bread-seeded-wholemeal.webp">
@@ -117,12 +119,12 @@
       <div class="hero-content">
         <div class="live-status-pill" aria-label="Bakery status: Ovens hot from 06:30, morning batch ready">
           <span class="pulse-dot" aria-hidden="true"></span>
-          <span>Ovens hot from 06:30 • Morning batch ready</span>
+          <span data-seasonal-pill>Ovens hot from 06:30 • Morning batch ready</span>
         </div>
         <span class="eyebrow">Walcot Street • Bath</span>
         <h1 class="hero-title">Lune &amp; <em class="text-gradient">Crumb</em></h1>
         <div class="gold-line"></div>
-        <p class="hero-tagline">Slow-fermented sourdough loaves, 27-layer cultured butter pastries, and specialty morning coffee in the artisan quarter of Bath.</p>
+        <p class="hero-tagline" data-seasonal-tagline>Slow-fermented sourdough loaves, 27-layer cultured butter pastries, and specialty morning coffee in the artisan quarter of Bath.</p>
         <div class="hero-actions">
           <a href="https://wa.me/447700900123?text=Hi%20Lune%20%26%20Crumb%2C%20I%20would%20like%20to%20reserve%20fresh%20sourdough%20and%20pastries%20for%20pickup%20today." target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp" data-whatsapp-button aria-label="Reserve fresh bakes with Lune &amp; Crumb Bakery on WhatsApp">
             <svg class="icon-whatsapp" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
@@ -159,6 +161,7 @@
     </div>
   </header>
 
+
   <!-- Provenance Marquee -->
   <div class="marquee" aria-hidden="true">
     <div class="marquee-track">
@@ -168,13 +171,48 @@
       <span class="marquee-item">Baked Fresh <em>Every Dawn</em> <span class="marquee-dot">•</span></span>
       <span class="marquee-item">Walcot Street, <em>Bath</em> <span class="marquee-dot">•</span></span>
       <span class="marquee-item"><em>36-Hour</em> Cold Ferment <span class="marquee-dot">•</span></span>
+      <span class="marquee-item">Proof. Bake. <em>Break Bread.</em> <span class="marquee-dot">•</span></span>
+      <span class="marquee-item">French Technique. <em>Somerset Flour.</em> <span class="marquee-dot">•</span></span>
       <span class="marquee-item"><em>Wild-Fermented</em> Sourdough <span class="marquee-dot">•</span></span>
       <span class="marquee-item">Somerset Stoneground <em>Flour</em> <span class="marquee-dot">•</span></span>
       <span class="marquee-item"><em>27-Layer</em> Cultured Butter Pastry <span class="marquee-dot">•</span></span>
       <span class="marquee-item">Baked Fresh <em>Every Dawn</em> <span class="marquee-dot">•</span></span>
       <span class="marquee-item">Walcot Street, <em>Bath</em> <span class="marquee-dot">•</span></span>
       <span class="marquee-item"><em>36-Hour</em> Cold Ferment <span class="marquee-dot">•</span></span>
+      <span class="marquee-item">Proof. Bake. <em>Break Bread.</em> <span class="marquee-dot">•</span></span>
+      <span class="marquee-item">French Technique. <em>Somerset Flour.</em> <span class="marquee-dot">•</span></span>
     </div>
+  </div>
+
+  <!-- At a glance: location, today's hours (computed in main.js), reserve -->
+  <section class="info-strip" aria-label="Visit at a glance">
+    <div class="wrap info-strip-grid">
+      <div class="info-card">
+        <div class="contact-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+        <div>
+          <span class="info-card-label">Find us</span>
+          <span class="info-card-value">14 Walcot Street, Bath</span>
+          <p class="info-card-detail"><a href="https://www.google.com/maps/dir/?api=1&amp;destination=14+Walcot+Street%2C+Bath+BA1+5BG" target="_blank" rel="noopener noreferrer">Get directions</a></p>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="contact-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div>
+          <span class="info-card-label">Today</span>
+          <span class="info-card-value" data-open-status>Tue–Sun, from 06:30</span>
+          <p class="info-card-detail" data-open-detail>Closed Mondays</p>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="contact-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.8 7l-4.2 1 1.1-3.9A8 8 0 1 1 21 12z"/></svg></div>
+        <div>
+          <span class="info-card-label">Reserve</span>
+          <a class="info-card-value" href="https://wa.me/447700900123?text=Hi%20Lune%20%26%20Crumb%2C%20I%20would%20like%20to%20reserve%20fresh%20sourdough%20and%20pastries%20for%20pickup%20today." target="_blank" rel="noopener noreferrer" data-whatsapp-button>Message us on WhatsApp →</a>
+          <p class="info-card-detail">Reserve Sunday bakes by Saturday</p>
+        </div>
+      </div>
+    </div>
+  </section>
   </div>
 
   <main id="main">
@@ -282,7 +320,7 @@
             <div class="spotlight-meta">
               <span class="bread-meta-chip">40-hr ferment</span>
               <span class="bread-meta-chip">1.2kg</span>
-              <span class="bread-meta-chip">Vegan</span>
+              <span class="bread-meta-chip menu-tag--vg">Vegan</span>
             </div>
             <a href="breads.html" class="btn-ghost">See the full Bread Directory →</a>
           </div>
@@ -294,7 +332,7 @@
     <section class="section section-alt" data-reveal>
       <div class="wrap">
         <div class="section-header section-header--center">
-          <span class="eyebrow">Today's Bakes</span>
+          <span class="eyebrow">From the Oven</span>
           <h2 class="section-title">A Taste of the <em>Menu</em></h2>
           <div class="gold-line gold-line--center"></div>
           <p class="section-subtitle">A preview of our daily-changing counter — see the full menu with prices and dietary notes.</p>
@@ -335,12 +373,60 @@
       </div>
     </section>
 
+
+    <!-- Occasions & large orders: each tile opens WhatsApp with its own prefilled message -->
+    <section class="section" data-reveal>
+      <div class="wrap">
+        <div class="section-header section-header--center">
+          <span class="eyebrow">Large Orders &amp; Celebrations</span>
+          <h2 class="section-title">Baking for an <em>Occasion?</em></h2>
+          <div class="gold-line gold-line--center"></div>
+          <p class="section-subtitle">Tell us the date and how many you're feeding, and we'll come back with a quote on WhatsApp. No forms.</p>
+        </div>
+        <div class="highlights-grid">
+            <a class="highlight-card stagger-item" href="https://wa.me/447700900123?text=Hi%20Lune%20%26%20Crumb%2C%20I%27d%20like%20a%20quote%20for%20a%20celebration%20cake%20on%20__%20%28date%29.%20Size%20%2F%20flavour%3A%20__" target="_blank" rel="noopener noreferrer" data-whatsapp-button="occasion-cake">
+              <div class="highlight-icon-box" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16"/><path d="M5 21v-7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v7"/><path d="M5 16c1.5 1 2.5 1 3.5 0s2.5-1 3.5 0 2.5 1 3.5 0 2.5-1 3.5 0"/><path d="M12 12V8"/><path d="M12 5.5c-.8-.8-.8-1.8 0-2.5.8.7.8 1.7 0 2.5z"/></svg>
+              </div>
+              <h3 class="highlight-title">Birthday &amp; Celebration Cakes</h3>
+              <p class="highlight-desc">Made to order from £28, in the flavours and size you need for the day.</p>
+              <span class="highlight-cta">Ask on WhatsApp →</span>
+            </a>
+            <a class="highlight-card stagger-item" href="https://wa.me/447700900123?text=Hi%20Lune%20%26%20Crumb%2C%20I%27d%20like%20to%20order%20a%20weekend%20brunch%20box%20for%20__%20people%2C%20for%20pickup%20on%20__%20%28date%29." target="_blank" rel="noopener noreferrer" data-whatsapp-button="occasion-brunch">
+              <div class="highlight-icon-box" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M3 9l2-4h14l2 4"/><path d="M12 5v4"/><path d="M8 14h8"/></svg>
+              </div>
+              <h3 class="highlight-title">Weekend Brunch Box</h3>
+              <p class="highlight-desc">Croissants, a sourdough loaf and cardamom buns, boxed for the table.</p>
+              <span class="highlight-cta">Ask on WhatsApp →</span>
+            </a>
+            <a class="highlight-card stagger-item" href="https://wa.me/447700900123?text=Hi%20Lune%20%26%20Crumb%2C%20I%27d%20like%20a%20quote%20for%20an%20office%20pastry%20platter%20for%20__%20people%20on%20__%20%28date%29." target="_blank" rel="noopener noreferrer" data-whatsapp-button="occasion-office">
+              <div class="highlight-icon-box" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18h18"/><path d="M5 18a7 7 0 0 1 14 0"/><path d="M12 11V9"/><path d="M10.5 9h3"/></svg>
+              </div>
+              <h3 class="highlight-title">Office Pastry Platter</h3>
+              <p class="highlight-desc">A morning spread of viennoiserie and savoury twists for the whole team.</p>
+              <span class="highlight-cta">Ask on WhatsApp →</span>
+            </a>
+            <a class="highlight-card stagger-item" href="https://wa.me/447700900123?text=Hi%20Lune%20%26%20Crumb%2C%20I%27d%20like%20to%20put%20together%20a%20bread%20%26%20pastry%20gift%20hamper%20for%20__%20%28date%29.%20Budget%3A%20__" target="_blank" rel="noopener noreferrer" data-whatsapp-button="occasion-gift">
+              <div class="highlight-icon-box" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="0.5"/><path d="M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8"/><path d="M12 8v13"/><path d="M12 8c-1.5-3-5-3.5-5-1.5S10 8 12 8z"/><path d="M12 8c1.5-3 5-3.5 5-1.5S14 8 12 8z"/></svg>
+              </div>
+              <h3 class="highlight-title">Gift Hamper</h3>
+              <p class="highlight-desc">A loaf, a few pastries and something sweet, wrapped for a bread-loving friend.</p>
+              <span class="highlight-cta">Ask on WhatsApp →</span>
+            </a>
+        </div>
+        <p class="section-footnote">Celebration cakes need at least 72 hours' notice. For larger orders, the earlier you ask, the better.</p>
+      </div>
+    </section>
+
     <!-- Reviews Section -->
     <section id="reviews" class="section section-reviews" data-reveal>
       <div class="wrap">
         <div class="section-header section-header--center">
-          <span class="eyebrow">Community Impressions</span>
-          <h2 class="section-title">Words from Our <em>Neighbors</em></h2>
+          <span class="eyebrow">People Talk</span>
+          <h2 class="section-title">Overheard at the <em>Counter</em></h2>
           <div class="gold-line gold-line--center"></div>
           <p class="section-subtitle">Real feedback and morning impressions from our Walcot Street community in Bath.</p>
         </div>
@@ -411,13 +497,39 @@
       </div>
     </section>
 
+
+    <!-- Instagram strip -->
+    <section class="section section-tight" data-reveal>
+      <div class="wrap">
+        <div class="section-header section-header--center">
+          <span class="eyebrow">Share the Crumb</span>
+          <h2 class="section-title">Mornings on <em>Walcot Street</em></h2>
+          <div class="gold-line gold-line--center"></div>
+          <p class="section-subtitle">Tag your bakes <a class="insta-handle" href="https://www.instagram.com/explore/tags/luneandcrumb/" target="_blank" rel="noopener noreferrer">#LuneAndCrumb</a> and we'll see them.</p>
+        </div>
+        <div class="insta-strip-grid">
+          <a class="insta-tile stagger-item" href="https://www.instagram.com/explore/tags/luneandcrumb/" target="_blank" rel="noopener noreferrer"><picture><source srcset="assets/img/sliced-sourdough-crumb.webp" type="image/webp"><img src="assets/img/sliced-sourdough-crumb.jpg" alt="Sliced country sourdough showing its open crumb" width="300" height="300" loading="lazy" decoding="async"></picture></a>
+          <a class="insta-tile stagger-item" href="https://www.instagram.com/explore/tags/luneandcrumb/" target="_blank" rel="noopener noreferrer"><picture><source srcset="assets/img/pastry-croissants.webp" type="image/webp"><img src="assets/img/pastry-croissants.jpg" alt="Cultured butter croissants on a cooling rack" width="300" height="300" loading="lazy" decoding="async"></picture></a>
+          <a class="insta-tile stagger-item" href="https://www.instagram.com/explore/tags/luneandcrumb/" target="_blank" rel="noopener noreferrer"><picture><source srcset="assets/img/gallery-flat-white.webp" type="image/webp"><img src="assets/img/gallery-flat-white.jpg" alt="Flat white with latte art" width="300" height="300" loading="lazy" decoding="async"></picture></a>
+          <a class="insta-tile stagger-item" href="https://www.instagram.com/explore/tags/luneandcrumb/" target="_blank" rel="noopener noreferrer"><picture><source srcset="assets/img/gallery-cinnamon-bun.webp" type="image/webp"><img src="assets/img/gallery-cinnamon-bun.jpg" alt="Glazed cinnamon swirl" width="300" height="300" loading="lazy" decoding="async"></picture></a>
+          <a class="insta-tile stagger-item" href="https://www.instagram.com/explore/tags/luneandcrumb/" target="_blank" rel="noopener noreferrer"><picture><source srcset="assets/img/storefront-exterior.webp" type="image/webp"><img src="assets/img/storefront-exterior.jpg" alt="The Lune &amp; Crumb storefront on Walcot Street" width="300" height="300" loading="lazy" decoding="async"></picture></a>
+          <a class="insta-tile stagger-item" href="https://www.instagram.com/explore/tags/luneandcrumb/" target="_blank" rel="noopener noreferrer"><picture><source srcset="assets/img/bread-focaccia-rosemary.webp" type="image/webp"><img src="assets/img/bread-focaccia-rosemary.jpg" alt="Rosemary focaccia fresh from the oven" width="300" height="300" loading="lazy" decoding="async"></picture></a>
+        </div>
+      </div>
+    </section>
+
     <!-- CTA Banner -->
     <section class="cta-banner" data-reveal>
       <div class="wrap">
-        <span class="eyebrow">Visit Us</span>
+        <span class="eyebrow">Before It Sells Out</span>
         <h2>Fresh Bakes Wait for <em>No One</em></h2>
-        <p>Small-batch means when today's rack is empty, it's gone until sunrise. Reserve your favorites over WhatsApp for hassle-free counter pickup.</p>
+        <p>Small-batch means when today's rack is empty, it's gone until sunrise. Reserve your favorites over WhatsApp for hassle-free counter pickup. Sunday batches are small, so reserve by Saturday evening.</p>
         <a href="https://wa.me/447700900123?text=Hi%20Lune%20%26%20Crumb%2C%20I%20would%20like%20to%20reserve%20fresh%20sourdough%20and%20pastries%20for%20pickup%20today." target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp" data-whatsapp-button>Reserve on WhatsApp</a>
+        <ul class="cta-banner-facts">
+          <li>Tue–Fri from 06:30 · Sat 07:00 · Sun 08:00</li>
+          <li><a href="tel:+447700900123">+44 7700 900123</a></li>
+          <li><a href="https://www.google.com/maps/dir/?api=1&amp;destination=14+Walcot+Street%2C+Bath+BA1+5BG" target="_blank" rel="noopener noreferrer">Get directions</a></li>
+        </ul>
       </div>
     </section>
   </main>
@@ -449,15 +561,16 @@
         <div>
           <div class="footer-col-title">Visit</div>
           <ul class="footer-links">
-            <li>14 Walcot Street, Bath, BA1 5BG</li>
-            <li>Tue–Sun · 06:30–15:00</li>
+            <li>14 Walcot Street, Bath, BA1 5BG<br><a href="https://www.google.com/maps/dir/?api=1&amp;destination=14+Walcot+Street%2C+Bath+BA1+5BG" target="_blank" rel="noopener noreferrer">Get directions →</a></li>
+            <li>Tue–Fri from 06:30 · Sat from 07:00<br>Sun 08:00–13:00 · Closed Mondays</li>
             <li><a href="tel:+447700900123">+44 7700 900123</a></li>
             <li><a href="mailto:hello@luneandcrumb.co.uk">hello@luneandcrumb.co.uk</a></li>
+            <li><a href="menu.html#allergens">Allergen information</a></li>
           </ul>
         </div>
         <div class="footer-newsletter">
           <div class="footer-newsletter-title">Join the Crumb Club</div>
-          <p>Weekly specials and morning sell-out alerts, straight to your inbox.</p>
+          <p>Tomorrow's bake list, in your inbox every evening at six.</p>
           <form class="footer-newsletter-form" data-newsletter-form>
             <input type="email" name="email" placeholder="you@email.com" aria-label="Email address" required>
             <button type="submit">Join</button>

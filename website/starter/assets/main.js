@@ -16,14 +16,150 @@
     return `https://wa.me/${cleanPhone}?text=${encodedMsg}`;
   }
 
+  // Context-specific prefilled messages, keyed by the data-whatsapp-button value.
+  // A bare data-whatsapp-button (no value) gets the default reserve message.
+  const WHATSAPP_MESSAGES = {
+    'reserve-tomorrow': "Hi Lune & Crumb, I'd like to reserve the following for pickup tomorrow morning: ",
+    'occasion-cake': "Hi Lune & Crumb, I'd like a quote for a celebration cake on __ (date). Size / flavour: __",
+    'occasion-brunch': "Hi Lune & Crumb, I'd like to order a weekend brunch box for __ people, for pickup on __ (date).",
+    'occasion-office': "Hi Lune & Crumb, I'd like a quote for an office pastry platter for __ people on __ (date).",
+    'occasion-gift': "Hi Lune & Crumb, I'd like to put together a bread & pastry gift hamper for __ (date). Budget: __",
+    'allergens': "Hi Lune & Crumb, could you send me the full allergen sheet for today's bakes?",
+    'question': "Hi Lune & Crumb, I have a quick question: "
+  };
+
   function syncWhatsAppButtons() {
-    const url = buildWhatsAppUrl();
     document.querySelectorAll('[data-whatsapp-button]').forEach(function (btn) {
-      btn.setAttribute('href', url);
+      const key = btn.getAttribute('data-whatsapp-button');
+      const message = WHATSAPP_MESSAGES[key] || WHATSAPP_CONFIG.message;
+      btn.setAttribute('href', buildWhatsAppUrl(WHATSAPP_CONFIG.number, message));
     });
   }
 
   syncWhatsAppButtons();
+
+  // ========================================================================
+  // Opening hours — single source of truth (UK time). Index 0 = Sunday.
+  // Keep in sync with the JSON-LD openingHoursSpecification in index.html.
+  // ========================================================================
+  const OPENING_HOURS = [
+    { open: '08:00', close: '13:00' }, // Sun
+    null,                              // Mon — closed
+    { open: '06:30', close: '15:00' }, // Tue
+    { open: '06:30', close: '15:00' }, // Wed
+    { open: '06:30', close: '15:00' }, // Thu
+    { open: '06:30', close: '16:00' }, // Fri
+    { open: '07:00', close: '16:00' }  // Sat
+  ];
+  const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  // Current day (0–6) and minutes since midnight in Bath, regardless of the visitor's timezone
+  function getBathNow() {
+    try {
+      const parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/London', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
+      }).formatToParts(new Date());
+      const get = function (type) { return parts.find(function (p) { return p.type === type; })?.value; };
+      const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(get('weekday'));
+      return { day: day, minutes: parseInt(get('hour'), 10) * 60 + parseInt(get('minute'), 10) };
+    } catch (e) {
+      const now = new Date();
+      return { day: now.getDay(), minutes: now.getHours() * 60 + now.getMinutes() };
+    }
+  }
+
+  function toMinutes(hhmm) {
+    const [h, m] = hhmm.split(':').map(Number);
+    return h * 60 + m;
+  }
+
+  function nextOpening(fromDay) {
+    for (let i = 1; i <= 7; i++) {
+      const d = (fromDay + i) % 7;
+      if (OPENING_HOURS[d]) return { day: d, hours: OPENING_HOURS[d], isTomorrow: i === 1 };
+    }
+    return null;
+  }
+
+  function describeOpenStatus() {
+    const now = getBathNow();
+    const today = OPENING_HOURS[now.day];
+    if (today && now.minutes < toMinutes(today.open)) {
+      return { label: 'Opens today at ' + today.open, detail: 'Until ' + today.close + ', or until we sell out' };
+    }
+    if (today && now.minutes < toMinutes(today.close)) {
+      return { label: 'Open now, until ' + today.close, detail: 'Sourdough goes by mid-morning' };
+    }
+    const next = nextOpening(now.day);
+    if (!next) return null;
+    const when = next.isTomorrow ? 'tomorrow' : DAY_NAMES[next.day];
+    return { label: (today ? 'Closed now' : 'Closed today') + ', opens ' + when + ' ' + next.hours.open, detail: 'Reserve tonight for the morning' };
+  }
+
+  function setupOpenStatus() {
+    const status = describeOpenStatus();
+    if (status) {
+      document.querySelectorAll('[data-open-status]').forEach(function (el) { el.textContent = status.label; });
+      document.querySelectorAll('[data-open-detail]').forEach(function (el) { el.textContent = status.detail; });
+    }
+
+    // Contact page: highlight today's row (rows run Monday → Sunday)
+    const rows = document.querySelectorAll('.hours-table tbody tr');
+    if (rows.length === 7) {
+      const rowIndex = (getBathNow().day + 6) % 7;
+      rows.forEach(function (row, i) { row.classList.toggle('is-today', i === rowIndex); });
+    }
+  }
+  setupOpenStatus();
+
+  // ========================================================================
+  // Seasonal hero copy — swaps only the status pill and tagline text.
+  // Ranges are inclusive 'MM-DD'; Easter-relative entries use offsets in days.
+  // ========================================================================
+  const SEASONAL_COPY = [
+    { easterFrom: -14, easterTo: 0, pill: 'Hot cross buns for Easter', tagline: 'Spiced, fruit-studded hot cross buns join the counter for Easter. Reserve a half-dozen before the bank-holiday rush.' },
+    { from: '11-20', to: '12-24', pill: 'Stollen now baking', tagline: 'Marzipan-filled stollen joins the counter for the festive weeks, alongside our everyday 36-hour sourdough.' },
+    { from: '09-22', to: '11-19', pill: 'Somerset apple season', tagline: 'Cider-apple cake, cardamom buns and dark rye for shorter mornings, with the ovens still hot from 06:30.' }
+  ];
+
+  // Anonymous Gregorian algorithm — returns Easter Sunday for a given year
+  function easterSunday(year) {
+    const a = year % 19, b = Math.floor(year / 100), c = year % 100;
+    const d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25);
+    const g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+    const i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7;
+    const m = Math.floor((a + 11 * h + 22 * l) / 451);
+    const month = Math.floor((h + l - 7 * m + 114) / 31);
+    const day = ((h + l - 7 * m + 114) % 31) + 1;
+    return new Date(year, month - 1, day);
+  }
+
+  function setupSeasonalHero() {
+    const pillText = document.querySelector('[data-seasonal-pill]');
+    const tagline = document.querySelector('[data-seasonal-tagline]');
+    if (!pillText && !tagline) return;
+
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const mmdd = String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+    const dayMs = 86400000;
+
+    const season = SEASONAL_COPY.find(function (s) {
+      if (s.easterFrom != null) {
+        const offset = Math.round((today - easterSunday(now.getFullYear())) / dayMs);
+        return offset >= s.easterFrom && offset <= s.easterTo;
+      }
+      return mmdd >= s.from && mmdd <= s.to;
+    });
+    if (!season) return;
+
+    if (pillText) {
+      pillText.textContent = season.pill;
+      pillText.closest('.live-status-pill')?.setAttribute('aria-label', 'Bakery status: ' + season.pill);
+    }
+    if (tagline) tagline.textContent = season.tagline;
+  }
+  setupSeasonalHero();
 
   // ========================================================================
   // Navbar: shrink + shadow on scroll, mobile hamburger, active link

@@ -80,6 +80,13 @@
 
   <main id="main" class="section" data-reveal>
     <div class="wrap">
+      <ul class="diet-key" aria-label="Dietary key">
+        <li><span class="menu-tag menu-tag--vg">VG</span> Vegan</li>
+        <li><span class="menu-tag menu-tag--v">V</span> Vegetarian</li>
+        <li><span class="menu-tag menu-tag--gf">GF</span> Gluten-free</li>
+        <li><span class="menu-tag menu-tag--nuts">Nuts</span> Contains nuts</li>
+      </ul>
+
       <div class="menu-tabs">
         <button type="button" class="menu-tab" data-target="cat-breads">Breads</button>
         <button type="button" class="menu-tab" data-target="cat-pastries">Pastries</button>
@@ -95,7 +102,7 @@
             <div class="menu-item-info">
               <h4>Country Sourdough</h4>
               <p>36-hour cold ferment, blistered crust, 800g</p>
-              <div class="menu-item-tags"><span class="menu-tag">Vegan</span></div>
+              <div class="menu-item-tags"><span class="menu-tag menu-tag--vg" title="Vegan">VG</span></div>
             </div>
             <span class="menu-item-price">£6.50</span>
           </div>
@@ -103,7 +110,7 @@
             <div class="menu-item-info">
               <h4>Somerset Rye Loaf</h4>
               <p>Dark rye blend, caraway, 700g</p>
-              <div class="menu-item-tags"><span class="menu-tag">Vegan</span></div>
+              <div class="menu-item-tags"><span class="menu-tag menu-tag--vg" title="Vegan">VG</span></div>
             </div>
             <span class="menu-item-price">£6.80</span>
           </div>
@@ -111,7 +118,7 @@
             <div class="menu-item-info">
               <h4>Seeded Wholemeal</h4>
               <p>Sunflower, linseed, pumpkin seed crust</p>
-              <div class="menu-item-tags"><span class="menu-tag">Vegan</span></div>
+              <div class="menu-item-tags"><span class="menu-tag menu-tag--vg" title="Vegan">VG</span></div>
             </div>
             <span class="menu-item-price">£6.90</span>
           </div>
@@ -119,7 +126,7 @@
             <div class="menu-item-info">
               <h4>Focaccia of the Day</h4>
               <p>Rosemary sea salt or roast tomato &amp; olive</p>
-              <div class="menu-item-tags"><span class="menu-tag">Vegan</span></div>
+              <div class="menu-item-tags"><span class="menu-tag menu-tag--vg" title="Vegan">VG</span></div>
             </div>
             <span class="menu-item-price">£5.20</span>
           </div>
@@ -127,7 +134,7 @@
             <div class="menu-item-info">
               <h4>Sourdough Baguette</h4>
               <p>Crisp shell, open airy crumb</p>
-              <div class="menu-item-tags"><span class="menu-tag">Vegan</span></div>
+              <div class="menu-item-tags"><span class="menu-tag menu-tag--vg" title="Vegan">VG</span></div>
             </div>
             <span class="menu-item-price">£3.90</span>
           </div>
@@ -135,7 +142,7 @@
             <div class="menu-item-info">
               <h4>Gluten-Free Seed Loaf</h4>
               <p>Buckwheat &amp; teff blend, dense and nutty</p>
-              <div class="menu-item-tags"><span class="menu-tag">GF</span><span class="menu-tag">Vegan</span></div>
+              <div class="menu-item-tags"><span class="menu-tag menu-tag--gf" title="Gluten-free">GF</span><span class="menu-tag menu-tag--vg" title="Vegan">VG</span></div>
             </div>
             <span class="menu-item-price">£7.20</span>
           </div>
@@ -165,7 +172,7 @@
             <div class="menu-item-info">
               <h4>Almond Croissant</h4>
               <p>Twice-baked, frangipane, toasted flakes</p>
-              <div class="menu-item-tags"><span class="menu-tag">Contains Nuts</span></div>
+              <div class="menu-item-tags"><span class="menu-tag menu-tag--nuts" title="Contains nuts">Nuts</span></div>
             </div>
             <span class="menu-item-price">£4.30</span>
           </div>
@@ -210,7 +217,7 @@
             <div class="menu-item-info">
               <h4>Cinnamon Swirl</h4>
               <p>Brown butter glaze, toasted pecan</p>
-              <div class="menu-item-tags"><span class="menu-tag">Contains Nuts</span></div>
+              <div class="menu-item-tags"><span class="menu-tag menu-tag--nuts" title="Contains nuts">Nuts</span></div>
             </div>
             <span class="menu-item-price">£4.00</span>
           </div>
@@ -266,7 +273,7 @@
             <div class="menu-item-info">
               <h4>Spinach &amp; Feta Sausage Roll</h4>
               <p>Flaky pastry, hand-rolled</p>
-              <div class="menu-item-tags"><span class="menu-tag">Vegetarian</span></div>
+              <div class="menu-item-tags"><span class="menu-tag menu-tag--v" title="Vegetarian">V</span></div>
             </div>
             <span class="menu-item-price">£4.30</span>
           </div>
@@ -274,7 +281,7 @@
             <div class="menu-item-info">
               <h4>Sourdough Toastie</h4>
               <p>Cheddar, caramelised onion, on our own loaf</p>
-              <div class="menu-item-tags"><span class="menu-tag">Vegetarian</span></div>
+              <div class="menu-item-tags"><span class="menu-tag menu-tag--v" title="Vegetarian">V</span></div>
             </div>
             <span class="menu-item-price">£6.20</span>
           </div>
@@ -311,7 +318,10 @@
         </div>
       </div>
 
-      <p class="menu-note">Prices correct as of print. All items are baked in a kitchen that handles gluten, nuts, and dairy. Please let us know about allergies before ordering — full allergen sheet available on request.</p>
+      <div class="menu-note" id="allergens">
+        <p>Prices correct as of print. All items are baked in a kitchen that handles gluten, nuts, dairy and egg, so we can't rule out traces. Please tell us about any allergy before ordering.</p>
+        <p><a class="btn-ghost" href="https://wa.me/447700900123?text=Hi%20Lune%20%26%20Crumb%2C%20could%20you%20send%20me%20the%20full%20allergen%20sheet%20for%20today%27s%20bakes%3F" target="_blank" rel="noopener noreferrer" data-whatsapp-button="allergens">Ask for the full allergen sheet →</a></p>
+      </div>
     </div>
   </main>
 
@@ -320,7 +330,12 @@
       <span class="eyebrow">Skip the Queue</span>
       <h2>Reserve Your <em>Morning Order</em></h2>
       <p>Send us your list on WhatsApp the evening before, and we'll have it boxed and ready at the counter.</p>
-      <a href="https://wa.me/447700900123?text=Hi%20Lune%20%26%20Crumb%2C%20I%20would%20like%20to%20reserve%20fresh%20sourdough%20and%20pastries%20for%20pickup%20today." target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp" data-whatsapp-button>Reserve on WhatsApp</a>
+      <a href="https://wa.me/447700900123?text=Hi%20Lune%20%26%20Crumb%2C%20I%27d%20like%20to%20reserve%20the%20following%20for%20pickup%20tomorrow%20morning%3A%20" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp" data-whatsapp-button="reserve-tomorrow">Reserve on WhatsApp</a>
+        <ul class="cta-banner-facts">
+          <li>Tue–Fri from 06:30 · Sat 07:00 · Sun 08:00</li>
+          <li><a href="tel:+447700900123">+44 7700 900123</a></li>
+          <li><a href="https://www.google.com/maps/dir/?api=1&amp;destination=14+Walcot+Street%2C+Bath+BA1+5BG" target="_blank" rel="noopener noreferrer">Get directions</a></li>
+        </ul>
     </div>
   </section>
 
@@ -350,15 +365,16 @@
         <div>
           <div class="footer-col-title">Visit</div>
           <ul class="footer-links">
-            <li>14 Walcot Street, Bath, BA1 5BG</li>
-            <li>Tue–Sun · 06:30–15:00</li>
+            <li>14 Walcot Street, Bath, BA1 5BG<br><a href="https://www.google.com/maps/dir/?api=1&amp;destination=14+Walcot+Street%2C+Bath+BA1+5BG" target="_blank" rel="noopener noreferrer">Get directions →</a></li>
+            <li>Tue–Fri from 06:30 · Sat from 07:00<br>Sun 08:00–13:00 · Closed Mondays</li>
             <li><a href="tel:+447700900123">+44 7700 900123</a></li>
             <li><a href="mailto:hello@luneandcrumb.co.uk">hello@luneandcrumb.co.uk</a></li>
+            <li><a href="menu.html#allergens">Allergen information</a></li>
           </ul>
         </div>
         <div class="footer-newsletter">
           <div class="footer-newsletter-title">Join the Crumb Club</div>
-          <p>Weekly specials and morning sell-out alerts, straight to your inbox.</p>
+          <p>Tomorrow's bake list, in your inbox every evening at six.</p>
           <form class="footer-newsletter-form" data-newsletter-form>
             <input type="email" name="email" placeholder="you@email.com" aria-label="Email address" required>
             <button type="submit">Join</button>
