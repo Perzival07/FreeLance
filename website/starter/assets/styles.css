@@ -1398,28 +1398,36 @@ body.menu-open { overflow: hidden; }
    Footer
    ========================================================================== */
 .site-footer {
-  padding-block: clamp(3rem, 6vw, 4.5rem);
+  padding-block: clamp(1.75rem, 3.5vw, 2.5rem) clamp(1rem, 2vw, 1.25rem);
   border-top: 1px solid var(--border-subtle);
   background-color: var(--bg-surface);
   color: var(--text-muted);
 }
+.site-footer p { font-size: var(--text-sm); line-height: 1.6; margin-bottom: 0; }
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-2xl);
-  margin-bottom: var(--space-2xl);
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg) var(--space-xl);
+  margin-bottom: var(--space-lg);
 }
-@media (min-width: 780px) { .footer-grid { grid-template-columns: 1.15fr 0.8fr 0.8fr 1.25fr; } }
+/* Phones: brand and newsletter span the row; Explore + Visit sit side by side */
+.footer-grid > :first-child,
+.footer-grid > .footer-newsletter { grid-column: 1 / -1; }
+@media (min-width: 900px) {
+  .footer-grid { grid-template-columns: 1.2fr 0.95fr 1.05fr 1.2fr; }
+  .footer-grid > :first-child,
+  .footer-grid > .footer-newsletter { grid-column: auto; }
+}
 
 .footer-brand-name {
   display: flex;
   align-items: center;
   gap: 0.55rem;
   font-family: var(--font-display);
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   color: var(--text-primary);
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-xs);
 }
 .footer-brand-name em { color: var(--gold); font-style: italic; }
 .footer-brand-name .brand-mark { width: 1.1em; height: 1.1em; }
@@ -1428,15 +1436,20 @@ body.menu-open { overflow: hidden; }
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-primary);
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-sm);
 }
-.footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+.footer-links li { font-size: var(--text-sm); line-height: 1.55; }
+/* Explore on wide screens: two short columns of links instead of one tall one */
+@media (min-width: 900px) {
+  .footer-grid > div:nth-child(2) .footer-links { display: grid; grid-template-columns: repeat(2, max-content); gap: 0.3rem 1.25rem; }
+}
 .footer-links a { color: var(--text-muted); font-size: var(--text-sm); }
 .footer-links a:hover { color: var(--gold); }
 
-.footer-social { display: flex; gap: 0.6rem; margin-top: var(--space-md); }
+.footer-social { display: flex; gap: 0.5rem; margin-top: var(--space-sm); }
 .footer-social a {
-  width: 2.25rem; height: 2.25rem;
+  width: 2rem; height: 2rem;
   display: inline-flex; align-items: center; justify-content: center;
   border: 1px solid var(--border-subtle);
   color: var(--text-muted);
@@ -1452,7 +1465,7 @@ body.menu-open { overflow: hidden; }
   color: var(--text-primary);
   margin-bottom: var(--space-sm);
 }
-.footer-newsletter p { font-size: var(--text-sm); margin-bottom: var(--space-md); }
+.footer-newsletter p { margin-bottom: var(--space-sm); }
 .footer-newsletter-form {
   display: flex;
   border: 1px solid var(--border-subtle);
@@ -1463,7 +1476,7 @@ body.menu-open { overflow: hidden; }
   min-width: 0;
   border: none;
   background: transparent;
-  padding: 0.7rem 0.9rem;
+  padding: 0.55rem 0.8rem;
   font-family: var(--font-body);
   font-size: var(--text-sm);
   color: var(--text-primary);
@@ -1482,15 +1495,15 @@ body.menu-open { overflow: hidden; }
   transition: background-color var(--transition);
 }
 .footer-newsletter-form button:hover { background: var(--gold-dark); }
-.footer-newsletter-note { font-size: var(--text-xs); color: var(--text-muted); margin-top: 0.5rem; }
+.site-footer .footer-newsletter-note { font-size: var(--text-xs); color: var(--text-muted); margin-top: 0.35rem; }
 
 .footer-bottom {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-xs);
   align-items: center;
   text-align: center;
-  padding-top: var(--space-xl);
+  padding-top: var(--space-md);
   border-top: 1px solid var(--border-subtle);
   font-size: var(--text-xs);
   letter-spacing: 0.06em;
@@ -1592,6 +1605,111 @@ body.menu-open { overflow: hidden; }
 .scroll-top-btn.is-visible { opacity: 1; visibility: visible; transform: translateY(0); }
 .scroll-top-btn:hover { border-color: var(--gold); transform: translateY(-3px); }
 .scroll-top-btn svg { width: 1.1rem; height: 1.1rem; }
+
+/* ==========================================================================
+   Demo Floating Badge
+   ========================================================================== */
+.demo-floating-badge {
+  position: fixed;
+  left: var(--space-lg);
+  bottom: calc(var(--sticky-bar-height) + var(--space-md));
+  z-index: 995;
+  pointer-events: auto;
+}
+
+.demo-badge-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.38rem 0.85rem 0.38rem 0.7rem;
+  background: rgba(18, 16, 14, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(201, 162, 75, 0.35);
+  border-radius: 999px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.demo-badge-link:hover {
+  transform: translateY(-2px);
+  border-color: var(--gold);
+  background: rgba(24, 21, 18, 0.95);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.4), 0 0 14px rgba(201, 162, 75, 0.3);
+  color: var(--text-primary);
+}
+
+.demo-badge-link:active {
+  transform: translateY(0);
+}
+
+.demo-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 8px var(--gold);
+  flex-shrink: 0;
+  animation: demo-badge-pulse 2.2s infinite ease-in-out;
+}
+
+@keyframes demo-badge-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+.demo-badge-label {
+  color: #d6cebf;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.demo-badge-label strong {
+  color: var(--gold);
+  font-weight: 500;
+}
+
+.demo-badge-text-short {
+  display: none;
+}
+
+.demo-badge-pill {
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.45rem;
+  background: var(--gold);
+  color: #12100e;
+  border-radius: 999px;
+  line-height: 1.2;
+}
+
+@media (max-width: 540px) {
+  .demo-floating-badge {
+    left: 0.75rem;
+    bottom: calc(var(--sticky-bar-height) + 0.65rem);
+  }
+  .demo-badge-link {
+    padding: 0.3rem 0.65rem 0.3rem 0.55rem;
+    font-size: 0.65rem;
+    gap: 0.45rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .demo-badge-text-full {
+    display: none;
+  }
+  .demo-badge-text-short {
+    display: inline;
+  }
+}
 
 /* ==========================================================================
    Flamboyant Flourishes — gradient text, glow, marquee, decorative accents
