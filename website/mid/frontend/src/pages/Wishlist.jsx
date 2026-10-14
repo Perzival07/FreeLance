@@ -1,120 +1,70 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
-import Title from "../components/Title";
-import ProducItem from "../components/ProducItem";
-import { assets } from "../assets/assets";
+import Breadcrumbs from "../components/Breadcrumbs";
+import Icon from "../components/Icons";
+import useSeo from "../hooks/useSeo";
+import { formatPrice, imageUrl, productUrl } from "../utils/format";
 
 const Wishlist = () => {
-  const {
-    wishlist,
-    token,
-    addToCart,
-    removeFromWishlist,
-  } = useContext(ShopContext);
+  const { wishlist, token, addToCart, removeFromWishlist } = useContext(ShopContext);
+  useSeo({ title: "Wishlist" });
 
   if (!token) {
     return (
-      <div className="border-t hairline-gold pt-16 text-center py-20">
-        <p className="text-ivory-300 mb-4">
-          Log in to view and manage your wishlist.
-        </p>
-        <Link
-          to="/login"
-          className="btn-gold"
-        >
-          Sign in
-        </Link>
-      </div>
-    );
-  }
-
-  if (wishlist.length === 0) {
-    return (
-      <div className="border-t hairline-gold pt-16 text-center py-20">
-        <div className="text-2xl mb-6">
-          <Title text1={"MY"} text2={"WISHLIST"} />
-        </div>
-        <p className="text-ivory-400">Your wishlist is empty.</p>
-        <Link
-          to="/collection"
-          className="btn-gold mt-6"
-        >
-          Browse products
-        </Link>
+      <div className="container-site py-20 text-center">
+        <Icon name="heart" className="mx-auto h-12 w-12 text-stone-400" />
+        <h1 className="mt-4 text-4xl font-semibold">Your wishlist</h1>
+        <p className="mt-2 text-stone-600">Log in to save furniture and come back to it later.</p>
+        <Link to="/login" className="btn-primary mt-6">Log in</Link>
       </div>
     );
   }
 
   return (
-    <div className="border-t hairline-gold pt-16">
-      <div className="text-2xl mb-8">
-        <Title text1={"MY"} text2={"WISHLIST"} />
-      </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-8">
-        {wishlist.map((item, index) => (
-          <div
-            key={`${String(item.productId)}-${item.dimensions}-${index}`}
-            className="relative"
-          >
-            {item.product ? (
-              <>
-                <ProducItem
-                  id={String(item.product._id)}
-                  name={item.product.name}
-                  image={item.product.image}
-                  price={item.product.price}
-                  dimensions={item.dimensions}
-                  showWishlistToggle={false}
-                />
-                <div className="absolute top-2 right-2 flex gap-2 z-10">
-                  <button
-                    type="button"
-                    title="Add to cart"
-                    onClick={() =>
-                      addToCart(item.product._id, item.dimensions)
-                    }
-                    className="bg-ink-900/90 rounded-full p-1.5 shadow-md border border-gold-500/25 hover:bg-gold-500 hover:border-gold-500 transition-colors group"
-                  >
-                    <img
-                      src={assets.cart_icon}
-                      alt=""
-                      className="icon-luxury w-4 h-4 group-hover:[filter:none]"
-                    />
-                  </button>
-                  <button
-                    type="button"
-                    title="Remove from wishlist"
-                    onClick={() =>
-                      removeFromWishlist(item.productId, item.dimensions)
-                    }
-                    className="bg-ink-900/90 rounded-full p-1.5 shadow-md border border-gold-500/25 hover:bg-red-500 hover:border-red-500 transition-colors group"
-                  >
-                    <img
-                      src={assets.cross_icon}
-                      alt=""
-                      className="icon-luxury w-4 h-4"
-                    />
+    <div className="container-site py-8">
+      <Breadcrumbs items={[{ label: "Wishlist" }]} />
+      <h1 className="text-4xl font-semibold">Your wishlist</h1>
+
+      {wishlist.length === 0 ? (
+        <div className="card mt-8 p-10 text-center">
+          <p className="text-stone-700">Nothing saved yet. Tap the heart on any product to save it here.</p>
+          <Link to="/collection" className="btn-primary mt-5">Browse furniture</Link>
+        </div>
+      ) : (
+        <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-4">
+          {wishlist.map((item, index) => {
+            const p = item.product;
+            if (!p) {
+              return (
+                <div key={`${item.productId}-${index}`} className="card flex flex-col justify-between p-4 text-sm text-stone-600">
+                  <p>This product is no longer available.</p>
+                  <button type="button" onClick={() => removeFromWishlist(item.productId, item.dimensions)} className="mt-3 w-fit text-red-700 underline">
+                    Remove
                   </button>
                 </div>
-              </>
-            ) : (
-              <div className="card-luxury rounded-sm p-4 text-sm text-ivory-300 flex flex-col gap-3 min-h-[200px]">
-                <p>This product is no longer available.</p>
-                <button
-                  type="button"
-                  onClick={() =>
-                    removeFromWishlist(item.productId, item.dimensions)
-                  }
-                  className="text-red-400 border border-red-500/60 px-3 py-1.5 rounded-sm text-xs hover:bg-red-500 hover:text-white transition-colors w-fit"
-                >
-                  Remove
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+              );
+            }
+            return (
+              <article key={`${item.productId}-${item.dimensions}-${index}`} className="flex flex-col">
+                <Link to={productUrl(p)} className="block overflow-hidden rounded-lg bg-cream-200">
+                  <img src={imageUrl(p.image?.[0], 600)} alt={p.name} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+                </Link>
+                <Link to={productUrl(p)} className="mt-3 line-clamp-2 text-[15px] text-stone-900 hover:text-gold-800">{p.name}</Link>
+                <p className="mt-1 font-semibold text-stone-900">{formatPrice(p.price)}</p>
+                <div className="mt-3 flex gap-2">
+                  <button type="button" onClick={() => addToCart(p._id, item.dimensions)} className="btn-primary flex-1 px-3 py-2">
+                    Add to cart
+                  </button>
+                  <button type="button" onClick={() => removeFromWishlist(item.productId, item.dimensions)} className="btn-outline px-3 py-2" aria-label={`Remove ${p.name} from wishlist`}>
+                    <Icon name="trash" className="h-4 w-4" />
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

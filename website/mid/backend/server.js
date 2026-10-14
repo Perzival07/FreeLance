@@ -17,6 +17,8 @@ import orderRouter from './routes/orderRoute.js';
 import wishlistRouter from './routes/wishlistRoute.js';
 import reviewRouter from './routes/reviewRoute.js';
 import deliveryRouter from './routes/deliveryRoute.js';
+import leadRouter from './routes/leadRoute.js';
+import sitemapRouter from './routes/sitemapRoute.js';
 import { generalLimiter } from './middleware/rateLimiter.js';
 
 const app = express();
@@ -122,10 +124,14 @@ function mountApiRoutes(prefix) {
     app.use(`${prefix}/wishlist`, wishlistRouter);
     app.use(`${prefix}/review`, reviewRouter);
     app.use(`${prefix}/delivery`, deliveryRouter);
+    app.use(`${prefix}/lead`, leadRouter);
 }
 
 mountApiRoutes('/api/v1');
 mountApiRoutes('/api');
+// /sitemap.xml is rewritten to the API function on Vercel; /api/sitemap.xml works locally
+app.use(sitemapRouter);
+app.use('/api', sitemapRouter);
 
 app.get('/', (req, res) => {
     res.send('API Is Working Properly');

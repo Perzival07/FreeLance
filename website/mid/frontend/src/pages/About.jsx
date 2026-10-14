@@ -1,57 +1,64 @@
-import Title from './../components/Title';
-import { assets } from './../assets/assets';
-import NewsletterBox from './../components/NewsletterBox';
+import { Link } from "react-router-dom";
+import PageHeader from "../components/PageHeader";
+import Icon from "../components/Icons";
+import NewsletterBox from "../components/NewsletterBox";
+import useSeo from "../hooks/useSeo";
+import { assets } from "../assets/assets";
+import { SITE } from "../config/site";
+
+const REASONS = [
+  { icon: "shield", title: "Quality you can check", text: "Solid wood, high-density foam and durable fabrics. Every piece is inspected before it leaves us — and you can test it yourself in the showroom first." },
+  { icon: "ruler", title: "Made to fit your home", text: "Choose ready-made designs or ask for custom sizes, colours and upholstery. We'll help you measure." },
+  { icon: "truck", title: "Delivered & installed", text: "Our own team delivers, carries and assembles your furniture — and is a phone call away for after-sales service." },
+];
 
 const About = () => {
+  useSeo({ title: "About Us", description: `${SITE.name} is a family furniture store in Bidhan Park, Barasat, making and selling sofas, beds, wardrobes and custom furniture.` });
+
   return (
-    <div>
-
-      <div className='text-2xl text-center pt-8 border-t hairline-gold'>
-        <Title text1={'ABOUT'} text2={'US'}/>
-      </div>
-
-      <div className='my-10 flex flex-col md:flex-row gap-16'>
-
-        <img className='w-full md:max-w-[450px] card-luxury p-2' src={assets.about_img} alt="about_img" />
-
-        <div className='flex flex-col justify-center gap-6 md:w-2/4 text-ivory-300'>
-          <p>Welcome to <strong className="text-ivory-100">Loknath Sofa Center</strong>, your trusted destination for premium quality furniture in Barasat, Kolkata. Since our establishment, we have been dedicated to transforming houses into homes with thoughtfully crafted furniture that blends durability, comfort, and timeless design.</p>
-
-          <p>We take pride in offering a wide range of sofas, beds, tables, chairs, and storage solutions – each piece carefully selected to suit modern Indian lifestyles. Our showroom at Bidhan Park, Barasat, is where quality meets affordability, and every customer is treated like family.</p>
-
-          <b className='font-display text-xl text-gold-gradient'>Our Mission</b>
-          <p>To provide beautifully designed, long‑lasting furniture that brings joy and functionality to every home, while ensuring honest pricing, transparent service, and complete customer satisfaction.</p>
+    <>
+      <PageHeader title="About Loknath Sofa Center" crumbs={[{ label: "About us" }]} />
+      <div className="container-site py-10">
+        <div className="grid items-center gap-10 lg:grid-cols-2">
+          <img src={assets.about_img} alt="Furniture workshop" className="aspect-[4/3] w-full rounded-xl object-cover" loading="lazy" />
+          <div className="space-y-4 text-stone-700">
+            <p className="eyebrow">Our story</p>
+            <h2 className="section-title">A local furniture store that treats every customer like family</h2>
+            <p>
+              {SITE.name} is your neighbourhood furniture store in {SITE.address.locality}
+              {SITE.establishedYear ? `, serving families since ${SITE.establishedYear}` : ""}. We help turn houses into homes with furniture that is comfortable, durable and designed for the way Indian families live.
+            </p>
+            <p>
+              Our showroom at {SITE.address.line1} has sofas, beds, wardrobes, dining sets, tables and storage on display — and if you don&apos;t find exactly what you want, we&apos;ll make it for you.
+            </p>
+            <p>
+              <strong className="text-stone-900">Our promise:</strong> honest prices, clear information about materials and delivery, and support long after the sale.
+            </p>
+            <div className="flex flex-wrap gap-3 pt-2">
+              <Link to="/showroom" className="btn-primary">Visit the showroom</Link>
+              <Link to="/collection" className="btn-outline">Browse furniture</Link>
+            </div>
+          </div>
         </div>
 
+        <section className="mt-16">
+          <h2 className="section-title">Why choose us</h2>
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            {REASONS.map((r) => (
+              <div key={r.title} className="card p-6">
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-cream-200 text-gold-800">
+                  <Icon name={r.icon} />
+                </span>
+                <h3 className="mt-4 text-2xl font-semibold">{r.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-stone-600">{r.text}</p>
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
-
-      <div className='text-xl py-4'>
-        <Title text1={'WHY'} text2={'CHOSE US'}/>
-      </div>
-
-      <div className='flex flex-col md:flex-row text-sm mb-20 gap-4'>
-
-        <div className='card-luxury px-10 md:px-16 py-8 sm:py-20 flex flex-col gap-5 hover:border-gold-400/50 hover:shadow-gold transition-all'>
-          <b className='font-display text-lg text-ivory-100 tracking-wide'>Quality Assurance</b>
-          <p className='text-ivory-300'>We source only high‑grade materials – solid wood, premium foam, and durable fabric – to ensure every piece lasts for years. Every product is inspected before it reaches your home.</p>
-        </div>
-
-        <div className='card-luxury px-10 md:px-16 py-8 sm:py-20 flex flex-col gap-5 hover:border-gold-400/50 hover:shadow-gold transition-all'>
-          <b className='font-display text-lg text-ivory-100 tracking-wide'>Convenience &amp; Customisation</b>
-          <p className='text-ivory-300'>Choose from ready‑to‑ship designs or request custom dimensions, colours, and upholstery. We offer free delivery across Barasat and surrounding areas with hassle‑free installation.</p>
-        </div>
-
-        <div className='card-luxury px-10 md:px-16 py-8 sm:py-20 flex flex-col gap-5 hover:border-gold-400/50 hover:shadow-gold transition-all'>
-          <b className='font-display text-lg text-ivory-100 tracking-wide'>Exceptional Customer Service</b>
-          <p className='text-ivory-300'>Our friendly team guides you from selection to after‑sales support. We’re just a call or message away – because your comfort is our priority.</p>
-        </div>
-
-      </div>
-
-      <NewsletterBox/>
-
-    </div>
-  )
-}
+      <NewsletterBox />
+    </>
+  );
+};
 
 export default About;

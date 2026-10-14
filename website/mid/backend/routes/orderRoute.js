@@ -1,7 +1,8 @@
 import express from 'express';
-import {placeOrder, placeOrderStripe, placeOrderRazorpay, allOrders, userOrders, updateStatus, removeOrder, updatePaymentStatus, verifyStripe,verifyRazorpay, cancelOrder, getDashboardStats} from '../controllers/orderController.js';
+import {placeOrder, placeOrderStripe, placeOrderRazorpay, allOrders, userOrders, updateStatus, removeOrder, updatePaymentStatus, verifyStripe,verifyRazorpay, cancelOrder, getDashboardStats, trackOrder} from '../controllers/orderController.js';
 import adminAuth from '../middleware/adminAuth.js';
 import authUser from '../middleware/auth.js';
+import { trackLimiter } from '../middleware/rateLimiter.js';
 
 
 
@@ -25,6 +26,7 @@ orderRouter.post('/razorpay', authUser, placeOrderRazorpay);
 // user features
 orderRouter.post('/userorders', authUser, userOrders);
 orderRouter.post('/cancel', authUser, cancelOrder);
+orderRouter.post('/track', trackLimiter, trackOrder);
 
 
 // verify payment

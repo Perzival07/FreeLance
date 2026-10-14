@@ -4,6 +4,7 @@ import axios from "axios";
 import { backendUrl } from "../App";
 import { toast } from "react-toastify";
 import { cmToFeetInches, cmToMeters, feetInchesToCm } from "../utils/dimensionsConverter";
+import { CATEGORIES, SUBCATEGORIES } from "../constants";
 
 const Add = ({ token }) => {
   const [image1, setImage1] = useState(false);
@@ -24,6 +25,13 @@ const Add = ({ token }) => {
   const [category, setCategory] = useState("Living Room");
   const [subCategory, setSubCategory] = useState("Sofas");
   const [bestseller, setBestseller] = useState(false);
+  // Optional details shown on the product page
+  const [mrp, setMrp] = useState("");
+  const [material, setMaterial] = useState("");
+  const [colors, setColors] = useState("");
+  const [seating, setSeating] = useState("");
+  const [warranty, setWarranty] = useState("");
+  const [madeToOrder, setMadeToOrder] = useState(false);
   const [length, setLength] = useState("");
   const [breadth, setBreadth] = useState("");
   const [height, setHeight] = useState("");
@@ -49,6 +57,12 @@ const Add = ({ token }) => {
       formData.append("category", category);
       formData.append("subCategory", subCategory);
       formData.append("bestseller", bestseller);
+      if (mrp) formData.append("mrp", mrp);
+      if (material.trim()) formData.append("material", material.trim());
+      if (colors.trim()) formData.append("colors", colors.trim());
+      if (seating.trim()) formData.append("seating", seating.trim());
+      if (warranty.trim()) formData.append("warranty", warranty.trim());
+      formData.append("madeToOrder", madeToOrder);
       
       // Convert to cm if input is in feet/inches
       let lengthCm, breadthCm, heightCm;
@@ -105,6 +119,12 @@ const Add = ({ token }) => {
         setImage9(false);
         setImage10(false);
         setPrice('');
+        setMrp('');
+        setMaterial('');
+        setColors('');
+        setSeating('');
+        setWarranty('');
+        setMadeToOrder(false);
         setStock("0");
         setLength('');
         setBreadth('');
@@ -318,33 +338,26 @@ const Add = ({ token }) => {
         <div>
           <p className="mb-2 text-ivory-200">Product Category</p>
           <select
+            value={category}
             onChange={(e) => setCategory(e.target.value)}
             className="w-full px-3 py-2 rounded-md"
           >
-            <option value="Living Room">Living Room</option>
-            <option value="Bedroom">Bedroom</option>
-            <option value="Dining Room">Dining Room</option>
-            <option value="Office">Office</option>
-            <option value="Outdoor">Outdoor</option>
-            <option value="Storage">Storage</option>
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
           </select>
         </div>
 
         <div>
           <p className="mb-2 text-ivory-200">Sub Category</p>
           <select
+            value={subCategory}
             onChange={(e) => setSubCategory(e.target.value)}
             className="w-full px-3 py-2 rounded-md"
           >
-            <option value="Sofas">Sofas</option>
-            <option value="Tables">Tables</option>
-            <option value="Chairs">Chairs</option>
-            <option value="Beds">Beds</option>
-            <option value="Wardrobes">Wardrobes</option>
-            <option value="Desks">Desks</option>
-            <option value="Shelving">Shelving</option>
-            <option value="Storage">Storage</option>
-            <option value="Lighting">Lighting</option>
+            {SUBCATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
           </select>
         </div>
 
@@ -566,6 +579,36 @@ const Add = ({ token }) => {
 
 
 
+      <div className="card-luxury rounded p-6 w-full">
+        <p className="mb-1 text-ivory-200">Details (optional)</p>
+        <p className="mb-4 text-xs text-ivory-400">Shown on the product page. Leave blank if not applicable.</p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="text-sm text-ivory-300">
+            MRP (original price, shows a discount if higher than price)
+            <input value={mrp} onChange={(e) => setMrp(e.target.value)} type="number" min="0" className="mt-1 w-full px-3 py-2 rounded-md" placeholder="e.g. 55000" />
+          </label>
+          <label className="text-sm text-ivory-300">
+            Material
+            <input value={material} onChange={(e) => setMaterial(e.target.value)} className="mt-1 w-full px-3 py-2 rounded-md" placeholder="e.g. Sheesham wood frame, velvet fabric" />
+          </label>
+          <label className="text-sm text-ivory-300">
+            Available colours (comma separated)
+            <input value={colors} onChange={(e) => setColors(e.target.value)} className="mt-1 w-full px-3 py-2 rounded-md" placeholder="e.g. Grey, Teal, Beige" />
+          </label>
+          <label className="text-sm text-ivory-300">
+            Seating
+            <input value={seating} onChange={(e) => setSeating(e.target.value)} className="mt-1 w-full px-3 py-2 rounded-md" placeholder="e.g. 3-seater, L-shape" />
+          </label>
+          <label className="text-sm text-ivory-300">
+            Warranty (leave blank for the standard warranty)
+            <input value={warranty} onChange={(e) => setWarranty(e.target.value)} className="mt-1 w-full px-3 py-2 rounded-md" placeholder="e.g. 3-year frame warranty" />
+          </label>
+          <label className="flex items-center gap-2 text-sm text-ivory-300 sm:mt-6">
+            <input type="checkbox" checked={madeToOrder} onChange={(e) => setMadeToOrder(e.target.checked)} className="accent-gold-500 w-4 h-4" />
+            Made to order (can be bought even when stock is 0)
+          </label>
+        </div>
+      </div>
 
       <div className="flex gap-2 mt-2 items-center">
         <input

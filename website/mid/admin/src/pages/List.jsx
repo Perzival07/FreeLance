@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { backendUrl, currency } from "../App";
 import { toast } from "react-toastify";
+import EditProductModal from "../components/EditProductModal";
 
 const List = ({token}) => {
   const [list, setList] = useState([]);
+  const [editing, setEditing] = useState(null);
+  const [query, setQuery] = useState("");
 
   const fetchList = async () => {
     try {
@@ -109,7 +112,14 @@ const List = ({token}) => {
   return (
     <>
       <p className="eyebrow-gold text-xs mb-1">CATALOG</p>
-      <h2 className="font-display text-3xl text-ivory-50 mb-6">All Products</h2>
+      <h2 className="font-display text-3xl text-ivory-50 mb-4">All Products</h2>
+      <input
+        type="search"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder={`Search ${list.length} products by name or category`}
+        className="mb-4 w-full max-w-md px-3 py-2 rounded-md"
+      />
 
       <div className="card-luxury rounded overflow-hidden">
         {/* ------ List Table Title--------- */}
@@ -126,10 +136,12 @@ const List = ({token}) => {
         {/* ------ Product List--------- */}
 
         <div className="divide-y divide-gold-500/10">
-        {list.map((item, index) => (
+        {list
+          .filter((item) => !query || `${item.name} ${item.category} ${item.subCategory}`.toLowerCase().includes(query.toLowerCase()))
+          .map((item, index) => (
           <div
             className="grid grid-cols-[1fr_2fr_1fr] md:grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr] items-center gap-2 py-3 px-4 text-sm hover:bg-gold-500/5 transition-colors"
-            key={index}
+            key={item._id || index}
           >
             <img className="w-12 rounded border border-gold-500/15" src={item.image[0]} alt="product_image" />
             <div className="flex flex-col gap-1">
@@ -164,13 +176,29 @@ const List = ({token}) => {
                 title="Mark as bestseller"
               />
             </div>
-            <p onClick={() => removeProduct(item._id)} className="text-right md:text-center cursor-pointer text-lg text-ivory-400 hover:text-red-400 transition-colors">
-              ×
-            </p>
+            <div className="flex items-center justify-end gap-3 md:justify-center">
+              <button type="button" onClick={() => setEditing(item)} className="text-xs text-gold-300 hover:underline">
+                Edit
+              </button>
+              <button type="button" onClick={() => removeProduct(item._id)} className="text-lg text-ivory-400 hover:text-red-400 transition-colors" aria-label={`Delete ${item.name}`}>
+                ×
+              </button>
+            </div>
           </div>
         ))}
         </div>
       </div>
+      {editing && (
+        <EditProductModal
+          product={editing}
+          token={token}
+          onClose={() => setEditing(null)}
+          onSaved={(updated) => {
+            setList((prev) => prev.map((p) => (p._id === updated._id ? updated : p)));
+            setEditing(null);
+          }}
+        />
+      )}
     </>
   );
 };

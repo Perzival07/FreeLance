@@ -1,0 +1,346 @@
+LOKNATH SOFA CENTER — WEBSITE AUDIT & REVAMP PLAN
+=================================================
+Date: 15 Oct 2026
+Scope: customer site (frontend/). Admin panel and backend only where they affect customers.
+
+Reference sites studied:
+  WoodenStreet, IKEA India, Magnolia Home, Nitori India, Godrej Interio,
+  Home Centre (Mumbai store locator), Urban Ladder (Mumbai stores),
+  Durian (Goregaon store page), Pepperfry (Mumbai stores — page blocked automated
+  access; reviewed via public info on Studio Pepperfry).
+
+Note: the references are national chains. Loknath is a single showroom in
+Bidhan Park, Barasat (Kolkata). Ideas below are adapted to a one-store local
+business — e.g. "store locator" becomes one strong "Visit Our Showroom" page.
+
+Priority key:  [P1] do first / high impact   [P2] next   [P3] nice to have
+
+
+######################################################################
+PART A — WHAT IS BAD IN THE CURRENT WEBSITE
+######################################################################
+
+A1. BUGS (things that are actually broken)
+------------------------------------------
+[P1] Product page main image is 16px wide on mobile.
+     pages/Product.jsx: wrapper is "w-4 sm:w-[80%]" (w-4 = 1rem). On phones the
+     main photo is basically invisible. Should be "w-full sm:w-[80%]".
+[P1] Search icon does nothing outside /collection.
+     Navbar sets showSearch=true, but SearchBar only renders on /collection.
+     Clicking search on Home/Product pages appears dead. Should open search
+     anywhere and take the user to results.
+[P1] Filters, search and sort only work on products already loaded.
+     Products load 20 at a time; Collection filters/sorts the loaded slice in the
+     browser. With >20 products, "Low to High" and search give wrong/incomplete
+     results. Filtering/sorting/search must be done by the API.
+[P1] Newsletter form does nothing (onSubmit just preventDefault). Users enter an
+     email and nothing happens — no message, nothing saved. Appears on Home,
+     About and Contact.
+[P2] Prices are not formatted: "₹ 45000" instead of "₹45,000".
+[P2] Category/type filter checkboxes are hard-coded. If the admin adds a new
+     category it never appears in filters (and old ones show even if empty).
+[P2] Product grids use the array index as React key (LatestCollection,
+     BestSeller) — causes wrong re-renders when lists change.
+[P3] Profile dropdown is hover-only — doesn't open on touch devices/tablets in
+     landscape (sm+ widths).
+
+A2. TRUST / CONTENT PROBLEMS
+-----------------------------
+[P1] "Admin Panel" button in the public navbar and mobile menu. Customers should
+     never see this; it looks unprofessional and invites attacks. Remove it
+     (admin is reachable at /admin directly).
+[P1] "We provide 24/7 customer support" (OurPolicy) contradicts the stated hours
+     (Mon–Sun 10–8, Thu 11–5). False claims hurt trust.
+[P1] Only 2 vague "policy" points (Quality Assurance, Customer Support). All
+     references show 4–6 concrete promises: delivery, warranty, returns,
+     EMI/payment, assembly, customisation.
+[P1] No Returns/Refund, Shipping/Delivery, Warranty, or Terms & Conditions pages.
+     Only a Privacy Policy. These are expected (and required by payment gateways
+     like Razorpay/Stripe).
+[P1] No customer reviews/testimonials on the homepage, no Google rating shown.
+     Every reference uses social proof ("Their Words, Our Pride", star ratings).
+[P2] Typo: "WHY CHOSE US" → "WHY CHOOSE US" (About page).
+[P2] Footer credit "Designed by Koustav Das with ❤️" is the only line in the
+     footer bottom — replace with © Loknath Sofa Center, year, GSTIN, and move
+     the developer credit to small text or remove.
+[P2] Exact stock count shown ("In stock (3 available)"). For furniture this is
+     odd and can deter buyers; show "In stock" / "Only a few left" / "Made to
+     order" instead.
+[P2] Product page trust lines are generic ("100% Original product.").
+[P2] Store hours inconsistent wording; Thursday hours buried in brackets.
+
+A3. DESIGN / UX PROBLEMS
+------------------------
+[P1] Visual overload in the hero: Ken-Burns zoom + 3 floating colour orbs (gold,
+     ruby pink, purple) + spinning text ring + shimmer text + bouncing scroll cue
+     + moving marquee — all at once. Pink/purple "jewel" orbs clash with a
+     furniture brand and look like a crypto site, not a sofa showroom. Every
+     reference uses calm, photo-led layouts where the furniture is the hero.
+[P1] Hero has no offer and no category entry points — just "Transform Your
+     Home". References lead with a promo carousel + shop-by-category tiles.
+[P1] Homepage has no "Shop by Category" or "Shop by Room" tiles. The only path
+     to products is "Explore Collection" → one long grid.
+[P1] Navigation is just HOME / COLLECTION / ABOUT / CONTACT. No product
+     categories in the menu (references: Sofas, Beds, Dining, Storage... with a
+     mega menu). Users can't jump to "Sofas" directly.
+[P2] All-dark (near-black) theme with gold everywhere: product photos of
+     light-coloured sofas/beds lose contrast; text-heavy sections are tiring.
+     References are light/neutral (white, cream, warm grey) with one accent.
+     Consider a warm light theme, or keep dark only for hero/footer bands.
+[P2] Too many decorative animations site-wide (glow-pulse icons, shine, card
+     lift, reveal on every section, two marquees). Slows phones, distracts, and
+     ignores "reduce motion" preference.
+[P2] Product card shows only image, name, price. Missing: MRP/discount, rating,
+     "Bestseller"/"New" badge, quick add/enquire. (Nitori/Magnolia pattern.)
+[P2] Product page: dimensions are printed three times (metric list, imperial
+     list, summary line). One clean spec table is enough.
+[P2] Mobile menu has no categories, no phone/WhatsApp, no login/account link.
+[P3] Icons are PNG images (search, cart, profile) with alt text like
+     "searchIcon", "pofileIcon" — use SVG icons with proper aria labels.
+
+A4. PERFORMANCE
+---------------
+[P1] Hero image is 2.9 MB JPG (hero_img.jpg), contact image 1 MB PNG,
+     about 280 KB. Hero alone makes mobile first load slow. Convert to WebP/AVIF,
+     resize (≤1920px wide, ~200 KB), serve responsive sizes (srcset).
+[P2] hero_full.jpg (545 KB) appears unused — remove dead assets.
+[P2] Razorpay checkout script loads on every page (index.html). Load it only on
+     the checkout page.
+[P2] Product images from Cloudinary are served full size — use Cloudinary
+     transformations (f_auto,q_auto,w_600) for cards.
+
+A5. SEO & DISCOVERABILITY
+-------------------------
+[P1] No meta description, no Open Graph/Twitter tags (WhatsApp/Facebook shares
+     show no preview), same <title> on every page.
+[P1] No per-page titles ("Sofas | Loknath Sofa Center", product name on product
+     pages). Use react-helmet-async or similar.
+[P1] No LocalBusiness / FurnitureStore structured data (address, hours, phone,
+     geo, rating) — key for "furniture shop near me" / "sofa shop Barasat".
+[P2] No sitemap.xml or robots.txt.
+[P2] Image alt texts are "product_img", "about_img" etc. — use the product name.
+[P2] URLs use Mongo IDs (/product/66a1...). Slugs (/product/3-seater-chesterfield-sofa)
+     rank and share better.
+[P2] No category landing pages with text (Durian/Home Centre/WoodenStreet all
+     have keyword-rich local pages: "Sofa shop in Barasat", "Furniture store
+     near Madhyamgram/Kolkata").
+
+A6. ACCESSIBILITY
+-----------------
+[P2] Many clickable <img>/<p> elements instead of <button>/<a> (search icon,
+     menu icon, profile menu items) — not keyboard accessible.
+[P2] No skip-to-content link (IKEA, Magnolia, Nitori all have one).
+[P2] Filter checkboxes not wrapped in <label> — tiny click target.
+[P2] Gold-on-black small text likely fails contrast in places (ivory-500 on ink).
+
+
+######################################################################
+PART B — WHAT SHOULD BE ADDED (learned from the reference sites)
+######################################################################
+
+B1. HEADER & NAVIGATION
+-----------------------
+[P1] Slim top bar: phone (tap to call), WhatsApp, store hours today, "Free
+     delivery in Barasat & nearby" message.            (WoodenStreet, Nitori)
+[P1] Category navigation: Sofas, Beds, Dining, Wardrobes & Storage, Tables,
+     Chairs, Office, Outdoor, Lighting, New Arrivals, Sale. Desktop dropdown /
+     mega menu with small images; mobile drawer with the same.
+                                     (WoodenStreet, Interio, Magnolia, Nitori)
+[P1] Search bar visible in the header with "Trending searches" (sofa, bed,
+     wardrobe...) and recently viewed.              (WoodenStreet, Interio)
+[P2] "Track Order" link in header for logged-in users.     (WoodenStreet)
+
+B2. HOMEPAGE (suggested order)
+------------------------------
+ 1. [P1] Hero carousel: 3–4 slides — festive offer, new arrivals, custom sofas,
+         visit showroom. Clear CTA per slide.  (WoodenStreet, IKEA, Nitori)
+ 2. [P1] Shop by Category tiles (photo + name): Sofas, Sofa-cum-beds, Beds,
+         Dining, Wardrobes, Tables, Chairs...   (all references)
+ 3. [P1] Service promise strip (icons): Free delivery & installation locally ·
+         Custom sizes & fabrics · X-year warranty · Easy EMI / COD / UPI ·
+         Showroom since <year>.           (Magnolia "service promises")
+ 4. [P1] Tabbed product carousel: New Arrivals | Bestsellers | On Sale
+                                             (Magnolia, Nitori)
+ 5. [P1] Shop by Room tiles: Living, Bedroom, Dining, Study.
+                                       (WoodenStreet, IKEA, Interio)
+ 6. [P1] "Made to Order / Custom Sofa" banner — custom size, fabric, colour,
+         with "Enquire on WhatsApp" CTA.   (Magnolia Bespoke, WoodenStreet)
+ 7. [P1] Customer reviews section — real reviews with photos + Google rating
+         badge ("4.x ★ on Google, N reviews").  (WoodenStreet, Durian)
+ 8. [P1] Visit Our Showroom block — photo of the store, address, hours (with
+         Thursday hours), map, Get Directions, Call, WhatsApp, "Book a Visit".
+                                (Home Centre, Durian, Urban Ladder, Magnolia)
+ 9. [P2] Shop the Look / room inspiration — styled room photos with tagged
+         products.                                       (IKEA)
+10. [P2] Fabric & material guide teaser (leatherette, velvet, fabric, sheesham,
+         engineered wood) + care tips.                (WoodenStreet SEO content)
+11. [P2] Newsletter with a real incentive ("Early access to sales", "₹500 off
+         first order") — and it must actually save the email.  (Magnolia)
+12. [P3] Instagram feed / "Follow us" strip.          (Magnolia, Nitori)
+
+B3. PRODUCT LISTING (Collection)
+--------------------------------
+[P1] Category pages via URL: /collection/sofas, /collection/beds (shareable).
+[P1] Server-side filters: category, type, price range, material, seating
+     capacity (1/2/3/L-shape), colour, in-stock; sort: popularity, new, price.
+[P1] Product cards: image (+ 2nd image on hover), name, price, MRP strike-through
+     with % off, rating stars, badges (New / Bestseller / Made to order / Sale),
+     wishlist heart.                                    (Nitori, Magnolia)
+[P2] Result count ("48 products") and active filter chips with "clear all".
+[P2] Mobile: sticky "Filter | Sort" bar at bottom instead of a dropdown.
+
+B4. PRODUCT PAGE
+----------------
+[P1] Large image gallery with zoom/full-screen and swipe on mobile.
+[P1] Price block: price, MRP, % off, "Inclusive of all taxes", EMI from ₹X/month.
+[P1] Variant options: fabric / colour / size / seating (new product fields).
+[P1] Pincode check: "Delivery by <date>" + delivery fee (the backend already
+     has a delivery calculator — expose it on the product page).
+[P1] Specifications table: dimensions (once, cm + ft/in), material, frame,
+     cushion foam density, finish, weight, warranty, assembly, care.
+[P1] "Chat on WhatsApp about this product" + "Call us" + "See it in our
+     showroom" buttons — most local furniture sales close by phone/visit.
+                                         (Magnolia WhatsApp, Interio callback)
+[P1] Delivery, returns & warranty summary (accordion) on every product.
+[P2] Reviews with photos, rating breakdown, verified-buyer tag.
+[P2] "Frequently bought together" / "Complete the look" and "Recently viewed".
+[P2] Sticky "Add to cart / Enquire" bar on mobile.
+[P3] "View in your room" (AR) — only if budget allows.
+
+B5. SERVICES & ENQUIRY FLOWS
+----------------------------
+[P1] Book a Showroom Visit / Free Design Consultation form (date, time, name,
+     phone, interest) → saved to DB + admin notification/WhatsApp.
+                       (WoodenStreet, Durian, Magnolia, Urban Ladder, Pepperfry)
+[P1] Custom / made-to-order furniture request form (upload a reference photo,
+     size, fabric, budget).                       (Magnolia, WoodenStreet)
+[P1] Floating WhatsApp button on every page.             (Magnolia)
+[P2] "Request a call back" form.                   (Godrej Interio)
+[P2] Free home measurement visit within X km.  (Urban Ladder "Free Home Visits")
+[P2] Bulk / corporate orders enquiry (offices, hotels, cafes).
+                                               (WoodenStreet, Interio B2B)
+[P2] Old furniture exchange offer (if the business does this).
+[P3] Gift cards.                                         (IKEA)
+
+B6. SHOWROOM PAGE (single-store version of the store-locator pages)
+------------------------------------------------------------------
+[P1] Dedicated /showroom (or /store/barasat) page:
+     - H1 "Loknath Sofa Center – Furniture Showroom in Barasat, Kolkata"
+     - Address with landmark, PIN, embedded map, Get Directions, tap-to-call,
+       WhatsApp, email
+     - Opening hours table (each day; Thursday highlighted), "Open now" status
+     - Photo gallery of the showroom interior
+     - Amenities: parking, card/UPI accepted, home delivery, wheelchair access
+                                                        (Durian amenities)
+     - Categories on display; "Book a visit" CTA
+     - Areas we deliver to: Barasat, Madhyamgram, New Town, Dum Dum, Salt Lake,
+       Habra... (local SEO)                        (WoodenStreet city list)
+     - Google rating + reviews
+     - FAQ (parking? custom orders? delivery time? EMI?)
+     - LocalBusiness structured data
+                                (Home Centre, Durian, Pepperfry store pages)
+
+B7. FOOTER
+----------
+[P1] Columns: Shop (categories) · Help (Track order, Shipping, Returns,
+     Warranty, FAQ, Contact) · Company (About, Showroom, Custom orders, Bulk
+     orders, Careers) · Visit us (address, hours, phone, WhatsApp, map link).
+[P1] Social links (Instagram, Facebook, YouTube), payment icons (UPI, cards,
+     COD, Razorpay), "Secure payments" badge.          (all references)
+[P2] Delivery areas list and popular-search keyword links (SEO).
+                                                (WoodenStreet, Durian)
+[P2] Legal line: © year Loknath Sofa Center · GSTIN · Terms · Privacy.
+
+B8. POLICY & INFO PAGES TO CREATE
+---------------------------------
+[P1] Shipping & Delivery  [P1] Returns & Refunds / Cancellation
+[P1] Warranty             [P1] Terms & Conditions
+[P1] FAQ                  [P2] Care guide (fabric, leather, wood)
+[P2] Track Order (by order ID + phone, without login)
+
+B9. CHECKOUT & ACCOUNT
+----------------------
+[P2] Guest checkout (phone + OTP) — forcing account creation loses buyers.
+[P2] EMI options shown via Razorpay; show "No-cost EMI" where applicable.
+[P2] Order tracking timeline (Placed → Confirmed → Out for delivery →
+     Delivered & installed).
+[P2] Order confirmation on WhatsApp/SMS, not just email.
+[P3] Coupons / promo codes; first-order discount.
+[P3] Loyalty points for repeat customers.   (IKEA Family idea, scaled down)
+
+B10. ADMIN PANEL ADDITIONS (needed to power the above)
+------------------------------------------------------
+[P1] Manage homepage banners/offers without code changes.
+[P1] Product fields: MRP, material, colours/fabrics, seating, warranty,
+     made-to-order flag, badges, slug, SEO title/description.
+[P1] Inbox for visit bookings, custom-order requests, call-backs, newsletter
+     subscribers.
+[P2] Review moderation (approve/hide), featured reviews for homepage.
+
+
+######################################################################
+PART C — SUGGESTED REVAMP ORDER
+######################################################################
+Phase 1 (fix & trust, ~quick wins)
+  - Fix bugs in A1; remove Admin Panel link; remove false 24/7 claim; fix typo
+  - Compress images; per-page titles + meta + OG + LocalBusiness schema
+  - Floating WhatsApp, top bar with phone/hours, real footer, policy pages
+
+Phase 2 (new look & homepage)
+  - Calmer design system (decide: warm light theme vs refined dark), fewer
+    animations, respect prefers-reduced-motion
+  - Category navigation + new homepage sections (B2 items 1–8)
+  - Showroom page (B6)
+
+Phase 3 (shopping experience)
+  - Server-side filters/search/sort, category URLs, better product cards
+  - Product page upgrade (B4), pincode delivery check, enquiry buttons
+  - Book-a-visit and custom-order forms + admin inbox
+
+Phase 4 (growth)
+  - Guest checkout, order tracking, WhatsApp notifications, coupons,
+    blog/guides for SEO, slugs, sitemap
+
+Information needed from the store owner before building:
+  - Year established, warranty terms, return policy, delivery areas & charges
+  - EMI availability, GSTIN, social media links, WhatsApp number
+  - Real showroom photos, customer reviews (or Google Business link), offers
+  - Whether custom/made-to-order and bulk orders are offered
+
+
+######################################################################
+PART D — REVAMP STATUS (15 Oct 2026)
+######################################################################
+Correction to A4: the hero actually loaded hero_full.jpg (545 KB); the 2.9 MB
+hero_img.jpg was unused. Both are replaced by hero.webp (200 KB) / hero-sm.webp.
+
+New finding fixed: the backend trusted the order total sent by the browser
+(anyone could pay ₹1). Orders are now priced from the database, and the
+delivery fee is recalculated on the server.
+
+DONE
+  A1 all bugs · A2 all · A3 all · A4 all · A5 all except slugs-in-DB (product
+  URLs now /product/<name>-<id>) · A6 all
+  B1 · B2 1–8, 10, 11 · B3 · B4 (except variant picker, AR) · B5 visit, custom,
+  WhatsApp, call-back, bulk · B6 · B7 · B8 all pages · B9 order timeline ·
+  B10 product fields + edit, enquiries inbox (with CSV export)
+
+NOT DONE (needs a decision, a paid service or the owner's content)
+  - Guest checkout with phone OTP (needs an SMS provider)
+  - WhatsApp/SMS order notifications (needs WhatsApp Business API / SMS provider)
+  - Coupons, loyalty points, gift cards, AR "view in room", blog, Instagram feed
+  - Homepage banners editable from admin (they're in frontend/src/pages/Home.jsx)
+  - Review moderation in admin
+  - Colour/fabric picker that goes into the cart (colours are shown; customer
+    mentions choice on WhatsApp / order notes)
+  - Server-side rendering / prerendering (Google renders JS; other crawlers
+    and link previews see the default tags from index.html)
+  - Free home measurement visit, old-furniture exchange (owner to confirm)
+
+OWNER MUST CONFIRM / PROVIDE (frontend/src/config/site.js + config/policies.jsx)
+  - Warranty, return window, delivery terms and all policy wording
+  - "Free delivery across Barasat" (old About page) vs checkout, which always
+    charges ₹1,575+ — copy now says "Delivery & installation by our team"
+  - WhatsApp number (currently the shop phone), GSTIN, year established,
+    social links, Google rating
+  - Real showroom photos (current photos are stock), real reviews

@@ -47,8 +47,8 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="border-t hairline-gold pt-14 pb-14 max-w-md mx-auto px-4">
-      <div className="card-luxury px-8 py-10 shadow-gold">
+    <div className="mx-auto max-w-md px-4 py-14">
+      <div className="card-luxury px-8 py-10 shadow-sm">
         <h1 className="font-display text-3xl text-gold-gradient text-center mb-8">Set new password</h1>
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <input
@@ -57,7 +57,7 @@ const ResetPassword = () => {
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-gold-500/30 focus:border-gold-400 bg-ink-950 text-ivory-100 outline-none transition-colors"
+            className="w-full px-3 py-2 border border-cream-300 focus:border-stone-900 bg-white text-stone-900 outline-none transition-colors"
             placeholder="New password (min 8 characters)"
           />
           <input
@@ -66,7 +66,7 @@ const ResetPassword = () => {
             minLength={8}
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
-            className="w-full px-3 py-2 border border-gold-500/30 focus:border-gold-400 bg-ink-950 text-ivory-100 outline-none transition-colors"
+            className="w-full px-3 py-2 border border-cream-300 focus:border-stone-900 bg-white text-stone-900 outline-none transition-colors"
             placeholder="Confirm password"
           />
           <button
@@ -76,7 +76,7 @@ const ResetPassword = () => {
           >
             {submitting ? "Updating…" : "Update password"}
           </button>
-          <Link to="/login" className="text-center text-sm text-ivory-300 hover:text-gold-400 transition-colors">
+          <Link to="/login" className="text-center text-sm text-stone-700 hover:text-gold-800 transition-colors">
             Back to login
           </Link>
         </form>

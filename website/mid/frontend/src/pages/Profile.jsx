@@ -2,9 +2,10 @@ import { useContext, useEffect, useState, useCallback } from 'react';
 import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import Title from '../components/Title';
+import useSeo from '../hooks/useSeo';
 
 const Profile = () => {
+  useSeo({ title: 'My profile' });
   const { token, backendUrl, navigate } = useContext(ShopContext);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -141,20 +142,18 @@ const Profile = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
-        <p className="text-ivory-400 font-display text-lg">Loading profile...</p>
+        <p className="text-stone-600 font-display text-lg">Loading profile...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-[80vh] border-t hairline-gold pt-10">
-      <div className="text-center text-2xl mb-8">
-        <Title text1={'MY'} text2={'PROFILE'} />
-      </div>
+    <div className="container-site min-h-[70vh] py-10">
+      <h1 className="mb-8 text-center text-4xl font-semibold">My profile</h1>
 
       <div className="max-w-2xl mx-auto">
         <div className="card-luxury p-6 rounded-lg mb-4">
-          <p className="text-sm text-ivory-300">
+          <p className="text-sm text-stone-700">
             Save your details here to make checkout faster. Your information will be pre-filled when placing orders.
           </p>
         </div>
@@ -166,7 +165,7 @@ const Profile = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-ivory-200 mb-1">
+                <label className="block text-sm font-medium text-stone-700 mb-1">
                   First Name *
                 </label>
                 <input
@@ -174,14 +173,14 @@ const Profile = () => {
                   name="firstName"
                   value={profile.firstName}
                   onChange={handleChange}
-                  className="w-full border border-gold-500/25 bg-ink-950 text-ivory-100 rounded py-2 px-3 outline-none focus:border-gold-400 transition-colors"
+                  className="w-full border border-cream-300 bg-white text-stone-900 rounded py-2 px-3 outline-none focus:border-stone-900 transition-colors"
                   placeholder="Enter first name"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-ivory-200 mb-1">
+                <label className="block text-sm font-medium text-stone-700 mb-1">
                   Last Name *
                 </label>
                 <input
@@ -189,14 +188,14 @@ const Profile = () => {
                   name="lastName"
                   value={profile.lastName}
                   onChange={handleChange}
-                  className="w-full border border-gold-500/25 bg-ink-950 text-ivory-100 rounded py-2 px-3 outline-none focus:border-gold-400 transition-colors"
+                  className="w-full border border-cream-300 bg-white text-stone-900 rounded py-2 px-3 outline-none focus:border-stone-900 transition-colors"
                   placeholder="Enter last name"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-ivory-200 mb-1">
+                <label className="block text-sm font-medium text-stone-700 mb-1">
                   Phone Number *
                 </label>
                 <input
@@ -204,14 +203,14 @@ const Profile = () => {
                   name="phone"
                   value={profile.phone}
                   onChange={handleChange}
-                  className="w-full border border-gold-500/25 bg-ink-950 text-ivory-100 rounded py-2 px-3 outline-none focus:border-gold-400 transition-colors"
+                  className="w-full border border-cream-300 bg-white text-stone-900 rounded py-2 px-3 outline-none focus:border-stone-900 transition-colors"
                   placeholder="+91 12345 67890"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-ivory-200 mb-1">
+                <label className="block text-sm font-medium text-stone-700 mb-1">
                   Default Distance from Store (km)
                 </label>
                 <input
@@ -219,12 +218,12 @@ const Profile = () => {
                   name="defaultDistance"
                   value={profile.defaultDistance}
                   onChange={handleChange}
-                  className="w-full border border-gold-500/25 bg-ink-950 text-ivory-100 rounded py-2 px-3 outline-none focus:border-gold-400 transition-colors"
+                  className="w-full border border-cream-300 bg-white text-stone-900 rounded py-2 px-3 outline-none focus:border-stone-900 transition-colors"
                   placeholder="Distance in km"
                   min="0"
                   step="0.1"
                 />
-                <p className="text-xs text-ivory-400 mt-1">This will be pre-filled during checkout</p>
+                <p className="text-xs text-stone-600 mt-1">This will be pre-filled during checkout</p>
               </div>
             </div>
           </div>
@@ -235,7 +234,7 @@ const Profile = () => {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-ivory-200 mb-1">
+                <label className="block text-sm font-medium text-stone-700 mb-1">
                   Street Address *
                 </label>
                 <input
@@ -243,7 +242,7 @@ const Profile = () => {
                   name="address.street"
                   value={profile.address.street}
                   onChange={handleChange}
-                  className="w-full border border-gold-500/25 bg-ink-950 text-ivory-100 rounded py-2 px-3 outline-none focus:border-gold-400 transition-colors"
+                  className="w-full border border-cream-300 bg-white text-stone-900 rounded py-2 px-3 outline-none focus:border-stone-900 transition-colors"
                   placeholder="Street address"
                   required
                 />
@@ -251,7 +250,7 @@ const Profile = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-ivory-200 mb-1">
+                  <label className="block text-sm font-medium text-stone-700 mb-1">
                     City *
                   </label>
                   <input
@@ -259,14 +258,14 @@ const Profile = () => {
                     name="address.city"
                     value={profile.address.city}
                     onChange={handleChange}
-                    className="w-full border border-gold-500/25 bg-ink-950 text-ivory-100 rounded py-2 px-3 outline-none focus:border-gold-400 transition-colors"
+                    className="w-full border border-cream-300 bg-white text-stone-900 rounded py-2 px-3 outline-none focus:border-stone-900 transition-colors"
                     placeholder="City"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-ivory-200 mb-1">
+                  <label className="block text-sm font-medium text-stone-700 mb-1">
                     State *
                   </label>
                   <input
@@ -274,7 +273,7 @@ const Profile = () => {
                     name="address.state"
                     value={profile.address.state}
                     onChange={handleChange}
-                    className="w-full border border-gold-500/25 bg-ink-950 text-ivory-100 rounded py-2 px-3 outline-none focus:border-gold-400 transition-colors"
+                    className="w-full border border-cream-300 bg-white text-stone-900 rounded py-2 px-3 outline-none focus:border-stone-900 transition-colors"
                     placeholder="State"
                     required
                   />
@@ -283,7 +282,7 @@ const Profile = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-ivory-200 mb-1">
+                  <label className="block text-sm font-medium text-stone-700 mb-1">
                     Zip/Postal Code *
                   </label>
                   <input
@@ -291,14 +290,14 @@ const Profile = () => {
                     name="address.zipcode"
                     value={profile.address.zipcode}
                     onChange={handleChange}
-                    className="w-full border border-gold-500/25 bg-ink-950 text-ivory-100 rounded py-2 px-3 outline-none focus:border-gold-400 transition-colors"
+                    className="w-full border border-cream-300 bg-white text-stone-900 rounded py-2 px-3 outline-none focus:border-stone-900 transition-colors"
                     placeholder="Zip code"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-ivory-200 mb-1">
+                  <label className="block text-sm font-medium text-stone-700 mb-1">
                     Country *
                   </label>
                   <input
@@ -306,7 +305,7 @@ const Profile = () => {
                     name="address.country"
                     value={profile.address.country}
                     onChange={handleChange}
-                    className="w-full border border-gold-500/25 bg-ink-950 text-ivory-100 rounded py-2 px-3 outline-none focus:border-gold-400 transition-colors"
+                    className="w-full border border-cream-300 bg-white text-stone-900 rounded py-2 px-3 outline-none focus:border-stone-900 transition-colors"
                     placeholder="Country"
                     required
                   />

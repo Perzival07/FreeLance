@@ -1,0 +1,11 @@
+User-agent: *
+Disallow: /cart
+Disallow: /place-order
+Disallow: /orders
+Disallow: /profile
+Disallow: /wishlist
+Disallow: /verify
+Disallow: /login
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /admin/

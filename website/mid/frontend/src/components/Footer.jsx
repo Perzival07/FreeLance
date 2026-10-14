@@ -1,42 +1,144 @@
-import { assets } from "../assets/assets";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import { assets } from "../assets/assets";
+import Icon, { WhatsAppIcon } from "./Icons";
+import { NAV_CATEGORIES, SITE, fullAddress, whatsappLink } from "../config/site";
+import { hoursSummary } from "../utils/format";
+
+const collectionLink = (params) => `/collection?${new URLSearchParams(params)}`;
+
+const FooterLinks = ({ title, links }) => (
+  <div>
+    <h2 className="mb-4 font-sans text-sm font-semibold uppercase tracking-wider text-white">{title}</h2>
+    <ul className="space-y-2.5 text-sm">
+      {links.map(([label, to]) => (
+        <li key={label}>
+          <Link to={to} className="hover:text-white">
+            {label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
+FooterLinks.propTypes = {
+  title: PropTypes.string.isRequired,
+  links: PropTypes.arrayOf(PropTypes.array).isRequired,
+};
+
+const SOCIAL = [
+  ["instagram", "Instagram"],
+  ["facebook", "Facebook"],
+  ["youtube", "YouTube"],
+];
 
 const Footer = () => {
+  const year = new Date().getFullYear();
+  const socials = SOCIAL.filter(([key]) => SITE.social[key]);
+
   return (
-    <div className="relative bg-ink-900 border-t border-gold-500/15 mt-10 full-bleed">
-      <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-ruby-500 to-transparent"></div>
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
-        <div className="flex flex-col sm:grid grid-cols-[3fr_1fr_1fr] gap-14 py-16 text-sm">
-          <div>
-            <img src={assets.logo_dark} alt="Loknath Sofa Center" className="w-28 mb-5 drop-shadow-[0_0_14px_rgba(201,162,75,0.25)]" />
-            <p className="w-full md:w-2/3 text-ivory-400 leading-relaxed">
-              Transforming your house into a home with thoughtfully designed furniture built to last a lifetime.
+    <footer className="mt-16 bg-ink-900 text-stone-400">
+      <div className="container-site grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <div>
+          <img src={assets.logo_dark} alt={SITE.name} width="96" height="96" className="mb-4 h-24 w-24" loading="lazy" />
+          <p className="mb-5 max-w-xs text-sm leading-relaxed">
+            Sofas, beds, wardrobes and made-to-order furniture from our showroom in {SITE.address.locality}, delivered and installed across Kolkata.
+          </p>
+          <address className="space-y-2 text-sm not-italic">
+            <p className="flex gap-2">
+              <Icon name="pin" className="mt-0.5 h-4 w-4 shrink-0" /> {fullAddress()}
             </p>
-          </div>
-
-          <div>
-            <p className="font-display text-xl tracking-wide text-shimmer mb-5">Company</p>
-            <ul className="flex flex-col gap-2 text-ivory-400">
-              <li><Link to="/" className="hover:text-gold-400 transition-colors">Home</Link></li>
-              <li><Link to="/about" className="hover:text-gold-400 transition-colors">About us</Link></li>
-              <li><Link to="/contact" className="hover:text-gold-400 transition-colors">Contact</Link></li>
-              <li><Link to="/privacy-policy" className="hover:text-gold-400 transition-colors">Privacy policy</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <p className="font-display text-xl tracking-wide text-shimmer mb-5">Get in Touch</p>
-            <ul className="flex flex-col gap-2 text-ivory-400">
-              <li>+91 91239 24645</li>
-              <li><a href="mailto:loknathsofacenter@gmail.com" className="hover:text-gold-400 transition-colors">loknathsofacenter@gmail.com</a></li>
-            </ul>
+            <p className="flex gap-2">
+              <Icon name="clock" className="mt-0.5 h-4 w-4 shrink-0" /> {hoursSummary()}
+            </p>
+            <p className="flex gap-2">
+              <Icon name="phone" className="mt-0.5 h-4 w-4 shrink-0" />
+              <a href={SITE.phoneHref} className="hover:text-white">{SITE.phone}</a>
+            </p>
+            <p className="flex gap-2">
+              <Icon name="mail" className="mt-0.5 h-4 w-4 shrink-0" />
+              <a href={`mailto:${SITE.email}`} className="break-all hover:text-white">{SITE.email}</a>
+            </p>
+          </address>
+          <div className="mt-5 flex items-center gap-3">
+            <a href={whatsappLink()} target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20" aria-label="WhatsApp">
+              <WhatsAppIcon className="h-4 w-4" />
+            </a>
+            {socials.map(([key, label]) => (
+              <a key={key} href={SITE.social[key]} target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20" aria-label={label}>
+                <Icon name={key} className="h-4 w-4" />
+              </a>
+            ))}
           </div>
         </div>
 
-        <div className="divider-gold"></div>
-        <p className="py-6 text-xs text-center text-ivory-500 tracking-wide">Designed by Koustav Das with ❤️</p>
+        <FooterLinks
+          title="Shop"
+          links={[
+            ["All furniture", "/collection"],
+            ...NAV_CATEGORIES.slice(0, 7).map((c) => [c.label, collectionLink({ subCategory: c.subCategory })]),
+          ]}
+        />
+        <FooterLinks
+          title="Help"
+          links={[
+            ["Track your order", "/track-order"],
+            ["Shipping & delivery", "/shipping-policy"],
+            ["Returns & refunds", "/return-policy"],
+            ["Warranty", "/warranty"],
+            ["Furniture care guide", "/care-guide"],
+            ["FAQs", "/faq"],
+            ["Contact us", "/contact"],
+          ]}
+        />
+        <FooterLinks
+          title="Company"
+          links={[
+            ["About us", "/about"],
+            ["Visit our showroom", "/showroom"],
+            ["Book a showroom visit", "/book-visit"],
+            ["Custom furniture", "/custom-furniture"],
+            ["Bulk & corporate orders", "/bulk-orders"],
+          ]}
+        />
       </div>
-    </div>
+
+      <div className="border-t border-white/10">
+        <div className="container-site py-6 text-sm">
+          <p className="mb-2 text-white">We deliver to</p>
+          <p className="leading-relaxed">{SITE.deliveryAreas.join(" · ")}</p>
+        </div>
+      </div>
+
+      <div className="border-t border-white/10">
+        <div className="container-site flex flex-col gap-4 py-6 text-xs sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p>
+              © {year} {SITE.name}. All rights reserved.
+              {SITE.gstin ? ` · GSTIN ${SITE.gstin}` : ""}
+            </p>
+            <p className="mt-1">
+              <Link to="/terms" className="hover:text-white">Terms</Link>
+              {" · "}
+              <Link to="/privacy-policy" className="hover:text-white">Privacy</Link>
+              {" · "}
+              <a href="/sitemap.xml" className="hover:text-white">Sitemap</a>
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2" aria-label="Payment methods we accept">
+            {["UPI", "Cards", "Net banking", "Cash on delivery"].map((m) => (
+              <span key={m} className="rounded border border-white/15 px-2 py-1 text-[11px] text-stone-300">
+                {m}
+              </span>
+            ))}
+            <span className="ml-1 flex items-center gap-1 text-[11px] text-stone-300">
+              <Icon name="shield" className="h-3.5 w-3.5" /> Secure checkout
+            </span>
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 };
 

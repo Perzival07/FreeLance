@@ -1,9 +1,9 @@
 import express from 'express';
 import multer from 'multer';
-import { listProducts, addProduct, removeProduct, singleProduct, updateBestseller } from '../controllers/productController.js';
+import { listProducts, addProduct, removeProduct, singleProduct, updateBestseller, updateProduct, productFacets, productsByIds } from '../controllers/productController.js';
 import upload from '../middleware/multer.js';
 import adminAuth from '../middleware/adminAuth.js';
-import { validateProduct } from '../middleware/validation.js';
+import { validateProduct, validateProductUpdate } from '../middleware/validation.js';
 
 const productRouter = express.Router();
 
@@ -37,6 +37,9 @@ productRouter.post('/add', adminAuth, handleProductUpload, validateProduct, addP
 productRouter.post('/remove', adminAuth,removeProduct);
 productRouter.post('/single', singleProduct);
 productRouter.get('/list', listProducts);
+productRouter.get('/facets', productFacets);
+productRouter.post('/by-ids', productsByIds);
+productRouter.post('/update', adminAuth, validateProductUpdate, updateProduct);
 productRouter.post('/update-bestseller', adminAuth, updateBestseller);
 
 

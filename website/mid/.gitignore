@@ -5,3 +5,4 @@ dist/
 .vite/
 # full-code dump includes backend/.env secrets
 project_full_code.md
+.env.vercel

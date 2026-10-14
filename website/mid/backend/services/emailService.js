@@ -212,3 +212,39 @@ export const sendPasswordResetEmail = async (email, name, resetLink) => {
     html,
   });
 };
+
+const LEAD_LABELS = {
+  visit: "Showroom visit booking",
+  custom: "Custom furniture request",
+  callback: "Call-back request",
+  bulk: "Bulk / corporate order enquiry",
+  product: "Product enquiry",
+  newsletter: "Newsletter sign-up",
+};
+
+export const sendAdminLeadAlert = async (lead) => {
+  const adminTo = process.env.ORDERS_ALERT_EMAIL || process.env.ADMIN_EMAIL;
+  if (!adminTo) return;
+
+  const rows = [
+    ["Name", lead.name],
+    ["Phone", lead.phone],
+    ["Email", lead.email],
+    ["Product", lead.productName],
+    ["Preferred date", lead.preferredDate],
+    ["Preferred time", lead.preferredTime],
+    ["Budget", lead.budget],
+    ["Message", lead.message],
+  ]
+    .filter(([, v]) => v)
+    .map(([k, v]) => `<p><strong>${k}:</strong> ${escapeHtml(v)}</p>`)
+    .join("");
+
+  const label = LEAD_LABELS[lead.type] || "New enquiry";
+  await sendSafe({
+    from: `"Store" <${process.env.EMAIL_USER}>`,
+    to: adminTo,
+    subject: `${label}${lead.name ? ` — ${lead.name}` : ""}`,
+    html: `<h2>${label}</h2>${rows}<p>See all enquiries in the admin panel.</p>`,
+  });
+};

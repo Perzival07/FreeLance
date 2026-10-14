@@ -1,253 +1,140 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Prata&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-a.active hr {
-    display: block;
-}
+@layer base {
+    html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+    }
 
-* {
-    font-family: Outfit;
-}
+    body {
+        @apply bg-cream-100 font-sans text-stone-800 antialiased;
+    }
 
-html {
-    scroll-behavior: smooth;
-}
+    h1, h2, h3 {
+        @apply font-display text-stone-900;
+    }
 
-body {
-    background-color: #0d0b09;
-    background-image:
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(201, 162, 75, 0.10), transparent),
-        linear-gradient(180deg, #0d0b09 0%, #100e0c 100%);
-    color: #F5EFE6;
-}
+    ::selection {
+        @apply bg-gold-200 text-stone-900;
+    }
 
-/* Slowly drifting aurora of gold / ruby / amethyst light behind the whole site */
-body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background:
-        radial-gradient(ellipse 45% 40% at 8% 12%, rgba(201, 162, 75, 0.16), transparent 70%),
-        radial-gradient(ellipse 40% 35% at 95% 30%, rgba(224, 36, 94, 0.11), transparent 70%),
-        radial-gradient(ellipse 50% 40% at 60% 100%, rgba(139, 92, 246, 0.12), transparent 70%);
-    animation: aurora 24s ease-in-out infinite alternate;
-}
+    input[type="checkbox"],
+    input[type="radio"],
+    input[type="range"] {
+        accent-color: #8a6a2b;
+    }
 
-@keyframes aurora {
-    0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.85; }
-    100% { transform: translate3d(-2%, 3%, 0) scale(1.12); opacity: 1; }
-}
-
-::selection {
-    background-color: #C9A24B;
-    color: #0d0b09;
-}
-
-input[type="checkbox"],
-input[type="radio"] {
-    accent-color: #C9A24B;
-}
-
-.prata-regular {
-    font-family: "Prata", serif;
-    font-weight: 400;
-    font-style: normal;
-}
-
-.font-display {
-    font-family: "Cormorant Garamond", "Prata", serif;
-}
-
-/* hide default scroll bar of product img */
-::-webkit-scrollbar {
-    display: none;
-}
-
-@media (max-width:648px) {
-    a.active {
-        background-color: #C9A24B;
-        color: #0d0b09;
+    :focus-visible {
+        @apply outline-none ring-2 ring-gold-600 ring-offset-2 ring-offset-cream-100;
     }
 }
 
-/* Recolors flat black/gray line-art PNG & SVG icons to ivory so they read on the dark canvas */
-.icon-luxury {
-    filter: brightness(0) invert(1) opacity(0.88);
-    transition: filter 0.2s ease, opacity 0.2s ease;
+@layer components {
+    /* Page width container used by every section */
+    .container-site {
+        @apply mx-auto w-full max-w-site px-4 sm:px-6 lg:px-8;
+    }
+
+    .btn-primary {
+        @apply inline-flex items-center justify-center gap-2 rounded-md bg-stone-900 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-gold-800 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    .btn-accent {
+        @apply inline-flex items-center justify-center gap-2 rounded-md bg-gold-500 px-6 py-3 text-sm font-medium text-stone-900 transition-colors hover:bg-gold-400 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    .btn-outline {
+        @apply inline-flex items-center justify-center gap-2 rounded-md border border-stone-300 bg-white px-6 py-3 text-sm font-medium text-stone-800 transition-colors hover:border-stone-900 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    .btn-whatsapp {
+        @apply inline-flex items-center justify-center gap-2 rounded-md bg-[#1f8f4e] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#18733e];
+    }
+
+    .card {
+        @apply rounded-lg border border-cream-300 bg-white;
+    }
+
+    .input {
+        @apply w-full rounded-md border border-stone-300 bg-white px-3 py-2.5 text-sm text-stone-900 placeholder-stone-400 transition-colors focus:border-stone-900 focus:outline-none;
+    }
+
+    .label {
+        @apply mb-1 block text-sm font-medium text-stone-700;
+    }
+
+    .eyebrow {
+        @apply text-xs font-medium uppercase tracking-[0.2em] text-gold-700;
+    }
+
+    .section {
+        @apply py-12 sm:py-16;
+    }
+
+    .section-title {
+        @apply font-display text-3xl font-semibold text-stone-900 sm:text-4xl;
+    }
+
+    .link {
+        @apply text-gold-800 underline-offset-4 hover:underline;
+    }
+
+    /* Long-form text on policy / info pages */
+    .prose-site h2 {
+        @apply mb-3 mt-8 text-2xl font-semibold;
+    }
+    .prose-site p,
+    .prose-site li {
+        @apply leading-relaxed text-stone-700;
+    }
+    .prose-site p {
+        @apply mb-4;
+    }
+    .prose-site ul {
+        @apply mb-4 list-disc space-y-1 pl-5;
+    }
+
+    /* ---- Legacy class names still used by account/checkout pages ---- */
+    .card-luxury {
+        @apply rounded-lg border border-cream-300 bg-white;
+    }
+    .btn-gold {
+        @apply btn-primary;
+    }
+    .btn-gold-outline {
+        @apply btn-outline;
+    }
+    .eyebrow-gold {
+        @apply text-xs font-medium uppercase tracking-[0.2em] text-gold-700;
+    }
+    .divider-gold {
+        @apply h-px bg-cream-300;
+    }
+    .hairline-gold {
+        @apply border-cream-300;
+    }
+    .text-gold-gradient {
+        @apply text-stone-900;
+    }
+    .text-shimmer {
+        @apply text-gold-700;
+    }
+    .icon-luxury {
+        @apply opacity-80;
+    }
 }
 
-.icon-luxury:hover {
-    filter: brightness(0) invert(1) opacity(1) drop-shadow(0 0 6px rgba(201, 162, 75, 0.6));
-}
-
-/* ---- Shared luxury utility classes ---- */
-
-.eyebrow-gold {
-    letter-spacing: 0.25em;
-    color: #C9A24B;
-}
-
-.divider-gold {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(201, 162, 75, 0.7), transparent);
-}
-
-.hairline-gold {
-    border-color: rgba(201, 162, 75, 0.25);
-}
-
-.card-luxury {
-    background-color: #161311;
-    border: 1px solid rgba(201, 162, 75, 0.18);
-}
-
-.text-gold-gradient {
-    background-image: linear-gradient(135deg, #ecd8a3 0%, #C9A24B 55%, #8a6a2b 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
-
-/* Animated molten-gold text; use on headlines (not on every price) */
-.text-shimmer {
-    background-image: linear-gradient(100deg, #C9A24B 0%, #f5ead0 24%, #f0508a 48%, #f5ead0 70%, #C9A24B 100%);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    animation: shimmer 6s linear infinite;
-}
-
-.btn-gold {
-    position: relative;
-    overflow: hidden;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.9rem 2.25rem;
-    background-image: linear-gradient(135deg, #E0C073 0%, #C9A24B 45%, #8a6a2b 100%);
-    color: #0d0b09;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
-    box-shadow: 0 10px 30px -10px rgba(201, 162, 75, 0.55);
-}
-
-/* light sweep across the button on hover */
-.btn-gold::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -80%;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
-    transform: skewX(-20deg);
-    transition: left 0.7s ease;
-}
-
-.btn-gold:hover::after {
-    left: 130%;
-}
-
-.btn-gold:hover {
-    filter: brightness(1.08);
-    transform: translateY(-1px);
-    box-shadow: 0 16px 40px -10px rgba(201, 162, 75, 0.7);
-}
-
-.btn-gold-outline {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.85rem 2.1rem;
-    background: transparent;
-    border: 1px solid rgba(201, 162, 75, 0.6);
-    color: #F5EFE6;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    transition: all 0.25s ease;
-}
-
-.btn-gold-outline:hover {
-    border-color: #C9A24B;
-    background-color: rgba(201, 162, 75, 0.08);
-    color: #ecd8a3;
-    box-shadow: 0 0 30px -6px rgba(201, 162, 75, 0.55), 0 0 60px -20px rgba(224, 36, 94, 0.5);
-}
-
-/* ---- Flamboyant helpers ---- */
-
-/* Breaks a block out of the page's side padding so it spans the full viewport width */
-.full-bleed {
-    width: 100vw;
-    margin-left: calc(50% - 50vw);
-}
-
-/* Scroll-reveal (toggled by the Reveal component) */
-.reveal {
-    opacity: 0;
-    transform: translate3d(0, 36px, 0);
-    transition: opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
-    transition-delay: var(--reveal-delay, 0ms);
-}
-
-.reveal.is-visible {
-    opacity: 1;
-    transform: none;
-}
-
-/* Product card: lift + gold/ruby glow, with a diagonal shine over the photo */
-.card-lift {
-    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
-}
-
-.group:hover .card-lift {
-    transform: translateY(-8px);
-    border-color: rgba(224, 36, 94, 0.5);
-    box-shadow: 0 24px 50px -18px rgba(201, 162, 75, 0.55), 0 0 40px -14px rgba(224, 36, 94, 0.55);
-}
-
-.shine {
-    position: relative;
-}
-
-.shine::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.22) 50%, transparent 65%);
-    transform: translateX(-120%);
-    transition: transform 0.9s ease;
-    pointer-events: none;
-}
-
-.group:hover .shine::after {
-    transform: translateX(120%);
-}
-
-/* Big outlined marquee lettering that fills with gold on hover */
-.text-outline-gold {
-    color: transparent;
-    -webkit-text-stroke: 1.5px rgba(224, 192, 115, 0.9);
-    transition: color 0.4s ease, -webkit-text-stroke-color 0.4s ease;
-}
-
-.text-outline-gold:hover {
-    color: #C9A24B;
-    -webkit-text-stroke-color: #ecd8a3;
+@layer utilities {
+    .no-scrollbar {
+        scrollbar-width: none;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -258,10 +145,5 @@ input[type="radio"] {
         animation-iteration-count: 1 !important;
         transition-duration: 0.001ms !important;
         scroll-behavior: auto !important;
-    }
-
-    .reveal {
-        opacity: 1;
-        transform: none;
     }
 }

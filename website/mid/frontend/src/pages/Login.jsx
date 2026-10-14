@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
+import useSeo from '../hooks/useSeo';
 import { Link } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
@@ -8,6 +9,12 @@ import { GoogleLogin } from '@react-oauth/google';
 
 
 const Login = () => {
+  // Where to go after logging in (e.g. back to checkout)
+  const nextPath = (() => {
+    const n = new URLSearchParams(window.location.search).get('next') || '/';
+    return n.startsWith('/') && !n.startsWith('//') ? n : '/';
+  })();
+  useSeo({ title: 'Log in or sign up' });
   const [currentState, setCurrentState] = useState('Login');
   const {token, setToken, navigate, backendUrl} = useContext(ShopContext);
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -74,7 +81,7 @@ const Login = () => {
   // This will happen when user is logged in
 useEffect(() =>{
 if(token){
-  navigate('/')
+  navigate(nextPath)
 }
 },[token])
 
@@ -82,22 +89,22 @@ if(token){
 
   return (
     <div>
-      <form onSubmit={onSubmitHandler} className="flex flex-col items-center w-[90%] sm:max-w-96 m-auto mt-14 mb-14 gap-4 text-ivory-100 card-luxury px-8 py-10 shadow-gold">
+      <form onSubmit={onSubmitHandler} className="card mx-auto my-12 flex w-[92%] flex-col items-center gap-4 px-6 py-10 text-stone-900 shadow-sm sm:max-w-md sm:px-8">
 
-          <div className="inline-flex items-center gap-2 mb-2">
-            <p className="font-display text-3xl text-gold-gradient">{currentState}</p>
-            <hr className='border-none h-[1.5px] w-8 bg-gold-500'/>
+          <div className="mb-2 text-center">
+            <h1 className="text-4xl font-semibold">{currentState === 'Login' ? 'Welcome back' : 'Create your account'}</h1>
+            <p className="mt-1 text-sm text-stone-600">{currentState === 'Login' ? 'Log in to check out, track orders and see your wishlist.' : 'Save your address and track every order.'}</p>
           </div>
 
-     {currentState === 'Login' ? '' :<input onChange={(e)=>setName(e.target.value)} value={name} type="text" className='w-full px-3 py-2 border border-gold-500/30 focus:border-gold-400 bg-ink-950 outline-none transition-colors' placeholder='Name' required/>}
-      <input onChange={(e)=>setEmail(e.target.value)} value={email} type="email" className='w-full px-3 py-2 border border-gold-500/30 focus:border-gold-400 bg-ink-950 outline-none transition-colors' placeholder='Email' required/>
-      <input onChange={(e)=>setPassword(e.target.value)} value={password} type="password" className='w-full px-3 py-2 border border-gold-500/30 focus:border-gold-400 bg-ink-950 outline-none transition-colors' placeholder='Password' required/>
+     {currentState === 'Login' ? '' :<input onChange={(e)=>setName(e.target.value)} value={name} type="text" className='input' placeholder='Name' aria-label='Name' autoComplete='name' required/>}
+      <input onChange={(e)=>setEmail(e.target.value)} value={email} type="email" className='input' placeholder='Email' aria-label='Email' autoComplete='email' required/>
+      <input onChange={(e)=>setPassword(e.target.value)} value={password} type="password" className='input' placeholder='Password' aria-label='Password' autoComplete={currentState === 'Login' ? 'current-password' : 'new-password'} minLength={currentState === 'Login' ? undefined : 8} required/>
 
 
 
-      <div className='w-full flex justify-between text-sm mt-[-8px] text-ivory-300'>
+      <div className='w-full flex justify-between text-sm mt-[-8px] text-stone-700'>
       {currentState === 'Login' ? (
-        <Link to="/forgot-password" className="cursor-pointer hover:text-gold-400 transition-colors">
+        <Link to="/forgot-password" className="cursor-pointer hover:text-gold-800 transition-colors">
           Forgot your password?
         </Link>
       ) : (
@@ -105,21 +112,21 @@ if(token){
       )}
       {
         currentState === 'Login' ?
-        <p onClick={() => setCurrentState('Sign Up')} className='cursor-pointer hover:text-gold-400 transition-colors'>Create an account</p>
+        <button type='button' onClick={() => setCurrentState('Sign Up')} className='hover:text-gold-800 transition-colors'>Create an account</button>
         :
-        <p onClick={() => setCurrentState('Login')} className='cursor-pointer hover:text-gold-400 transition-colors'>Login Here</p>
+        <button type='button' onClick={() => setCurrentState('Login')} className='hover:text-gold-800 transition-colors'>Log in instead</button>
       }
 
       </div>
 
-<button className='btn-gold w-full mt-4'>{currentState === 'Login' ? 'Sign In' : 'Sign Up'}</button>
+<button type='submit' className='btn-primary w-full mt-4'>{currentState === 'Login' ? 'Log in' : 'Create account'}</button>
 
       {googleClientId && (
         <>
           <div className='w-full flex items-center gap-4 mt-4'>
-            <hr className='flex-1 border-gold-500/20' />
-            <span className='text-sm text-ivory-400 tracking-widest'>OR</span>
-            <hr className='flex-1 border-gold-500/20' />
+            <hr className='flex-1 border-cream-300' />
+            <span className='text-sm text-stone-600 tracking-widest'>OR</span>
+            <hr className='flex-1 border-cream-300' />
           </div>
 
           <div className='w-full mt-4 flex justify-center'>
@@ -139,7 +146,7 @@ if(token){
                       localStorage.removeItem('refreshToken');
                     }
                     toast.success('Login successful!');
-                    navigate('/');
+                    navigate(nextPath);
                   } else {
                     toast.error(response.data.message || 'Google login failed');
                   }

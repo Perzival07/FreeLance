@@ -86,4 +86,37 @@ const getProductReviews = async (req, res) => {
     }
 };
 
-export { addReview, getProductReviews };
+// Recent 4–5 star reviews for the homepage, with the product they belong to
+const getLatestReviews = async (req, res) => {
+    try {
+        const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 6, 1), 12);
+        const reviews = await reviewModel
+            .find({ rating: { $gte: 4 }, comment: { $exists: true } })
+            .sort({ createdAt: -1 })
+            .limit(limit)
+            .lean();
+        const ids = reviews.map((r) => r.productId).filter((id) => mongoose.Types.ObjectId.isValid(id));
+        const products = await productModel.find({ _id: { $in: ids } }, { name: 1, image: 1 }).lean();
+        const byId = new Map(products.map((p) => [String(p._id), p]));
+        res.set('Cache-Control', 'public, max-age=300');
+        res.json({
+            success: true,
+            reviews: reviews.map((r) => {
+                const p = byId.get(r.productId);
+                return {
+                    _id: r._id,
+                    userName: r.userName,
+                    rating: r.rating,
+                    comment: r.comment,
+                    createdAt: r.createdAt,
+                    product: p ? { _id: p._id, name: p.name, image: p.image?.[0] } : null,
+                };
+            }),
+        });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+export { addReview, getProductReviews, getLatestReviews };

@@ -1,12 +1,20 @@
 import { useContext, useState, useEffect } from "react";
 import { assets } from "../assets/assets";
-import Title from "../components/Title";
+import { Link } from "react-router-dom";
+import useSeo from "../hooks/useSeo";
 import CartTotal from "./../components/CartTotal";
 import { ShopContext } from "../context/ShopContext";
 import { toast } from "react-toastify";
 import axios from "axios";
 
 const PlaceOrder = () => {
+  useSeo({ title: "Checkout" });
+
+  // Checkout needs an account — send guests to log in and come back here
+  useEffect(() => {
+    if (!localStorage.getItem("token")) navigate("/login?next=/place-order", { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [method, setMethod] = useState("cod");
   const [showUpiQr, setShowUpiQr] = useState(false);
   const {
@@ -157,8 +165,15 @@ const PlaceOrder = () => {
     }
 
 
-    const rzp = new window.Razorpay(options);
-    rzp.open();
+    // Razorpay's script is only loaded when someone actually pays online
+    const open = () => new window.Razorpay(options).open();
+    if (window.Razorpay) return open();
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = open;
+    script.onerror = () => toast.error("Could not load the payment window. Please try again.");
+    document.body.appendChild(script);
+    return undefined;
   }
 
 
@@ -296,18 +311,16 @@ const PlaceOrder = () => {
   return (
     <form
       onSubmit={onSubmitHandler}
-      className="flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t hairline-gold"
+      className="container-site grid gap-10 py-8 lg:grid-cols-[1fr_400px]"
     >
       {/* ---------Left Side----------- */}
-      <div className="flex flex-col gap-4 w-full sm:max-w-[480px]">
+      <div className="flex flex-col gap-4 w-full">
         <div className="flex items-center justify-between my-3">
-          <div className="text-xl sm:text-2xl">
-          <Title text1={"DELIVERY"} text2={"INFORMATION"} />
-          </div>
+          <h1 className="text-3xl font-semibold sm:text-4xl">Delivery details</h1>
           <button
             type="button"
             onClick={() => navigate('/profile')}
-            className="text-sm text-gold-400 hover:text-gold-300 transition-colors"
+            className="text-sm text-gold-800 hover:text-gold-800 transition-colors"
           >
             Save to Profile
           </button>
@@ -319,7 +332,7 @@ const PlaceOrder = () => {
             onChange={onChangeHandler}
             name="firstName"
             value={formData.firstName}
-            className="border border-gold-500/20 rounded py-1.5 px-3.5 w-full"
+            className="border border-cream-300 rounded py-1.5 px-3.5 w-full"
             type="text"
             placeholder="First name"
           />
@@ -328,7 +341,7 @@ const PlaceOrder = () => {
             onChange={onChangeHandler}
             name="lastName"
             value={formData.lastName}
-            className="border border-gold-500/20 rounded py-1.5 px-3.5 w-full"
+            className="border border-cream-300 rounded py-1.5 px-3.5 w-full"
             type="text"
             placeholder="Last name"
           />
@@ -339,7 +352,7 @@ const PlaceOrder = () => {
           onChange={onChangeHandler}
           name="email"
           value={formData.email}
-          className="border border-gold-500/20 rounded py-1.5 px-3.5 w-full"
+          className="border border-cream-300 rounded py-1.5 px-3.5 w-full"
           type="email"
           placeholder="Email Address"
         />
@@ -348,7 +361,7 @@ const PlaceOrder = () => {
           onChange={onChangeHandler}
           name="street"
           value={formData.street}
-          className="border border-gold-500/20 rounded py-1.5 px-3.5 w-full"
+          className="border border-cream-300 rounded py-1.5 px-3.5 w-full"
           type="text"
           placeholder="Street"
         />
@@ -359,7 +372,7 @@ const PlaceOrder = () => {
             onChange={onChangeHandler}
             name="city"
             value={formData.city}
-            className="border border-gold-500/20 rounded py-1.5 px-3.5 w-full"
+            className="border border-cream-300 rounded py-1.5 px-3.5 w-full"
             type="text"
             placeholder="City"
           />
@@ -368,7 +381,7 @@ const PlaceOrder = () => {
             onChange={onChangeHandler}
             name="state"
             value={formData.state}
-            className="border border-gold-500/20 rounded py-1.5 px-3.5 w-full"
+            className="border border-cream-300 rounded py-1.5 px-3.5 w-full"
             type="text"
             placeholder="State"
           />
@@ -380,7 +393,7 @@ const PlaceOrder = () => {
             onChange={onChangeHandler}
             name="zipcode"
             value={formData.zipcode}
-            className="border border-gold-500/20 rounded py-1.5 px-3.5 w-full"
+            className="border border-cream-300 rounded py-1.5 px-3.5 w-full"
             type="number"
             placeholder="Zipcode"
           />
@@ -389,7 +402,7 @@ const PlaceOrder = () => {
             onChange={onChangeHandler}
             name="country"
             value={formData.country}
-            className="border border-gold-500/20 rounded py-1.5 px-3.5 w-full"
+            className="border border-cream-300 rounded py-1.5 px-3.5 w-full"
             type="text"
             placeholder="Country"
           />
@@ -400,7 +413,7 @@ const PlaceOrder = () => {
           onChange={onChangeHandler}
           name="phone"
           value={formData.phone}
-          className="border border-gold-500/20 rounded py-1.5 px-3.5 w-full"
+          className="border border-cream-300 rounded py-1.5 px-3.5 w-full"
           type="number"
           placeholder="Phone"
         />
@@ -410,7 +423,7 @@ const PlaceOrder = () => {
           onChange={onChangeHandler}
           name="distance"
           value={formData.distance}
-          className="border border-gold-500/20 rounded py-1.5 px-3.5 w-full"
+          className="border border-cream-300 rounded py-1.5 px-3.5 w-full"
           type="number"
           min="0"
           step="0.1"
@@ -427,7 +440,7 @@ const PlaceOrder = () => {
               <input
                 onChange={(e) => onDeliveryOptionChange("floor", Number(e.target.value) || 0)}
                 value={deliveryOptions.floor}
-                className="border border-gold-500/20 rounded py-1.5 px-3.5 w-full"
+                className="border border-cream-300 rounded py-1.5 px-3.5 w-full"
                 type="number"
                 min="0"
                 placeholder="0"
@@ -465,10 +478,10 @@ const PlaceOrder = () => {
           </div>
 
           {formData.distance && formData.distance > 0 && (
-            <div className="mt-3 p-3 bg-ink-950 border border-gold-500/20 rounded">
-              <p className="text-sm font-semibold text-ivory-200">Estimated Delivery Charge:</p>
+            <div className="mt-3 p-3 bg-white border border-cream-300 rounded">
+              <p className="text-sm font-semibold text-stone-700">Estimated Delivery Charge:</p>
               <p className="text-lg font-display text-gold-gradient font-bold">₹{calculatedDeliveryFee}</p>
-              <p className="text-xs text-ivory-400 mt-1">
+              <p className="text-xs text-stone-600 mt-1">
                 Range: ₹{deliveryRange.min} - ₹{deliveryRange.max}
               </p>
             </div>
@@ -477,13 +490,13 @@ const PlaceOrder = () => {
       </div>
 
       {/* ----------Rigt Side----------- */}
-      <div className="mt-8">
-        <div className="mt-8 min-w-80">
+      <div className="lg:sticky lg:top-44 lg:self-start">
+        <div>
           <CartTotal deliveryFee={calculatedDeliveryFee > 0 ? calculatedDeliveryFee : undefined} />
         </div>
 
-        <div className="mt-12">
-          <Title text1={"PAYMENT"} text2={"METHOD"} />
+        <div className="mt-8">
+          <h2 className="mb-4 text-2xl font-semibold">Payment method</h2>
           {/* ------Payment Method Selection-------- */}
           <div className="flex gap-3 flex-col lg:flex-row">
             {/* Stripe payment method - DISABLED */}
@@ -493,17 +506,11 @@ const PlaceOrder = () => {
             >
               <p
                 className={`min-w-3.5 h-3.5 border rounded-full ${
-                  method === "stripe" ? "bg-green-400" : ""
+                  method === "stripe" ? "bg-green-600" : ""
                 }`}
               ></p>
               <img src={assets.stripe_logo} alt="stripe_logo" />
             </div> */}
-            <div
-              className="flex items-center gap-3 border border-gold-500/15 p-2 px-3 cursor-not-allowed opacity-50 grayscale"
-            >
-              <p className="min-w-3.5 h-3.5 border border-gold-500/30 rounded-full"></p>
-              <img src={assets.stripe_logo} alt="stripe_logo" />
-            </div>
 
             {/* Razorpay payment method - DISABLED */}
             {/* <div
@@ -512,70 +519,68 @@ const PlaceOrder = () => {
             >
               <p
                 className={`min-w-3.5 h-3.5 border rounded-full ${
-                  method === "razorpay" ? "bg-green-400" : ""
+                  method === "razorpay" ? "bg-green-600" : ""
                 }`}
               ></p>
               <img src={assets.razorpay_logo} alt="razorpay_logo" />
             </div> */}
-            <div
-              className="flex items-center gap-3 border border-gold-500/15 p-2 px-3 cursor-not-allowed opacity-50 grayscale"
-            >
-              <p className="min-w-3.5 h-3.5 border border-gold-500/30 rounded-full"></p>
-              <img src={assets.razorpay_logo} alt="razorpay_logo" />
-            </div>
 
-            <div
+            <button
+              type="button"
+              aria-pressed={method === "cod"}
               onClick={() => {
                 setMethod("cod");
                 setShowUpiQr(false);
               }}
-              className={`flex items-center gap-3 border p-2 px-3 cursor-pointer transition-colors ${
-                method === "cod" ? "border-gold-400 bg-gold-500/5" : "border-gold-500/20 hover:border-gold-500/40"
+              className={`flex flex-1 items-center gap-3 rounded-md border p-3 px-4 text-left cursor-pointer transition-colors ${
+                method === "cod" ? "border-stone-900 bg-cream-100" : "border-cream-300 hover:border-stone-400"
               }`}
             >
               <p
                 className={`min-w-3.5 h-3.5 border rounded-full ${
-                  method === "cod" ? "bg-gold-500 border-gold-500" : "border-gold-500/40"
+                  method === "cod" ? "bg-gold-500 border-stone-900" : "border-cream-300"
                 }`}
               ></p>
-              <p className="text-ivory-200 text-sm font-medium mx-4 tracking-wide">
+              <p className="text-stone-700 text-sm font-medium mx-4 tracking-wide">
                 Cash on Delivery
               </p>
-            </div>
+            </button>
 
-            <div
+            <button
+              type="button"
+              aria-pressed={method === "upi"}
               onClick={() => {
                 setMethod("upi");
                 setShowUpiQr(false);
               }}
-              className={`flex items-center gap-3 border p-2 px-3 cursor-pointer transition-colors ${
-                method === "upi" ? "border-gold-400 bg-gold-500/5" : "border-gold-500/20 hover:border-gold-500/40"
+              className={`flex flex-1 items-center gap-3 rounded-md border p-3 px-4 text-left cursor-pointer transition-colors ${
+                method === "upi" ? "border-stone-900 bg-cream-100" : "border-cream-300 hover:border-stone-400"
               }`}
             >
               <p
                 className={`min-w-3.5 h-3.5 border rounded-full ${
-                  method === "upi" ? "bg-gold-500 border-gold-500" : "border-gold-500/40"
+                  method === "upi" ? "bg-gold-500 border-stone-900" : "border-cream-300"
                 }`}
               ></p>
-              <p className="text-ivory-200 text-sm font-medium mx-4 tracking-wide">
+              <p className="text-stone-700 text-sm font-medium mx-4 tracking-wide">
                 UPI Payment
               </p>
-            </div>
+            </button>
           </div>
 
           {/* UPI QR Code Display */}
           {showUpiQr && method === "upi" && (
-            <div className="mt-6 p-6 card-luxury shadow-gold rounded-lg">
+            <div className="mt-6 p-6 card-luxury shadow-sm rounded-lg">
               <div className="flex flex-col items-center gap-4">
                 <h3 className="font-display text-xl text-gold-gradient">Scan QR Code to Pay</h3>
-                <div className="border-4 border-ivory-100 rounded-lg shadow-gold p-4 bg-ivory-50">
+                <div className="border-4 border-stone-900 rounded-lg shadow-sm p-4 bg-white">
                   <img 
                     src={assets.upi_qr} 
                     alt="UPI QR Code" 
                     className="w-64 h-64 object-contain"
                   />
                 </div>
-                <p className="text-sm text-ivory-300 text-center">
+                <p className="text-sm text-stone-700 text-center">
                   Scan this QR with your UPI app (Google Pay, PhonePe, Paytm, etc.) and pay the order amount.
                   <br />
                   <br />
@@ -597,13 +602,16 @@ const PlaceOrder = () => {
             </div>
           )}
 
-          <div className="w-full text-end mt-8">
+          <div className="mt-8">
             <button
               type="submit"
-              className="btn-gold px-16"
+              className="btn-primary w-full py-3.5"
             >
-              Place Order
+              Place order
             </button>
+            <p className="mt-3 text-center text-xs text-stone-500">
+              By placing your order you agree to our <Link to="/terms" className="link">terms</Link> and <Link to="/return-policy" className="link">return policy</Link>.
+            </p>
           </div>
         </div>
       </div>

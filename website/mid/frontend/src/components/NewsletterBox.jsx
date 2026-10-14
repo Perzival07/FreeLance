@@ -1,38 +1,57 @@
-import React from "react";
+import { useContext, useState } from "react";
+import axios from "axios";
+import { ShopContext } from "../context/ShopContext";
 
 const NewsletterBox = () => {
-  const onSubmitHandler = (event) => {
-    event.preventDefault();
+  const { backendUrl } = useContext(ShopContext);
+  const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState("");
+  const [state, setState] = useState({ status: "idle", message: "" });
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setState({ status: "sending", message: "" });
+    try {
+      const { data } = await axios.post(`${backendUrl}/lead/create`, { type: "newsletter", email, website });
+      setState({ status: data.success ? "done" : "error", message: data.message });
+      if (data.success) setEmail("");
+    } catch (err) {
+      setState({ status: "error", message: err.response?.data?.message || "Could not subscribe right now." });
+    }
   };
 
   return (
-    <div className="text-center py-16 px-6 card-luxury my-10 relative overflow-hidden shadow-[0_0_60px_-20px_rgba(224,36,94,0.45)] border-ruby-500/30">
-      <div className="pointer-events-none absolute -top-20 left-1/2 -translate-x-1/2 w-[420px] h-[200px] bg-gold-500/20 blur-3xl rounded-full animate-float"></div>
-      <div className="pointer-events-none absolute -bottom-24 right-10 w-[300px] h-[200px] bg-amethyst-500/20 blur-3xl rounded-full animate-float [animation-delay:-5s]"></div>
-      <p className="eyebrow-gold text-xs mb-3">STAY IN TOUCH</p>
-      <p className="font-display text-3xl sm:text-5xl text-ivory-100 relative">
-        Subscribe now &amp; get exciting news and offers
-      </p>
-
-      <form
-        onSubmit={onSubmitHandler}
-        className="w-full sm:w-1/2 flex items-center gap-0 mx-auto mt-8 relative bg-ink-950/60 border border-gold-500/30 focus-within:border-gold-400 transition-colors"
-      >
-        <input
-          className="w-full sm:flex-1 outline-none bg-transparent text-ivory-100 placeholder-ivory-500 pl-4 py-3"
-          type="email"
-          placeholder="Enter your email"
-          required
-        />
-
-        <button
-          type="submit"
-          className="btn-gold rounded-none px-8 py-3.5"
-        >
-          Subscribe
-        </button>
-      </form>
-    </div>
+    <section className="section container-site">
+      <div className="rounded-xl bg-cream-200 px-6 py-10 text-center sm:px-12 sm:py-14">
+        <p className="eyebrow mb-2">Stay in touch</p>
+        <h2 className="section-title">New arrivals & offers, first</h2>
+        <p className="mx-auto mt-3 max-w-lg text-stone-600">
+          Subscribers hear about new designs and sale dates before anyone else. One or two emails a month, no spam.
+        </p>
+        <form onSubmit={onSubmit} className="mx-auto mt-7 flex max-w-md flex-col gap-2 sm:flex-row">
+          <label htmlFor="newsletter-email" className="sr-only">Email address</label>
+          <input
+            id="newsletter-email"
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Your email address"
+            className="input flex-1"
+            autoComplete="email"
+          />
+          <input type="text" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} className="hidden" aria-hidden="true" />
+          <button type="submit" className="btn-primary" disabled={state.status === "sending"}>
+            {state.status === "sending" ? "Subscribing…" : "Subscribe"}
+          </button>
+        </form>
+        {state.message && (
+          <p className={`mt-3 text-sm ${state.status === "error" ? "text-red-700" : "text-green-800"}`} role="status">
+            {state.message}
+          </p>
+        )}
+      </div>
+    </section>
   );
 };
 

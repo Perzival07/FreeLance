@@ -36,6 +36,11 @@ const Sidebar = () => {
             <p className='hidden md:block'>Orders</p>
             </NavLink>
 
+             <NavLink className={linkClass} to="/enquiries">
+            <img className='icon-luxury w-5 h-5' src={assets.order_icon} alt="" />
+            <p className='hidden md:block'>Enquiries</p>
+            </NavLink>
+
              <NavLink className={linkClass} to="/customers">
             <img className='icon-luxury w-5 h-5' src={assets.order_icon} alt="customers_icon" />
             <p className='hidden md:block'>Customers</p>

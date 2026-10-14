@@ -11,6 +11,8 @@ import {
 } from '../services/emailService.js';
 import Stripe from 'stripe';
 import Razorpay from 'razorpay';
+import mongoose from 'mongoose';
+import { calculateDeliveryCharge } from '../utils/deliveryCalculator.js';
 
 
 
@@ -37,6 +39,45 @@ const getRazorpay = () => {
 });
     }
     return razorpayInstance;
+};
+
+// Rebuilds the cart from the database so the customer can't change prices or the delivery fee
+const buildPricedOrder = async (rawItems, address) => {
+    if (!Array.isArray(rawItems) || rawItems.length === 0) {
+        throw new Error('Your cart is empty');
+    }
+    const items = [];
+    let subtotal = 0;
+    for (const raw of rawItems) {
+        const qty = Number(raw?.quantity);
+        if (!Number.isInteger(qty) || qty < 1 || qty > 99) {
+            throw new Error(`Invalid quantity for ${raw?.name || 'an item'}`);
+        }
+        if (!mongoose.Types.ObjectId.isValid(raw?._id)) {
+            throw new Error('Invalid product in cart');
+        }
+        const p = await productModel.findById(raw._id).lean();
+        if (!p) {
+            throw new Error(`Product not found: ${raw.name || raw._id}`);
+        }
+        const d = p.dimensions || {};
+        items.push({
+            _id: String(p._id),
+            name: p.name,
+            price: p.price,
+            image: p.image,
+            category: p.category,
+            subCategory: p.subCategory,
+            dimensions: String(raw.dimensions || `${d.length}x${d.breadth}x${d.height}`),
+            quantity: qty,
+        });
+        subtotal += p.price * qty;
+    }
+    const distance = Number(address?.distance);
+    const deliveryFee = Number.isFinite(distance) && distance > 0
+        ? calculateDeliveryCharge(distance, address?.deliveryOptions || {})
+        : 0;
+    return { items, deliveryFee, amount: subtotal + deliveryFee };
 };
 
 const assertStockAvailableForItems = async (items) => {
@@ -120,7 +161,9 @@ const customerDisplayName = (user, address) => {
 // placing order using COD Method
 const placeOrder = async (req, res) => {
     try {
-        const { userId, items, amount, address, deliveryFee = 0 } = req.body;
+        const { userId, address } = req.body;
+        // Prices come from the database, never from the browser
+        const { items, amount, deliveryFee } = await buildPricedOrder(req.body.items, address);
 
 
        
@@ -194,7 +237,9 @@ const placeOrder = async (req, res) => {
 // placing orders using Stripe Method
 const placeOrderStripe = async (req, res) => {
  try {
-    const { userId, items, amount, address, deliveryFee = 0 } = req.body;
+    const { userId, address } = req.body;
+        // Prices come from the database, never from the browser
+        const { items, amount, deliveryFee } = await buildPricedOrder(req.body.items, address);
     const {origin} = req.headers;
 
      const orderData = {
@@ -340,7 +385,9 @@ const verifyStripe = async (req, res) => {
 const placeOrderRazorpay = async (req, res) => {
     
     try {
-         const { userId, items, amount, address, deliveryFee = 0 } = req.body;
+         const { userId, address } = req.body;
+        // Prices come from the database, never from the browser
+        const { items, amount, deliveryFee } = await buildPricedOrder(req.body.items, address);
     
 
      const orderData = {
@@ -688,6 +735,54 @@ const getDashboardStats = async (req, res) => {
     }
 };
 
-export {verifyStripe,verifyRazorpay, placeOrder, placeOrderStripe, placeOrderRazorpay, allOrders, userOrders, updateStatus, removeOrder, updatePaymentStatus, formatDateTime, cancelOrder, getDashboardStats };
+// public order tracking: order id (full or last 8 chars shown in emails) + phone used at checkout
+const trackOrder = async (req, res) => {
+    try {
+        const orderRef = String(req.body.orderId || '').trim().replace(/^#/, '');
+        const phoneDigits = String(req.body.phone || '').replace(/\D/g, '').slice(-10);
+        if (!orderRef || phoneDigits.length < 10) {
+            return res.json({ success: false, message: 'Enter your order ID and the phone number used at checkout' });
+        }
+
+        let candidates = [];
+        if (mongoose.Types.ObjectId.isValid(orderRef) && orderRef.length === 24) {
+            const order = await orderModel.findById(orderRef).lean();
+            if (order) candidates = [order];
+        } else if (/^[0-9a-f]{8}$/i.test(orderRef)) {
+            // short id from emails: match on the id suffix + phone
+            const recent = await orderModel
+                .find({ 'address.phone': { $regex: phoneDigits.slice(-4) + '$' } })
+                .sort({ _id: -1 })
+                .limit(50)
+                .lean();
+            candidates = recent.filter((o) => String(o._id).toLowerCase().endsWith(orderRef.toLowerCase()));
+        }
+
+        const order = candidates.find(
+            (o) => String(o.address?.phone || '').replace(/\D/g, '').slice(-10) === phoneDigits
+        );
+        if (!order) {
+            return res.json({ success: false, message: 'No order found with these details' });
+        }
+
+        res.json({
+            success: true,
+            order: {
+                id: String(order._id),
+                status: order.status,
+                date: order.date,
+                paymentMethod: order.paymentMethod,
+                payment: order.payment,
+                amount: order.amount,
+                items: (order.items || []).map((i) => ({ name: i.name, quantity: i.quantity, image: i.image?.[0] })),
+            },
+        });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: 'Could not look up the order right now' });
+    }
+};
+
+export {verifyStripe,verifyRazorpay, placeOrder, placeOrderStripe, placeOrderRazorpay, allOrders, userOrders, updateStatus, removeOrder, updatePaymentStatus, formatDateTime, cancelOrder, getDashboardStats, trackOrder, buildPricedOrder };
 
 

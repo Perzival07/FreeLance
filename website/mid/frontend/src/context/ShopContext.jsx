@@ -7,35 +7,31 @@ import { useNavigate } from "react-router-dom";
 export const ShopContext = createContext();
 
 const ShopContextProvider = (props) => {
-  const currency = "₹ ";
+  const currency = "₹";
   const delivery_fee = 0;
 
-  // backendUrl is imported from the admin app
-  const backendUrl = import.meta.env.VITE_BACKEND_URL ?? "";
-
-  // for searching state
-  const [search, setSearch] = useState("");
-  const [showSearch, setShowSearch] = useState(false);
+  // Defaults to the same-origin API (single Vercel deployment)
+  const backendUrl = import.meta.env.VITE_BACKEND_URL ?? "/api/v1";
 
   // for products state
-  const [cartItems, setCartItems] = useState({});
-
-  const [products, setProducts] = useState([]);
-  const [pagination, setPagination] = useState({
-    currentPage: 1,
-    totalPages: 1,
-    totalProducts: 0,
-    limit: 20,
+  const [cartItems, setCartItems] = useState(() => {
+    // Guests keep their cart in this browser; logged-in carts come from the server
+    try {
+      if (localStorage.getItem("token")) return {};
+      return JSON.parse(localStorage.getItem("guestCart") || "{}") || {};
+    } catch {
+      return {};
+    }
   });
-  const [loadingMore, setLoadingMore] = useState(false);
+
+  // Every product we've seen, by id — used by cart, checkout and wishlist
+  const [productCache, setProductCache] = useState({});
+  // Categories / types with counts and price range, for menus and filters
+  const [facets, setFacets] = useState({ categories: [], subCategories: [], price: { min: 0, max: 0 } });
   const [token, setToken] = useState("");
   const [wishlist, setWishlist] = useState([]);
-  const [catalogReady, setCatalogReady] = useState(false);
 
   const navigate = useNavigate();
-  const paginationRef = useRef(pagination);
-  paginationRef.current = pagination;
-
   const setTokenRef = useRef(setToken);
   useEffect(() => {
     setTokenRef.current = setToken;
@@ -80,7 +76,7 @@ const ShopContextProvider = (props) => {
             original.headers = { ...original.headers, token: data.token };
             return axios(original);
           }
-        } catch (e) {
+        } catch {
           localStorage.removeItem("token");
           localStorage.removeItem("refreshToken");
           setTokenRef.current("");
@@ -125,14 +121,15 @@ const ShopContextProvider = (props) => {
           { headers: { token } }
         );
         setCartItems(cartData);
+        toast.success("Added to cart");
       } catch (error) {
         console.log(error);
         toast.error(error.response?.data?.message || error.message);
       }
     } else {
       setCartItems(cartData);
+      toast.success("Added to cart");
     }
-
   };
 
   // add to card counter
@@ -192,76 +189,64 @@ const ShopContextProvider = (props) => {
 const getCartAmount = () => {
   let totalAmount = 0;
   for (const itemId in cartItems) {
-    const itemInfo = products.find((product) => product._id === itemId);
-    if (!itemInfo) continue; // ⚠️ যদি itemInfo না পাওয়া যায়, তাহলে skip
+    const itemInfo = productCache[itemId];
+    if (!itemInfo) continue;
     for (const dimensions in cartItems[itemId]) {
-      try {
-        const quantity = cartItems[itemId][dimensions];
-        if (quantity > 0) {
-          totalAmount += itemInfo.price * quantity;
-        }
-      } catch (error) {
-        console.log(error);
+      const quantity = cartItems[itemId][dimensions];
+      if (quantity > 0) {
+        totalAmount += itemInfo.price * quantity;
       }
     }
   }
   return totalAmount;
 };
 
+  const cacheProducts = useCallback((list) => {
+    if (!list?.length) return;
+    setProductCache((prev) => {
+      const next = { ...prev };
+      for (const p of list) next[String(p._id)] = p;
+      return next;
+    });
+  }, []);
 
-
-
-
-
-
-
-
-  const getProductsData = useCallback(
-    async (page = 1, append = false) => {
-      try {
-        const limit = paginationRef.current.limit || 20;
-        const response = await axios.get(
-          `${backendUrl}/product/list?page=${page}&limit=${limit}`
-        );
-        if (response.data.success) {
-          const newProducts = response.data.products || [];
-          if (append) {
-            setProducts((prev) => [...prev, ...newProducts]);
-          } else {
-            setProducts(newProducts);
-          }
-          if (response.data.pagination) {
-            setPagination(response.data.pagination);
-          }
-        } else {
-          toast.error(response.data.message);
-        }
-      } catch (error) {
-        console.log(error);
-        toast.error(error.message);
-      } finally {
-        if (!append && page === 1) {
-          setCatalogReady(true);
+  /**
+   * Server-side product search / filter / sort.
+   * params: { page, limit, q, category, subCategory, minPrice, maxPrice, inStock, bestseller, exclude, sort }
+   */
+  const fetchProducts = useCallback(
+    async (params = {}) => {
+      const query = new URLSearchParams();
+      for (const [k, v] of Object.entries(params)) {
+        if (v !== undefined && v !== null && v !== "" && !(Array.isArray(v) && !v.length)) {
+          query.set(k, Array.isArray(v) ? v.join(",") : String(v));
         }
       }
+      const { data } = await axios.get(`${backendUrl}/product/list?${query}`);
+      if (!data.success) throw new Error(data.message || "Could not load products");
+      cacheProducts(data.products);
+      return { products: data.products || [], pagination: data.pagination };
     },
-    [backendUrl]
+    [backendUrl, cacheProducts]
   );
 
-  const loadingMoreRef = useRef(false);
-  const loadMoreProducts = useCallback(async () => {
-    if (loadingMoreRef.current) return;
-    const { currentPage, totalPages } = paginationRef.current;
-    if (currentPage >= totalPages) return;
-    loadingMoreRef.current = true;
-    setLoadingMore(true);
-    try {
-      await getProductsData(currentPage + 1, true);
-    } finally {
-      loadingMoreRef.current = false;
-      setLoadingMore(false);
-    }
-  }, [getProductsData]);
+  const productCacheRef = useRef(productCache);
+  productCacheRef.current = productCache;
+
+  // Loads any of these products we don't have yet
+  const ensureProducts = useCallback(
+    async (ids) => {
+      const missing = [...new Set(ids.map(String))].filter((id) => !productCacheRef.current[id]);
+      if (!missing.length) return;
+      try {
+        const { data } = await axios.post(`${backendUrl}/product/by-ids`, { ids: missing });
+        if (data.success) cacheProducts(data.products);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    [backendUrl, cacheProducts]
+  );
 
   const fetchProductById = useCallback(
     async (productId) => {
@@ -271,25 +256,17 @@ const getCartAmount = () => {
           productId,
         });
         if (data.success && data.product) {
-          const p = data.product;
-          setProducts((prev) =>
-            prev.some((x) => String(x._id) === String(p._id)) ? prev : [...prev, p]
-          );
-          return p;
+          cacheProducts([data.product]);
+          return data.product;
         }
       } catch (e) {
         console.log(e);
       }
       return null;
     },
-    [backendUrl]
+    [backendUrl, cacheProducts]
   );
 
-
-
-
-
-  
   // Fetch user cart data from the backend
   const getUserCart = async (token) => {
     try {
@@ -392,8 +369,27 @@ const getCartAmount = () => {
 
   
   useEffect(() => {
-    getProductsData(1, false);
-  }, [getProductsData]);
+    axios
+      .get(`${backendUrl}/product/facets`)
+      .then(({ data }) => {
+        if (data.success) setFacets(data);
+      })
+      .catch((e) => console.log(e));
+  }, [backendUrl]);
+
+  // Cart and wishlist only store ids — make sure their products are loaded
+  useEffect(() => {
+    ensureProducts([...Object.keys(cartItems), ...wishlist.map((w) => w.productId)]);
+  }, [cartItems, wishlist, ensureProducts]);
+
+  useEffect(() => {
+    if (token) return;
+    try {
+      localStorage.setItem("guestCart", JSON.stringify(cartItems));
+    } catch {
+      // storage unavailable — cart still works for this visit
+    }
+  }, [cartItems, token]);
 
   useEffect(() => {
     if (!token && localStorage.getItem("token")) {
@@ -411,18 +407,15 @@ const getCartAmount = () => {
   }, [token, fetchWishlist]);
 
   const value = {
-    products,
-    pagination,
-    loadingMore,
-    loadMoreProducts,
+    // `products` = everything loaded so far (cart, checkout and wishlist look items up here)
+    products: Object.values(productCache),
+    productCache,
+    facets,
+    fetchProducts,
+    ensureProducts,
     fetchProductById,
-    getProductsData,
     currency,
     delivery_fee,
-    search,
-    setSearch,
-    showSearch,
-    setShowSearch,
     cartItems,
     addToCart,
     setCartItems,
@@ -433,7 +426,6 @@ const getCartAmount = () => {
     backendUrl,
     setToken,
     token,
-    catalogReady,
     wishlist,
     fetchWishlist,
     addToWishlist,

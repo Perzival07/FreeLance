@@ -1,179 +1,140 @@
-import { useContext, useEffect, useState } from "react";
-import { ShopContext } from "../context/ShopContext";
-import Title from "../components/Title";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { ShopContext } from "../context/ShopContext";
+import Breadcrumbs from "../components/Breadcrumbs";
+import OrderProgress from "../components/OrderProgress";
+import useSeo from "../hooks/useSeo";
+import { formatPrice, imageUrl } from "../utils/format";
+import { SITE, whatsappLink } from "../config/site";
 
 const formatOrderDate = (value) => {
-  if (value == null || value === "") return "—";
   const d = new Date(value);
-  return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleString();
+  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 };
 
+const canCancel = (status) => status === "Order Placed" || status === "Packing";
+
 const Orders = () => {
-  const { backendUrl, token, currency } = useContext(ShopContext);
-  const [orders, setOrders] = useState([]);
+  const { backendUrl, token } = useContext(ShopContext);
+  const [orders, setOrders] = useState(null);
+  useSeo({ title: "My orders" });
 
-  const loadOrderData = async () => {
+  const loadOrderData = useCallback(async () => {
+    if (!token) return;
     try {
-      if (!token) {
-        return null;
-      }
-
-      const response = await axios.post(
-        `${backendUrl}/order/userorders`,
-        {},
-        { headers: { token } }
-      );
-      if (response.data.success) {
-        setOrders([...(response.data.orders || [])].reverse());
-      } else {
-        setOrders([]);
-      }
+      const { data } = await axios.post(`${backendUrl}/order/userorders`, {}, { headers: { token } });
+      setOrders(data.success ? [...(data.orders || [])].reverse() : []);
     } catch (error) {
       console.error("Error loading order data:", error);
       setOrders([]);
     }
-  };
+  }, [backendUrl, token]);
 
   useEffect(() => {
     loadOrderData();
-  }, [token]);
+  }, [loadOrderData]);
 
   const handleCancelOrder = async (orderId) => {
     if (!window.confirm("Are you sure you want to cancel this order?")) return;
     try {
-      const { data } = await axios.post(
-        `${backendUrl}/order/cancel`,
-        { orderId },
-        { headers: { token } }
-      );
+      const { data } = await axios.post(`${backendUrl}/order/cancel`, { orderId }, { headers: { token } });
       if (data.success) {
-        toast.success(data.message || "Order cancelled successfully");
-        await loadOrderData();
+        toast.success(data.message || "Order cancelled");
+        loadOrderData();
       } else {
         toast.error(data.message || "Could not cancel order");
       }
     } catch (error) {
-      console.log(error);
       toast.error(error.response?.data?.message || error.message);
     }
   };
 
-  const canCancel = (status) =>
-    status === "Order Placed" || status === "Packing";
+  if (!token) {
+    return (
+      <div className="container-site py-20 text-center">
+        <h1 className="text-4xl font-semibold">My orders</h1>
+        <p className="mt-2 text-stone-600">Log in to see your orders, or track one with your order ID.</p>
+        <div className="mt-6 flex justify-center gap-3">
+          <Link to="/login" className="btn-primary">Log in</Link>
+          <Link to="/track-order" className="btn-outline">Track an order</Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="border-t hairline-gold pt-16">
-      <div className="text-2xl flex flex-wrap items-center justify-between gap-4">
-        <Title text1={"MY"} text2={"ORDERS"} />
-        <button
-          type="button"
-          onClick={loadOrderData}
-          className="btn-gold-outline"
-        >
-          Refresh
-        </button>
+    <div className="container-site py-8">
+      <Breadcrumbs items={[{ label: "My orders" }]} />
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <h1 className="text-4xl font-semibold">My orders</h1>
+        <button type="button" onClick={loadOrderData} className="btn-outline py-2">Refresh</button>
       </div>
 
-      <div className="flex flex-col gap-4 mt-4">
-        {orders.map((order) => (
-          <div
-            key={order._id}
-            className="py-6 px-5 card-luxury text-ivory-200 flex flex-col gap-4"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-ivory-300">
-              <p>
-                Date:{" "}
-                <span className="text-ivory-100">{formatOrderDate(order.date)}</span>
-              </p>
-              <p>
-                Total:{" "}
-                <span className="text-ivory-100 font-medium">
-                  {currency}
-                  {order.amount}
-                </span>
-              </p>
-              <p>
-                Payment:{" "}
-                <span className="text-ivory-100">{order.paymentMethod}</span>
-              </p>
-            </div>
-
-            {order.items.map((item, idx) => (
-              <div
-                key={`${order._id}-${idx}`}
-                className="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
-              >
-                <div className="flex items-start gap-6 text-sm">
-                  <img
-                    loading="lazy"
-                    className="w-16 sm:w-20 border border-gold-500/15"
-                    src={item.image[0]}
-                    alt="item_image"
-                  />
-
-                  <div>
-                    <p className="sm:text-base font-display text-lg text-ivory-100 tracking-wide">{item.name}</p>
-                    <div className="flex flex-wrap items-center gap-3 mt-1 text-base text-ivory-200">
-                      <p>
-                        {currency}
-                        {item.price}
-                      </p>
-                      <p>Quantity: {item.quantity}</p>
-                      {item.dimensions && (() => {
-                        const dims = item.dimensions.split("x");
-                        const formatDim = (cm) => {
-                          const totalInches = Number(cm) / 2.54;
-                          const feet = Math.floor(totalInches / 12);
-                          const inches =
-                            Math.round((totalInches % 12) * 10) / 10;
-                          return {
-                            cm: Math.round(Number(cm)),
-                            feet,
-                            inches,
-                          };
-                        };
-                        const length = formatDim(dims[0]);
-                        const breadth = formatDim(dims[1]);
-                        const height = formatDim(dims[2]);
-                        const imperial = `${length.feet}'${length.inches}"×${breadth.feet}'${breadth.inches}"×${height.feet}'${height.inches}"`;
-                        return (
-                          <p>
-                            Dimensions: {length.cm}×{breadth.cm}×{height.cm} cm (
-                            {imperial})
-                          </p>
-                        );
-                      })()}
-                      {!item.dimensions && <p>Dimensions: N/A</p>}
-                    </div>
-                  </div>
+      {orders === null ? (
+        <div className="mt-8 h-40 animate-pulse rounded-lg bg-cream-300" />
+      ) : orders.length === 0 ? (
+        <div className="card mt-8 p-10 text-center">
+          <p className="text-stone-700">You haven&apos;t placed any orders yet.</p>
+          <Link to="/collection" className="btn-primary mt-5">Start shopping</Link>
+        </div>
+      ) : (
+        <div className="mt-8 space-y-6">
+          {orders.map((order) => (
+            <article key={order._id} className="card overflow-hidden">
+              <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b border-cream-300 bg-cream-50 px-5 py-4 text-sm">
+                <div>
+                  <p className="text-stone-500">Order</p>
+                  <p className="font-medium text-stone-900">#{String(order._id).slice(-8).toUpperCase()}</p>
                 </div>
-              </div>
-            ))}
+                <div>
+                  <p className="text-stone-500">Placed</p>
+                  <p className="text-stone-900">{formatOrderDate(order.date)}</p>
+                </div>
+                <div>
+                  <p className="text-stone-500">Payment</p>
+                  <p className="text-stone-900">{order.paymentMethod} · {order.payment ? "Paid" : "Pending"}</p>
+                </div>
+                <div>
+                  <p className="text-stone-500">Total</p>
+                  <p className="font-semibold text-stone-900">{formatPrice(order.amount)}</p>
+                </div>
+              </header>
 
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4 border-t border-gold-500/15">
-              <div className="flex items-center gap-2">
-                <p className="min-w-2 h-2 rounded-full bg-gold-500" />
-                <p className="text-sm md:text-base font-medium text-ivory-100">{order.status}</p>
+              <div className="px-5 py-6">
+                <OrderProgress status={order.status} />
               </div>
-              <div className="flex flex-wrap gap-2">
-                {canCancel(order.status) ? (
-                  <button
-                    type="button"
-                    onClick={() => handleCancelOrder(order._id)}
-                    className="border border-red-500/60 text-red-400 px-4 py-2 text-sm font-medium rounded-sm hover:bg-red-500 hover:text-white transition-colors"
-                  >
+
+              <ul className="divide-y divide-cream-300 border-t border-cream-300 px-5">
+                {order.items.map((item, idx) => (
+                  <li key={`${order._id}-${idx}`} className="flex items-center gap-4 py-4">
+                    <img loading="lazy" src={imageUrl(item.image?.[0], 160)} alt="" className="h-16 w-20 rounded object-cover" />
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-stone-900">{item.name}</p>
+                      <p className="text-sm text-stone-500">
+                        Qty {item.quantity} · {formatPrice(item.price)} each
+                        {item.dimensions ? ` · ${item.dimensions.split("x").map((n) => Math.round(Number(n))).join(" × ")} cm` : ""}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-cream-300 px-5 py-4">
+                <a href={whatsappLink(`Hi, I have a question about my order #${String(order._id).slice(-8).toUpperCase()}.`)} target="_blank" rel="noopener noreferrer" className="text-sm text-stone-700 hover:text-stone-900">
+                  Need help? WhatsApp us or call {SITE.phone}
+                </a>
+                {canCancel(order.status) && (
+                  <button type="button" onClick={() => handleCancelOrder(order._id)} className="rounded-md border border-red-300 px-4 py-2 text-sm text-red-700 hover:bg-red-50">
                     Cancel order
                   </button>
-                ) : order.status === "Cancelled" ? (
-                  <p className="text-red-400 text-sm font-medium">Cancelled</p>
-                ) : null}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+                )}
+              </footer>
+            </article>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

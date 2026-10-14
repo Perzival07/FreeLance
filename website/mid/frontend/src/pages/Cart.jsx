@@ -1,166 +1,100 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
+import { Link } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
-import Title from "../components/Title";
-import { assets } from "../assets/assets";
 import CartTotal from "../components/CartTotal";
-import { toast } from "react-toastify";
+import Icon from "../components/Icons";
+import Breadcrumbs from "../components/Breadcrumbs";
+import useSeo from "../hooks/useSeo";
+import { formatPrice, imageUrl, productUrl } from "../utils/format";
+import { SITE } from "../config/site";
+
+const formatDimKey = (key) => {
+  const [l, b, h] = String(key).split("x").map(Number);
+  return [l, b, h].every(Number.isFinite) ? `${Math.round(l)} × ${Math.round(b)} × ${Math.round(h)} cm` : "";
+};
 
 const Cart = () => {
-  const { products, currency, cartItems, updateQuantity, navigate, fetchProductById } =
-    useContext(ShopContext);
+  const { productCache, cartItems, updateQuantity, navigate, token } = useContext(ShopContext);
+  useSeo({ title: "Your cart" });
 
-  const [cartData, setCartData] = useState([]);
-
-
-
-  useEffect(() => {
-    const tempData = [];
-    const ids = new Set();
-    for (const items in cartItems) {
-      for (const item in cartItems[items]) {
-        if (cartItems[items][item] > 0) {
-          tempData.push({
-            _id: items,
-            dimensions: item,
-            quantity: cartItems[items][item],
-          });
-          ids.add(items);
-        }
-      }
+  const lines = [];
+  for (const id in cartItems) {
+    for (const dims in cartItems[id]) {
+      if (cartItems[id][dims] > 0) lines.push({ id, dims, quantity: cartItems[id][dims], product: productCache[id] });
     }
-    setCartData(tempData);
+  }
 
-    const missing = [...ids].filter(
-      (id) => !products.some((p) => String(p._id) === String(id))
+  if (lines.length === 0) {
+    return (
+      <div className="container-site py-20 text-center">
+        <Icon name="bag" className="mx-auto h-12 w-12 text-stone-400" />
+        <h1 className="mt-4 text-4xl font-semibold">Your cart is empty</h1>
+        <p className="mt-2 text-stone-600">Find something you&apos;ll love sitting on for years.</p>
+        <Link to="/collection" className="btn-primary mt-6">Browse furniture</Link>
+      </div>
     );
-    if (missing.length === 0) return;
-
-    let cancelled = false;
-    (async () => {
-      for (const id of missing) {
-        if (cancelled) return;
-        await fetchProductById(id);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [cartItems, products, fetchProductById]);
-
-
+  }
 
   return (
-    <div className="border-t hairline-gold pt-14">
-      <div className="text-2xl mb-3">
-        <Title text1={"YOUR"} text2={"CART"} />
-      </div>
+    <div className="container-site py-8">
+      <Breadcrumbs items={[{ label: "Cart" }]} />
+      <h1 className="text-4xl font-semibold">Your cart</h1>
 
-      <div className="flex flex-col gap-3">
-        {cartData.map((item, index) => {
-          const productData = products.find(
-            (product) => String(product._id) === String(item._id)
-          );
-
-          if (!productData) {
-            return (
-              <div
-                key={`${item._id}-${item.dimensions}`}
-                className="py-4 card-luxury px-4 text-ivory-400 text-sm"
-              >
-                Loading product…
-              </div>
-            );
-          }
-
-          return (
-            <div
-              key={index}
-              className="py-4 px-4 card-luxury text-ivory-200 grid grid-cols-[4fr_0.5fr_0.5fr] sm:grid-cols-[4fr_2fr_0.5fr] items-center gap-4 hover:border-gold-400/40 transition-colors"
-            >
-              <div className="flex items-start gap-6">
-                <img
-                  className="w-16 sm:w-20 border border-gold-500/15"
-                  src={productData.image[0]}
-                  alt=""
-                />
-
-                <div>
-                  <p className="text-xs sm:text-lg font-display text-ivory-100 tracking-wide">
-                    {productData.name}
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <p className="text-gold-gradient font-semibold">
-                      {currency}
-                      {productData.price}
-                    </p>
-                    {(() => {
-                      const dims = item.dimensions.split('x');
-                      const formatDim = (cm) => {
-                        const totalInches = Number(cm) / 2.54;
-                        const feet = Math.floor(totalInches / 12);
-                        const inches = Math.round((totalInches % 12) * 10) / 10;
-                        return { cm: Math.round(Number(cm)), feet, inches, meters: Math.round((Number(cm) / 100) * 100) / 100 };
-                      };
-                      const length = formatDim(dims[0]);
-                      const breadth = formatDim(dims[1]);
-                      const height = formatDim(dims[2]);
-                      return (
-                        <p className="px-2 sm:px-3 sm:py-1 border border-gold-500/20 bg-ink-950 text-xs text-ivory-400">
-                          {length.cm}×{breadth.cm}×{height.cm}cm<br/>
-                          <span className="text-[10px]">{length.feet}'{length.inches}"×{breadth.feet}'{breadth.inches}"×{height.feet}'{height.inches}"</span>
-                        </p>
-                      );
-                    })()}
+      <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_380px]">
+        <ul className="divide-y divide-cream-300 border-y border-cream-300">
+          {lines.map(({ id, dims, quantity, product }) => (
+            <li key={`${id}-${dims}`} className="flex gap-4 py-5">
+              {product ? (
+                <>
+                  <Link to={productUrl(product)} className="shrink-0">
+                    <img src={imageUrl(product.image[0], 240)} alt={product.name} className="h-24 w-32 rounded-md object-cover sm:h-28 sm:w-36" />
+                  </Link>
+                  <div className="flex min-w-0 flex-1 flex-col">
+                    <div className="flex justify-between gap-4">
+                      <div className="min-w-0">
+                        <Link to={productUrl(product)} className="font-medium text-stone-900 hover:text-gold-800">{product.name}</Link>
+                        <p className="mt-0.5 text-sm text-stone-500">{formatDimKey(dims)}</p>
+                      </div>
+                      <p className="shrink-0 font-semibold text-stone-900">{formatPrice(product.price * quantity)}</p>
+                    </div>
+                    <div className="mt-auto flex items-center justify-between pt-3">
+                      <div className="flex items-center rounded-md border border-stone-300">
+                        <button type="button" onClick={() => updateQuantity(id, dims, quantity - 1)} disabled={quantity <= 1} className="px-3 py-1.5 disabled:opacity-30" aria-label="Decrease quantity">
+                          <Icon name="minus" className="h-4 w-4" />
+                        </button>
+                        <span className="min-w-[2ch] text-center text-sm" aria-live="polite">{quantity}</span>
+                        <button type="button" onClick={() => updateQuantity(id, dims, quantity + 1)} disabled={quantity >= 99} className="px-3 py-1.5 disabled:opacity-30" aria-label="Increase quantity">
+                          <Icon name="plus" className="h-4 w-4" />
+                        </button>
+                      </div>
+                      <button type="button" onClick={() => updateQuantity(id, dims, 0)} className="flex items-center gap-1 text-sm text-stone-500 hover:text-red-700">
+                        <Icon name="trash" className="h-4 w-4" /> Remove
+                      </button>
+                    </div>
                   </div>
+                </>
+              ) : (
+                <div className="flex w-full items-center justify-between text-sm text-stone-500">
+                  <span>Loading item…</span>
+                  <button type="button" onClick={() => updateQuantity(id, dims, 0)} className="hover:text-red-700">Remove</button>
                 </div>
-              </div>
+              )}
+            </li>
+          ))}
+        </ul>
 
-              <input
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (val === "") return;
-                  const n = Number(val);
-                  if (!Number.isFinite(n) || !Number.isInteger(n) || n < 1) return;
-                  if (n > 99) {
-                    toast.warn("Maximum quantity per item is 99");
-                    return;
-                  }
-                  updateQuantity(item._id, item.dimensions, n);
-                }}
-                className="border border-gold-500/25 focus:border-gold-400 bg-ink-950 text-ivory-100 max-w-10 sm:max-w-20 px-1 sm:px-2 py-1 outline-none transition-colors"
-                type="number"
-                min={1}
-                max={99}
-                value={item.quantity}
-              />
-
-
-              <img
-                onClick={() => updateQuantity(item._id, item.dimensions, 0)}
-                className="icon-luxury w-4 mr-4 sm:w-5 cursor-pointer"
-                src={assets.bin_icon}
-                alt="bin_icon"
-              />
-
-
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="flex justify-end my-20">
-        <div className="w-full sm:w-[450px]">
+        <aside className="space-y-4">
           <CartTotal />
-
-          <div className="w-full text-end">
-            <button
-              onClick={() => navigate("/place-order")}
-              className="btn-gold my-8"
-            >
-              Proceed to Checkout
-            </button>
-          </div>
-        </div>
+          <button type="button" onClick={() => navigate(token ? "/place-order" : "/login?next=/place-order")} className="btn-primary w-full py-3.5">
+            Proceed to checkout
+          </button>
+          {!token && <p className="text-center text-xs text-stone-500">You&apos;ll be asked to log in or create an account.</p>}
+          <ul className="space-y-2 pt-2 text-sm text-stone-600">
+            <li className="flex gap-2"><Icon name="shield" className="h-4 w-4 text-gold-800" /> Secure checkout · Cash on delivery available</li>
+            <li className="flex gap-2"><Icon name="truck" className="h-4 w-4 text-gold-800" /> {SITE.deliveryText}</li>
+            <li className="flex gap-2"><Icon name="phone" className="h-4 w-4 text-gold-800" /> Need help? <a href={SITE.phoneHref} className="link">{SITE.phone}</a></li>
+          </ul>
+        </aside>
       </div>
     </div>
   );
