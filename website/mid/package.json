@@ -1,0 +1,9 @@
+{
+  "name": "mid",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "install:all": "npm ci --prefix backend && npm ci --prefix frontend && npm ci --prefix admin",
+    "build": "npm run build --prefix frontend && npm run build --prefix admin && rm -rf dist && cp -r frontend/dist dist && cp -r admin/dist dist/admin"
+  }
+}
