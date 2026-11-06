@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Book — Elara Voss</title>
+    <meta name="description" content="A novel by Elara Voss." />
+    <meta name="theme-color" content="#F4ECDD" />
+    <meta property="og:image" content="%SITE%/images/og.jpg" />
+    <meta name="twitter:image" content="%SITE%/images/og.jpg" />
+    <script>
+      /* Apply the saved/system theme before first paint (prevents a day-to-night flash). */
+      try {
+        var t = localStorage.getItem('ev-theme');
+        if (!t && document.documentElement.hasAttribute('data-default-night')) t = 'night';
+        if (t === 'night') document.documentElement.dataset.theme = 'night';
+      } catch (e) {}
+    </script>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+  </head>
+  <body>
+    <header id="site-header"></header>
+    <main id="main"></main>
+    <footer id="site-footer"></footer>
+    <script type="module" src="/src/book.js"></script>
+  </body>
+</html>

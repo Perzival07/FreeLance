@@ -1,0 +1,509 @@
+================================================================================
+  AUTHOR PORTFOLIO WEBSITE — MASTER PLAN + SEQUENTIAL BUILD PROMPTS
+  Project folder : /Users/kd/Desktop/FreeLance/website/author-portfolio
+  Git repo root  : /Users/kd/Desktop/FreeLance  (shared with mid/ and starter/)
+  Created        : 2026-10-30
+================================================================================
+
+HOW TO USE THIS FILE
+--------------------
+- This file is the single source of truth for the build.
+- Execute ONE prompt per turn, in order (PROMPT 01 -> PROMPT 19).
+- Before starting a prompt: re-read PART A-D below (context) + that prompt only.
+- After finishing a prompt:
+    1. Check every item in its "DONE WHEN" list.
+    2. Change its STATUS line from [ ] TODO to [x] DONE.
+    3. Add one line to the PROGRESS LOG at the bottom (date, prompt, notes,
+       anything deviated from the plan).
+    4. Stop and wait for the user to say "next" (or give changes).
+- Never skip ahead. If a prompt reveals a problem in an earlier one, fix it
+  and note it in the PROGRESS LOG.
+- Commits: only when the user asks. Suggested message format per prompt:
+  "author-portfolio: <prompt title>"
+
+
+================================================================================
+PART A — RESEARCH SUMMARY (what good author websites do)
+================================================================================
+
+Sources reviewed (2026 roundups + well-known author sites):
+- weblium.com/blog/best-author-website
+- mycodelesswebsite.com/author-websites (76 examples)
+- authorsrepublic.com/learn/blog/59/promote-yourself-your-author-website
+- ghostwritingllc.com/blog/author-website-examples
+- format.com/magazine/galleries/design/writing-portfolio-roundup
+- 10web.io/blog/author-websites, colorlib.com/wp/best-author-websites
+- awwwards.com (Samuel Burrows portfolio, "interactive graphic novel" tag)
+
+Notable examples & what stands out:
+- Scott Broker ......... forthcoming cover as hero + pre-order button
+- Alice Driver ......... press pull-quotes (New Yorker, NYT) on homepage
+- Akwaeke Emezi ........ bold single colour + heavy type, brand-forward
+- Yumiko Fujiwara ...... cover page that "opens" into content
+- kuulikki ............. horizontal scroll, art-book feel, playful nav
+- Rickie Marsden ....... looping video reel on landing
+- Mary Morgan .......... moody photo hero, editorial list of works, store
+- Anderson Matthew ..... fixed side nav for multi-discipline archive
+- James Patterson ...... strong structure for a huge catalogue
+- Brad Thor ............ conversion-focused, cinematic imagery
+- Fantasy authors (e.g. Sanderson-style sites) .. reading order, world maps
+- Horror author sites .. high contrast, shadows, micro-animation, optional
+                         ambient sound
+
+Must-have sections (nearly universal):
+1. Books first — hero = current/upcoming book with buy/pre-order CTA
+2. Book detail pages — cover, logline, excerpt, reviews, retailer links
+3. About — short bio, achievements, personality, strong headshot
+4. Social proof — press/review quotes, awards
+5. Newsletter with a lead magnet (free short story)
+6. Events / tour dates
+7. Press kit — downloadable headshots, short/long bio
+8. Contact + social links
+9. Mobile-first, accessible, fast
+
+Creative techniques to borrow:
+- Kinetic typography (split letters/words/lines, animated)
+- Cover-first landing that unfolds
+- Horizontal scroll sections
+- Atmospheric looping visuals
+- Fan extras: reading order, world map, quiz, fan-art
+
+
+================================================================================
+PART B — PROJECT DECISIONS (defaults; user may override)
+================================================================================
+
+Sample author (FICTIONAL — must not resemble a real person):
+  Name ......... Elara Voss
+  Genre ........ Literary fantasy / magical realism
+  Tagline ...... "Stories written in lantern light."
+  Based in ..... Edinburgh, Scotland (fictional bio)
+  Books (5):
+    1. The Lantern Keeper      — Lanternfall Trilogy #1 (2019)
+    2. A City of Paper Moths   — Lanternfall Trilogy #2 (2021)
+    3. The Last Wick           — Lanternfall Trilogy #3 (2023)
+    4. Salt & Saint Elsewhere  — standalone (2022)
+    5. The Cartographer's Daughter — standalone, UPCOMING (release 2027-03-14)
+
+Tech stack:
+  - Vite (vanilla JS, ES modules, multi-page: index.html + book.html + 404.html)
+  - GSAP 3 + ScrollTrigger (animation), Lenis (smooth scroll)
+  - Plain CSS with custom properties (no framework), CSS 3D transforms
+  - Canvas 2D for ink effects (no WebGL — keep it light)
+  - All content in src/data/author.js (single editable data file)
+  - Deploy: Vercel (static build -> dist/)
+
+Layout:
+  - index.html = long-scroll single page with 11 sections
+  - book.html?id=<slug> = book detail page generated from data
+  - 404.html = themed "lost page" page
+
+Pictures:
+  - Portrait / atmosphere: Unsplash images (images.unsplash.com/photo-<id>?w=..&q=..&auto=format)
+  - IMPORTANT: verify every image URL returns HTTP 200 with curl before using
+    (a previous project had broken photo links). Fallback: picsum.photos/seed/<word>/W/H
+  - Book covers: designed in code (CSS + inline SVG), NOT stock photos —
+    consistent style, crisp at any size, usable as 3D book faces.
+  - Optional: download final images into public/images/ so the site does not
+    depend on hotlinks.
+
+
+================================================================================
+PART C — DESIGN SYSTEM
+================================================================================
+
+Mood: "an old library at night, lit by a single lantern" — warm, inky, literary,
+with moments of gold light. Day mode = parchment & ink. Night mode = ink & candle.
+
+Colour tokens (CSS custom properties on :root, overridden in [data-theme="night"]):
+  DAY                          NIGHT
+  --bg        #F4ECDD parchment  #0F0D0B ink-black
+  --bg-alt    #EADFCB            #1A1612
+  --text      #1E1A16 ink        #EFE6D6
+  --text-soft #5A5048            #A99D8C
+  --accent    #B4472B vermilion  #E8A84A lantern-gold
+  --accent-2  #2F4A3E bottle-green #6FA58C
+  --line      rgba(30,26,22,.15) rgba(239,230,214,.12)
+  Respect prefers-color-scheme on first visit; remember choice in localStorage
+  (wrapped in try/catch).
+
+Typography (Google Fonts):
+  Display ...... "Fraunces" (variable, use SOFT/WONK axes for character)
+  Body ......... "Newsreader" or "EB Garamond"
+  UI / labels .. "Inter Tight" (small caps, letter-spaced)
+  Fluid type scale with clamp(); hero name ~ clamp(3.5rem, 12vw, 11rem)
+
+Motion principles:
+  - Easing: "expo.out" / "power3.out"; durations 0.6–1.2s
+  - Everything reveals on scroll (ScrollTrigger), staggered
+  - prefers-reduced-motion: disable Lenis, parallax, cursor trail, page-turns;
+    content must be fully visible without JS animations
+  - Never block content behind animation longer than ~1.5s (preloader cap)
+
+Texture: subtle SVG paper-grain noise overlay (fixed, pointer-events:none, ~4% opacity)
+
+Layout: 12-col grid, max-width 1440px, side gutter 16px mobile / 48px desktop.
+Breakpoints: 480, 768, 1024, 1440.
+
+
+================================================================================
+PART D — FOLDER STRUCTURE (target)
+================================================================================
+
+author-portfolio/
+  PLAN_PROMPTS.txt         <- this file
+  README.md
+  package.json
+  vite.config.js
+  vercel.json
+  index.html
+  book.html
+  404.html
+  public/
+    images/                (downloaded photos, favicon, og-image)
+    audio/                 (ambient rain/fire loops — optional)
+    press-kit/             (bio.txt, headshot files)
+  src/
+    main.js                (entry for index.html)
+    book.js                (entry for book.html)
+    data/author.js         (ALL sample content)
+    styles/
+      tokens.css  base.css  layout.css  components.css  sections/*.css
+    core/
+      smooth-scroll.js  theme.js  cursor.js  progress.js  preloader.js
+      transitions.js  split-text.js  utils.js
+    components/
+      book3d.js  cover.js  modal.js  countdown.js  marquee.js
+    sections/
+      hero.js  featured.js  bookshelf.js  world-map.js  quiz.js  about.js
+      praise.js  events.js  journal.js  newsletter.js  presskit-contact.js
+
+
+================================================================================
+PART E — SEQUENTIAL BUILD PROMPTS
+================================================================================
+
+--------------------------------------------------------------------------------
+PROMPT 01 — Project scaffold
+STATUS: [x] DONE
+--------------------------------------------------------------------------------
+Set up the Vite multi-page project in author-portfolio/.
+- npm init + install: vite (dev), gsap, lenis.
+- vite.config.js with rollupOptions.input for index.html, book.html, 404.html.
+- Create the folder structure from PART D with empty/stub files.
+- index.html: semantic skeleton with <header>, <main> containing 11 empty
+  <section id="..."> (hero, featured, books, world, quiz, about, praise,
+  events, journal, newsletter, contact), <footer>. Meta tags: title,
+  description, OG/Twitter, theme-color, Google Fonts preconnect + link.
+- vercel.json for a static Vite build (outputDirectory: dist).
+- README.md: how to run (npm i, npm run dev, npm run build), where to edit content.
+- .gitignore (node_modules, dist).
+DONE WHEN: `npm run dev` serves a blank page with no console errors and
+`npm run build` succeeds.
+
+--------------------------------------------------------------------------------
+PROMPT 02 — Design system & base styles
+STATUS: [x] DONE
+--------------------------------------------------------------------------------
+Implement PART C.
+- tokens.css: all colour tokens (day + night), font stacks, type scale (clamp),
+  spacing scale, radii, shadows, z-index scale, easing variables.
+- base.css: modern reset, body background/text from tokens, link styles,
+  ::selection in accent, focus-visible rings, paper-grain noise overlay,
+  .sr-only, .container, .eyebrow (small-caps label), .btn (primary/ghost),
+  reduced-motion media query that kills transitions/animations.
+- layout.css: 12-col grid helpers, section spacing, section headings
+  (number + eyebrow + big serif title, e.g. "03 — The Bookshelf").
+- core/theme.js: day/night toggle (data-theme on <html>), system preference
+  default, localStorage persistence in try/catch, smooth colour crossfade.
+- Temporary style-guide block on index.html to eyeball tokens (remove in P18).
+DONE WHEN: both themes look right, fonts load, toggling works and persists.
+
+--------------------------------------------------------------------------------
+PROMPT 03 — Sample data file
+STATUS: [x] DONE
+--------------------------------------------------------------------------------
+Write src/data/author.js exporting one object with ALL content (original writing,
+no copied text from real books):
+- author: name, tagline, short bio (60 words), long bio (250 words), location,
+  socials (instagram, bluesky, threads, goodreads — placeholder URLs "#"),
+  agent + publicist contact (fictional, example.com emails), portrait image URLs.
+- books[5]: slug, title, series/number or "standalone", year, releaseDate,
+  status (published|upcoming), logline (1 line), blurb (120 words),
+  excerpt (~300 words, original), pages, genres[], cover design spec
+  (palette[3], motif: lantern|moth|wick|wave|compass, title layout),
+  reviews[3] {quote, source}, retailers[] {name, url:"#"}, awards[].
+- series: Lanternfall Trilogy description + reading order + "start here" note.
+- worldMap: 6–8 locations {id, name, x%, y%, book slug, description, quote}.
+- quiz: 4 questions × 3–4 answers, each answer weights book slugs; result copy.
+- timeline: 8–10 life/career milestones {year, title, text, image?}.
+- praise: 10 press quotes (fictional outlets, e.g. "The Northern Review").
+- awards: 4 items + stats (books sold "400K+", translations "23 languages", etc).
+- events: 6 upcoming {date ISO, city, venue, type: signing|festival|talk|virtual,
+  ticketUrl:"#"} + 3 past.
+- journal: 6 posts {slug, title, date, excerpt, readingTime, tag, image}.
+- newsletter: headline, lead magnet ("The Moth Who Swallowed the Moon" — free story).
+- images: central list of every photo URL used; verify each with
+  `curl -s -o /dev/null -w "%{http_code}"` and replace any non-200.
+DONE WHEN: file imports without error; all image URLs return 200.
+
+--------------------------------------------------------------------------------
+PROMPT 04 — Code-designed book covers + 3D book component
+STATUS: [x] DONE
+--------------------------------------------------------------------------------
+- components/cover.js: render a book cover (front) from the cover spec as
+  HTML+inline SVG: palette gradient, motif illustration (lantern, moth, candle
+  wick, wave, compass — simple elegant SVG line art), title + author in
+  Fraunces, series ribbon, subtle foil sheen (animated gradient on hover).
+  All 5 covers must look like a cohesive designed set.
+- components/book3d.js: a CSS 3D book (front cover, spine with vertical title,
+  page-edge block, back cover) built from a book object. Props: size, initial
+  rotation, interactive (tilt toward pointer with rAF + lerp). Real shadow.
+- Spine-only render mode for the bookshelf.
+DONE WHEN: all 5 books render as 3D objects that tilt smoothly with the mouse
+and degrade to flat covers under reduced motion.
+
+--------------------------------------------------------------------------------
+PROMPT 05 — Global shell (nav, cursor, smooth scroll, preloader, footer)
+STATUS: [x] DONE
+--------------------------------------------------------------------------------
+- core/smooth-scroll.js: Lenis wired to GSAP ticker + ScrollTrigger.update;
+  disabled for reduced motion; anchor links scroll smoothly with header offset.
+- Header: monogram "EV" logo, nav links (Books, World, About, Events, Journal,
+  Contact), "Pre-order" pill CTA, lamp theme toggle (SVG lamp whose light cone
+  switches on/off). Hides on scroll down, shows on scroll up; blurred bg.
+- Mobile menu: full-screen overlay, links stagger in like lines of a poem,
+  focus trap, Esc closes, body scroll locked.
+- core/cursor.js: custom cursor (small ink dot + lagging ring), grows over
+  links/buttons with a contextual label ("Open", "Read", "Drag"); hidden on touch.
+- core/progress.js: reading-progress "bookmark ribbon" on the right edge that
+  fills as you scroll; current section name shown beside it.
+- core/preloader.js: ink drop -> fills circle -> reveals "Elara Voss";
+  max 1.5s; skipped on repeat visits in the same session.
+- Footer: big serif sign-off line, nav, socials, newsletter mini-form, credits,
+  back-to-top quill button.
+DONE WHEN: nav, theme, mobile menu, cursor, progress and footer all work on
+desktop and at 375px width, keyboard-accessible.
+
+--------------------------------------------------------------------------------
+PROMPT 06 — Section 1: Hero
+STATUS: [x] DONE
+--------------------------------------------------------------------------------
+- core/split-text.js: split headings into lines/words/chars (accessible:
+  aria-label on parent, aria-hidden on spans).
+- Hero layout: huge "Elara Voss" name revealed by an INK-BLEED mask (canvas or
+  SVG turbulence filter animating from blot to crisp text), tagline that
+  types out with a blinking caret, eyebrow "Author of The Lanternfall Trilogy".
+- 3 floating 3D books (from P04) drifting at different depths; parallax on
+  pointer move and on scroll.
+- Ink cursor trail on a canvas (soft fading strokes) — hero area only.
+- Scroll cue: animated quill writing a line downward.
+- Primary CTAs: "Explore the books" and "Read an excerpt".
+DONE WHEN: hero intro plays smoothly (60fps target), looks great at mobile
+and desktop, and shows full static content with reduced motion.
+
+--------------------------------------------------------------------------------
+PROMPT 07 — Section 2: Featured upcoming release
+STATUS: [x] DONE
+--------------------------------------------------------------------------------
+- Pinned ScrollTrigger scene: the upcoming book (The Cartographer's Daughter)
+  starts closed; as the user scrolls, the cover swings open (rotateY) revealing
+  the first page with the opening line typed in, while an SVG map line draws
+  itself across the background.
+- Side panel: "Coming 14 March 2027", logline, live countdown
+  (components/countdown.js: days/hours/mins/secs with flip animation),
+  retailer pre-order buttons, "Add to calendar" (.ics download).
+- Mobile: no pin, simple reveal sequence instead.
+DONE WHEN: scroll scene is smooth and reversible; countdown is correct.
+
+--------------------------------------------------------------------------------
+PROMPT 08 — Section 3: The Bookshelf
+STATUS: [x] DONE
+--------------------------------------------------------------------------------
+- A wooden/ink shelf showing all books as SPINES side by side (spine mode).
+- Hover/focus: the book slides out and tilts, showing the cover; others dim.
+- Filters: All / Lanternfall Trilogy / Standalone — animate with GSAP Flip.
+- Click/Enter: open components/modal.js "open book" view — the book flies to
+  the centre, the cover turns like a page (CSS 3D page-turn), revealing:
+  left page = blurb + reviews, right page = excerpt with "turn page" buttons
+  (2–3 spreads). Retailer buttons + "Full details" link to book.html?id=slug.
+- Modal: focus trap, Esc to close, restores focus, scroll locked.
+- Mobile: horizontal swipe carousel of covers instead of spines.
+DONE WHEN: all 5 books open/close smoothly, keyboard + touch usable.
+
+--------------------------------------------------------------------------------
+PROMPT 09 — Section 4: World map + reading order
+STATUS: [x] DONE
+--------------------------------------------------------------------------------
+- Illustrated SVG map of the fictional land "Lanternfall": coastline, rivers,
+  mountains, compass rose, dashed travel route — drawn in ink style. The map
+  "inks itself" (stroke-dashoffset draw-on) when it enters the viewport.
+- 6–8 glowing lantern hotspots from data.worldMap; hover pulses, click opens
+  a parchment tooltip card with place name, description, quote, book link.
+- Drag to pan / pinch on mobile (or simple zoom buttons).
+- Beside the map: "Where to start?" reading-order path — numbered books
+  connected by a drawn line, with a "Start here" stamp on book 1.
+DONE WHEN: map draws in, hotspots are accessible buttons, cards readable on mobile.
+
+--------------------------------------------------------------------------------
+PROMPT 10 — Section 5: "Which book should you read first?" quiz
+STATUS: [x] DONE
+--------------------------------------------------------------------------------
+- Card-stack quiz from data.quiz: one question per card, answers as large
+  buttons; chosen card flips/slides away to reveal the next; progress dots.
+- Score by weights -> result screen: the matching 3D book rises in with a
+  light-burst, personalised line, "Read the excerpt" + "Buy" buttons,
+  "Retake" link. Share button copies a result sentence to clipboard.
+DONE WHEN: every path yields a result; works by keyboard and screen reader
+(aria-live result).
+
+--------------------------------------------------------------------------------
+PROMPT 11 — Section 6: About + horizontal timeline
+STATUS: [x] DONE
+--------------------------------------------------------------------------------
+- Split layout: portrait photo in an arched frame with scroll parallax and
+  a duotone tint matching the theme; long bio revealed line by line;
+  handwritten-style signature SVG that draws itself.
+- "Fun facts" chips (e.g. "Writes only after midnight", "Owns 3 typewriters").
+- Timeline: pinned horizontal-scroll strip of milestones from data.timeline
+  (year in giant outline type, card with text/image). Mobile = vertical list.
+DONE WHEN: horizontal scroll feels natural, no layout jumps on resize.
+
+--------------------------------------------------------------------------------
+PROMPT 12 — Section 7: Praise & awards
+STATUS: [x] DONE
+--------------------------------------------------------------------------------
+- components/marquee.js: two rows of press quotes scrolling in opposite
+  directions; speed reacts to scroll velocity; pauses on hover; accessible
+  (duplicated content aria-hidden, pause button).
+- Stats row: counters (400K+ copies, 23 languages, 5 novels, 4 awards) that
+  count up on enter.
+- Award badges: SVG laurel seals that rotate slightly with the cursor.
+DONE WHEN: marquee is seamless (no gap/jump) and stats animate once.
+
+--------------------------------------------------------------------------------
+PROMPT 13 — Section 8: Events & tour
+STATUS: [x] DONE
+--------------------------------------------------------------------------------
+- "Next event" hero card with live countdown + venue + ticket button.
+- Upcoming list as a ticket-stub style list (date block, city, venue, type
+  tag); hover reveals a small image/map preview following the cursor.
+- Filter chips by type; "Past events" toggle.
+- Add-to-calendar (.ics) per event (shared util from P07).
+DONE WHEN: dates sorted and formatted (Intl.DateTimeFormat), past events
+auto-detected from today's date.
+
+--------------------------------------------------------------------------------
+PROMPT 14 — Sections 9 & 10: Journal + Newsletter
+STATUS: [x] DONE
+--------------------------------------------------------------------------------
+- Journal: asymmetric masonry of 6 post cards (image, tag, title, date,
+  reading time); 3D tilt + image zoom on hover; "Read" opens a lightweight
+  reading overlay with the post (sample text).
+- Newsletter: big headline "Get a free short story", the lead-magnet book
+  cover, email field with inline validation. On submit (no backend — fake
+  success after 800ms): an envelope folds closed, wax seal stamps, flies off;
+  success message. Store nothing except optional localStorage "subscribed"
+  flag (try/catch).
+DONE WHEN: form validates, success animation plays, error state is clear.
+
+--------------------------------------------------------------------------------
+PROMPT 15 — Section 11: Press kit & contact
+STATUS: [x] DONE
+--------------------------------------------------------------------------------
+- Press kit card: headshot thumbnails (download links), short + long bio with
+  "Copy" buttons, downloadable press-kit files in public/press-kit/
+  (bio.txt, fact-sheet.txt).
+- Contact: tabs for "Readers / Media & Press / Rights & Agent"; form with
+  name, email, subject, message; floating labels; validation; fake submit with
+  success state (mailto fallback note in README).
+- Agent/publicist details with copy-email buttons.
+DONE WHEN: all copy/download buttons work; form is fully keyboard accessible.
+
+--------------------------------------------------------------------------------
+PROMPT 16 — Book detail pages (book.html)
+STATUS: [x] DONE
+--------------------------------------------------------------------------------
+- src/book.js: read ?id= slug, render from data (404 redirect if unknown).
+- Layout: large interactive 3D book, title in kinetic type, series badge,
+  logline, blurb, "Read the first chapter" excerpt in a beautiful reading
+  column (drop cap, adjustable font size, reading-time indicator), reviews,
+  awards, retailer buttons, book facts (pages, year, genres).
+- "More from Elara" — other books carousel; prev/next book navigation.
+- Per-page <title>/meta description set from data.
+- core/transitions.js: page-turn / ink-wipe transition between index and
+  book pages (View Transitions API where supported, CSS fallback).
+DONE WHEN: all 5 book pages render correctly; transitions work both ways;
+unknown id goes to 404.
+
+--------------------------------------------------------------------------------
+PROMPT 17 — Extras: ambient sound, 404, easter egg
+STATUS: [x] DONE
+--------------------------------------------------------------------------------
+- Ambient sound toggle in header: rain / fireplace loop (royalty-free, small
+  files in public/audio/), OFF by default, fades in/out, remembers choice.
+  If no audio files available, generate soft noise with Web Audio API instead.
+- 404.html: "This page has been lost to the fog" — a moth flutters around the
+  cursor, link back to the shelf.
+- Easter egg: typing "lantern" anywhere toggles a lantern-light mode where a
+  radial light follows the cursor over a darkened page.
+DONE WHEN: sound never autoplays; 404 works on Vercel; easter egg toggles.
+
+--------------------------------------------------------------------------------
+PROMPT 18 — QA: responsive, accessibility, performance, SEO
+STATUS: [x] DONE
+--------------------------------------------------------------------------------
+- Remove the temporary style guide from P02.
+- Test widths 360, 375, 768, 1024, 1440, 1920 — no horizontal scroll, 16px
+  min gutters, tap targets >= 44px.
+- Accessibility: semantic headings order, alt text on all images, aria labels
+  on icon buttons, focus order, colour contrast AA in both themes,
+  reduced-motion pass of every section.
+- Performance: lazy-load images (loading="lazy", width/height set), preload
+  hero fonts, kill ScrollTriggers off-screen, throttle canvases when hidden
+  (IntersectionObserver + visibilitychange), build size check.
+- SEO: meta + OG image (public/images/og.jpg), JSON-LD (Person + Book),
+  sitemap.xml, robots.txt, favicon set.
+- Run Lighthouse (or equivalent) — target 90+ in Performance/Accessibility/SEO.
+DONE WHEN: all checks pass or remaining issues are listed in PROGRESS LOG.
+
+--------------------------------------------------------------------------------
+PROMPT 19 — Run, verify, deploy prep
+STATUS: [x] DONE (waiting for the user's review/approval + commit decision)
+--------------------------------------------------------------------------------
+- `npm run build` + `npm run preview`; click through every section and every
+  book page in a real browser; check console for errors; take screenshots
+  (desktop + mobile) for the user.
+- Final README: features list, how to swap in a real author (edit
+  src/data/author.js + replace images), deploy steps for Vercel.
+- Note: repo root is /Users/kd/Desktop/FreeLance and mid/ has its own
+  vercel.json — deploy this project as its own Vercel project with root
+  directory = website/author-portfolio.
+- Ask the user before committing / pushing.
+DONE WHEN: user has seen the working site and approved.
+
+
+================================================================================
+PROGRESS LOG  (append one line per completed prompt)
+================================================================================
+2026-10-30 | PLAN | Research done, plan + 19 prompts written. Waiting for "next" to start PROMPT 01.
+2026-10-30 | P01 | Scaffold done: Vite 8 + gsap + lenis, 3 HTML entries, stub files per PART D, vercel.json, README, .gitignore. Build OK, dev serves 200. (Note: dev/build used Vite 8; stub entry JS files contain only a comment.)
+2026-10-30 | P02 | tokens/base/layout CSS + core/theme.js done; temp style guide on index.html (styleguide CSS lives in components.css, remove in P18). Build OK; not yet eyeballed in a real browser. main.js/book.js now import styles + initTheme. Theme flash on load not prevented yet (no inline head script) - consider in P18.
+2026-10-30 | P03 | src/data/author.js written (author, 5 books, series, 8 map locations, quiz 4x4, 10 timeline, 10 praise, awards+stats, 6+3 events, 6 journal posts w/ body text, newsletter, site, central `images` list of 18 Unsplash URLs, all HTTP 200 and visually checked on a contact sheet). Imports OK; all slug refs valid. Deviations: excerpts are 213-304 words (not all ~300); extras added beyond spec: funFacts, journal bodies, event titles/images, site.signOff. Default export + named exports. Event dates are hard-coded ISO (2026-05 to 2027-06) so 'past' detection in P13 should compare to today.
+2026-10-30 | P04 | components/cover.js (renderCover, renderSpineFace, 5 SVG motifs, titleLines), components/book3d.js (createBook3D -> {el,setRotation,destroy}; createSpine), styles/book3d.css (imported by main.js + book.js). Verified in headless Chrome: 5 covers + lead-magnet cover render as a cohesive set, tilt follows pointer (rAF lerp), reduced-motion renders flat covers, spines fit, no h-scroll at 375. Default resting rotateY is +28 (spine visible). Covers scale via container query units (cqw) so any width works. TEMP demo (books + spines) mounted in index.html #demo-books/#demo-spines + bottom of main.js - remove in P18.
+2026-10-30 | P05 | Added core/shell.js (header+footer render, mobile menu w/ focus trap/Esc/scroll lock, header hide-on-scroll via direction tracking), smooth-scroll.js (Lenis+GSAP ticker+ScrollTrigger, anchor handling; Lenis honours CSS scroll-margin-top:72px so no extra offset), cursor.js, progress.js (bookmark ribbon + section name from aria-label), preloader.js (ink drop, ~1.4s, once per session, 1.8s failsafe), styles/shell.css, utils.js helpers. Verified headless: preloader once/session, cursor labels, header hide/show, lamp toggle, anchors land at 72px, footer form validation, to-top, mobile menu + trap + Esc, no h-scroll at 375, reduced motion disables preloader/cursor/Lenis. Deviation: new file core/shell.js (not in PART D). Nav links use absolute '/#id' so they work from book.html. Sections are still empty so progress label stays blank until content lands (P06+). Temp styleguide got padding-top for the fixed header.
+2026-10-30 | P05 | QA pass: header/footer tap targets measured at 1300 + 375; fixed footer links 36px -> 44px. Also verified keyboard tab order + focus ring, lamp toggle inside open mobile menu (menu stays open), menu closes on resize to desktop + unlocks scroll, menu link anchors to 72px, book.html renders shell, no console errors.
+2026-10-30 | P06 | core/split-text.js (words/chars/lines, aria-label on parent + aria-hidden spans), sections/hero.js + styles/sections/hero.css. Ink-bleed name reveal via SVG feTurbulence+displacement+blur+alpha-threshold filter tweened by GSAP (filter removed when done), typewriter tagline w/ blinking caret, 3 floating 3D trilogy books (3 stacked wrappers: scroll parallax / pointer parallax / float yoyo), ink cursor trail on canvas (hero only, theme-coloured, pauses off-screen + when tab hidden), quill scroll cue, 2 CTAs. preloader.js now exports `ready` promise so the hero intro starts after the preloader. Verified headless: bleed frames, final desktop/night/mobile/tablet, reduced motion shows everything static, ~60fps idle, no h-scroll, no console errors. Deviations: name is stacked on two lines (Elara / Voss italic accent) at clamp(4.5rem,15vw,12rem) instead of one line at 12vw; faint library photo as hero bg (images.libraryNight); on <1024px text comes first and books sit below. 'Read an excerpt' links to /book.html?id=the-lantern-keeper#excerpt (page built in P16; P08 may swap it for the modal). Temp styleguide moved to just above the footer.
+2026-10-30 | P07 | sections/featured.js, components/countdown.js (flip digits, role=timer), styles/sections/featured.css; utils.js gained buildICS/downloadICS/formatDate (shared with P13). Desktop: pinned scrub (+=1600) cover swings open (rotateY -180), opening lines type in, SVG map contours + route draw; fully reversible (verified at 0/25/50/100% and scrolling back). <1024px: no pin, timed reveal on enter. Reduced motion: static open book. Countdown verified vs Date math + ticking + flip class; ICS all-day output checked. Fix after check: mobile page text overflowed -> shorter opening text on small screens; removed double space in Pre-order buttons; 3D perspective moved to .ob.
+2026-10-30 | P08 | components/modal.js (focus trap, Esc, backdrop, scroll lock, inert background, focus restore), sections/bookshelf.js, styles/sections/bookshelf.css. 3D spines (createBook3D at rotateY 90, thickness option added + exposed) slide out/tilt on hover/focus, others dim, side 'nook' panel shows active book; filters All/Trilogy/Standalone via GSAP Flip; open-book reader: book flies from shelf to centre, cover leaf turns, spread 1 = blurb+reviews | excerpt, 3 spreads, turn-page leaf animation both directions, arrow keys, last page has retailers + Full details link. Mobile (<768): scroll-snap cover carousel + scrollable sheet modal (no page turn). Reduced motion: flat spines, instant turns. Verified headless: hover/dim, filters, every one of 5 books opens correct title, Esc closes + focus restored + inert/scroll-lock released, trap holds, no h-scroll. Bugs found+fixed: 3D book boxes (300px) overlapped neighbours so hover/click hit the wrong book -> .book3d pointer-events:none, hover decided by the 54px slot column. Known nit: apostrophe in 'Cartographer's' looks spaced on vertical spines.
+2026-10-30 | P09 | sections/world-map.js + styles/sections/world.css. Hand-built ink-style SVG map (landmass, 2 islands, lagoon, rivers, mountains/trees generated, compass, title, dashed route via mask) that draws itself on first view (coast/river stroke-dashoffset, fills, peaks, route, lanterns pop in). 8 hotspots from data.worldMap = real <button>s (44px, aria-expanded), pulse; click/Enter opens parchment card (name, description, quote, 'Appears in' -> opens the book reader), Esc/outside/X closes + focus returns; card auto-positions inside map, bottom sheet on mobile. Pan (drag) + zoom (+/-/reset buttons, pinch) up to 2.6x, lanterns counter-scale, drag doesn't trigger click. Reading-order aside: numbered path w/ drawn dashed line, covers, 'Start here' stamp, standalone list; items open the reader. Verified headless incl. keyboard, all 8 cards stay inside map, mobile, reduced motion. Fixes: GSAP overwrote CSS counter-scale -> moved to .spot__in wrapper; zoom buttons moved under the map (they covered the Ninth Tower on mobile and swallowed a tap). Note: progress ribbon uses section aria-label as name (long: 'World map and reading order') -> add short data-name in P18. openBook now exported from bookshelf.js.
+2026-10-30 | P10 | sections/quiz.js (exports pure scoreQuiz) + styles/sections/quiz.css. Card stack w/ ghost cards, slide-away transitions, progress dots + 'Question n of 4', Back button, number keys 1-4 select, focus moves to each new question / result title, result region aria-live=polite. Result: 3D book rises with flash + rotating light-burst, personalised line, 'Read the excerpt' (opens reader), Buy/Pre-order, Share (clipboard w/ fallback + 'Copied' status), Retake. Brute-forced all 256 answer paths: every one yields a valid book and all 5 books are reachable (distribution 64/73/25/55/39). Verified keyboard, mobile taps, reduced motion (instant). No issues found.
+2026-10-30 | P11 | sections/about.js + styles/sections/about.css; split-text.js gained srOnly option (sr-only copy instead of aria-label for paragraphs). Arched portrait w/ scroll parallax + theme-driven duotone (mix-blend multiply+lighten; green/parchment day, ink/gold night) + clip reveal; long bio split into lines (re-split on width change, no replay) revealed line by line; hand-drawn single-stroke signature draws itself; fun-fact chips pop in. Timeline: desktop pinned horizontal scrub (track overflow 4247px at 1300w; verified at 0/25/50/75/100%, active milestone + progress bar + reverse + resize mid-scroll with no jump, page continues after pin); <1024px vertical list w/ fade-ins; reduced motion = static vertical list + finished signature. Fixes after check: cards were cut off at bottom of viewport -> sizes now vh-based (fits at 1920x1080, 1300x900, 1280x720, 1024x700); reduced-motion desktop timeline was a clipped row -> forced vertical; mobile year outline overlapped by image -> smaller overlap.
+2026-10-30 | P12 | components/marquee.js (two aria-hidden-duplicated copies, rAF translate, scroll-velocity boost, hover/focus pause, shared pause button, IO + visibility pause, static wrapped list for reduced motion), sections/praise.js, styles/sections/praise.css. Two opposing rows (row0 left ~43px/s, row1 right ~34px/s), seamless: traced row0 running to -1361 then wrapping to -2 with no gap; counters (400K+, 23, 5, 4) count up once; 4 laurel seals tilt toward cursor (matrix3d verified); mobile no h-scroll; reduced = static. Note: seals' leaves form a closed wreath ring rather than two open branches (acceptable).
+2026-10-30 | P13 | sections/events.js (exports pure splitEvents(now)), styles/sections/events.css. Next-event ink card w/ live countdown + tickets + calendar; ticket-stub list (date block, perforation notches, type tags), cursor-following image preview, type filters (Flip) with empty state, past-events toggle (3 past, no ticket links), per-event .ics download (ev-N.ics, UTC DTSTART/DTEND, escaped LOCATION). Dates via Intl.DateTimeFormat in Europe/London ('UK time'). Verified splitEvents at 4 fake dates (next event advances correctly, 0 upcoming in 2028), sorting, filters, downloads, preview, mobile (no tap target <44, no h-scroll), reduced motion.
+2026-10-30 | P14 | sections/journal.js, sections/newsletter.js, styles/sections/journal.css. Journal: 6 cards in CSS-columns masonry (1/2/3 cols) with varied image ratios (grid version left gaps/overlaps -> replaced), 3D tilt + image zoom on hover, whole card clickable via stretched heading button, reading overlay (modal, article w/ image/meta/body) opens for all 6 posts, Esc closes + focus returns. Newsletter: lead-magnet 3D cover, label+email input, inline validation (empty / malformed, aria-invalid, role=alert, clears while typing), fake submit 800ms ('Sending...'), envelope folds closed, wax seal stamps, flies off, success message; localStorage 'ev-subscribed' (try/catch) restores the done state after reload, 'Use a different email' resets; reduced motion = instant success. QA finds (all fixed): CSS-grid masonry overlap; button default padding indenting titles; newsletter card not inset by gutters; envelope overlapped copy; MOBILE h-scroll found by bisecting sections: bookshelf grid column grew to 1280px (min-width:0 on .shelf-layout children), 'Start here' stamp poked 49px out, footer grid at 320px (minmax(0,1fr)). Verified scrollWidth == viewport at 320/360/375/414/768/1024/1440/1920 after scrolling the full page. Note: journal heading buttons measure 29px tall but the ::after overlay makes the whole card the target.
+2026-10-30 | P15 | sections/presskit-contact.js + styles/sections/contact.css + scripts/build-press-kit.mjs (npm run presskit regenerates public/press-kit/bio.txt + fact-sheet.txt from src/data/author.js); headshot-1/2.jpg downloaded into public/press-kit (both crops of the same stock portrait; replace with real photos). Press kit card: 2 downloadable headshots, short bio (60 words) + long bio (253 words, <details>) each with Copy button (clipboard + execCommand fallback, 'Copied' flash + sr-only live status), file downloads (all four return 200 with correct types). Contact: ARIA tabs Readers / Media & Press / Rights & Agent (arrow/Home/End, roving tabindex, panel aria-labelledby follows), recipient card w/ mailto + Copy email, subject auto-prefills per tab until edited, floating-label form with per-field validation (aria-invalid, aria-describedby, focus first invalid, errors clear while fixing), fake submit 900ms -> success panel (focus moved to heading), 'Write another', mailto fallback link built from the fields. Verified in headless incl. reduced motion + 375px (found email link 14px tall -> min-height 44). README mention of mailto fallback still to write in P19.
+2026-10-30 | P16 | src/book.js (full page renderer), styles/sections/book-page.css, core/transitions.js. All 5 pages verified: per-page <title>/meta description/og tags + JSON-LD Book, big interactive 3D book, kinetic split-char title (hover lift), series badge, logline, buy/pre-order buttons, facts (pages/date/series/genres), blurb, reading column (drop cap, sticky bar, A-/A+ 5 sizes remembered in localStorage + sr-only status, reading-time + % progress), reviews + awards, 'More from Elara' scroll-snap carousel (4 others, never self), prev/next with wrap. Missing/unknown id -> location.replace('/404.html'). '#excerpt' deep link scrolls (home hero 'Read an excerpt' now works). Transitions: @view-transition + clip-path ink circle in base.css (verified native pageswap/pagereveal viewTransition on home<->book in Chrome 156; Chrome skips VT for URLs with #fragment, by design) and a JS ink-wipe overlay fallback for browsers without CSSViewTransitionRule (verified: overlay grows from click point, navigates, retracts, next-book + back button OK, modifier/hash/download links not hijacked, reduced motion skips). initTransitions() now called from main.js too. Minor: reading % is coarse because the excerpts are short (~1 min).
+2026-10-30 | P17 | core/sound.js (Web Audio generated rain + fire, no audio files needed; header button + panel Off/Rain/Fire radio group, Esc closes, preference remembered in localStorage but NEVER auto-starts: verified 0 AudioContexts at load/reload, context created only on click; rain RMS~0.059, fire ~0.049, fades to 0 on Off then suspends; pauses when tab hidden), core/lantern.js (type 'lantern' toggles a cursor-following light over a darkened page; ignores typing in inputs; Esc exits; overlay pointer-events:none; works on home + book + 404), 404.html + src/notfound.js + styles/notfound.css (fog layers, outlined 404, moth that flutters around the cursor or wanders on touch, night theme by default unless user chose, link back to #books; reduced motion = static). QA fix: world section overflowed at 375px before its reveal (stamp pre-scaled 1.8x) -> overflow-x:clip on .world. Public audio/ folder unused (kept empty).
+2026-10-30 | P18 | QA pass. CLEANUP: removed temp style guide (index.html, components.css) and P04 demo (main.js, book3d.css). SEO: vite.config.js plugin injects %SITE% (env SITE_URL, default https://elaravoss.example), JSON-LD (Person + WebSite + 5 Book) into index.html, emits sitemap.xml; public/robots.txt, favicon.svg + 32/180/192/512 PNGs, site.webmanifest, og.jpg (1200x630, rendered from the night hero), canonical + og:url/size/alt. FONTS: switched from Google Fonts to self-hosted Fontsource variable fonts (Fraunces full axes, Newsreader wght, Inter Tight wght), 3 first-paint faces preloaded; inline <head> script sets theme before paint (no flash) and the 'intro' class. PERF: hero is now static HTML generated from the data file at build time (h1 pre-split into letter spans) so first paint doesn't wait on JS; JS enhances it; below-fold sections init one per idle slot, then ScrollTrigger.refresh + Lenis resize (fixed: Lenis cached the old page height and clamped #hash deep links). A11Y fixes from Lighthouse/axe: timeline text dimmed below AA (now only images/years dim), aria-label on <p> tagline (sr-only copy instead), label-content-name-mismatch (empty overlay buttons on the shelf, glyph buttons via data-g CSS content, monogram label includes 'EV'), reader buttons use visible names. CONTRAST: tokens verified AA both themes; day accent #B4472B->#A93F24 (4.11->4.65 on --bg-alt), paper browns #8a6a44->#6b4f2f, error red #c0392b->#a82a1c. RESPONSIVE: found+fixed overflow in world (stamp pre-scale), footer at 320px, bookshelf carousel, reduced-motion praise rows; verified no h-scroll at 320/360/375/414/768/1024/1440/1920, gutters >=16px, no tap target <44px, no stuck-hidden content in normal or reduced motion (desktop+mobile). AXE-style DOM audit: 1 h1/page, no skipped levels, all imgs have alt + width/height, no unnamed controls, no duplicate ids, sane tab order. LIGHTHOUSE (prod build, headless): home desktop perf 98 / a11y 100 / BP 100 / SEO 100; book page desktop 99/100/100/100; book page mobile 85/100/100/100; HOME MOBILE PERF 84 (simulated slow-4G, 4x CPU; FCP 2.4s, LCP 3.8s, TBT 40ms, CLS 0.001; real unthrottled FCP/LCP ~80ms). Known gap vs the 90 target: home-mobile LCP is gated by the ~120KB Fraunces display font (4 axes incl. opsz/SOFT/WONK); dropping axes would visibly change the headings, so kept. Options if a higher score matters: subset/drop opsz, or lazy-load italics.
+2026-10-30 | P19 | Final run on the PRODUCTION build (npm run build + npm run preview, headless Chrome 156): clicked through all 11 sections, every nav link (lands at 72px), theme toggle, sound panel (off by default), shelf -> reader, map card, quiz to a result, events filter, journal overlay, contact validation, all 5 book pages + unknown id -> /404.html, night theme, mobile 390x844 (no h-scroll, menu, book sheet). 21/21 checks pass, 0 console errors/warnings, 0 failed requests, 0 HTTP>=400 (the only 'failure' was a test-script artifact: typing 'lantern' while a form input had focus is ignored by design). Screenshots saved to screenshots/{desktop,mobile,night}/. README rewritten (run, edit content, swap-a-real-author checklist, forms-are-demos + mailto fallback, Vercel deploy with root dir website/author-portfolio + SITE_URL, a11y/perf notes). NOT committed or pushed: asking the user first. Repo root is /Users/kd/Desktop/FreeLance; the whole author-portfolio folder is currently untracked.

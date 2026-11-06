@@ -1,0 +1,31 @@
+import './styles/tokens.css';
+import './styles/base.css';
+import './styles/layout.css';
+import './styles/components.css';
+import './styles/shell.css';
+import './styles/sections/contact.css';
+import { gsap } from 'gsap';
+import { initTheme, initThemeHint } from './core/theme.js';
+import { initShell } from './core/shell.js';
+import { initSmoothScroll } from './core/smooth-scroll.js';
+import { initCursor } from './core/cursor.js';
+import { initTransitions } from './core/transitions.js';
+import { initLantern } from './core/lantern.js';
+import { initPreloader } from './core/preloader.js';
+import { prefersReducedMotion } from './core/utils.js';
+import { pressKitHTML, initPressKit } from './sections/presskit.js';
+
+initTransitions();
+initLantern();
+initShell();
+initTheme();
+initThemeHint();
+initSmoothScroll();
+initCursor();
+initPreloader();
+
+const main = document.getElementById('main');
+main.innerHTML = `<section class="presskit contactsec" aria-label="Press kit">${pressKitHTML()}</section>`;
+initPressKit(main);
+document.documentElement.classList.add('is-ready');
+if (!prefersReducedMotion()) gsap.from(main.querySelectorAll('.section-head > *, .kit'), { opacity: 0, y: 30, duration: 0.9, stagger: 0.1, ease: 'expo.out' });

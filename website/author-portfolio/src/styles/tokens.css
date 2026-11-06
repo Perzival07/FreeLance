@@ -1,0 +1,91 @@
+@import '@fontsource-variable/fraunces/full.css';
+@import '@fontsource-variable/fraunces/full-italic.css';
+@import '@fontsource-variable/newsreader/wght.css';
+@import '@fontsource-variable/newsreader/wght-italic.css';
+@import '@fontsource-variable/inter-tight/wght.css';
+
+:root {
+  --bg: #f4ecdd;
+  --bg-alt: #eadfcb;
+  --text: #1e1a16;
+  --text-soft: #5a5048;
+  --accent: #a93f24;
+  --accent-2: #2f4a3e;
+  --line: rgba(30, 26, 22, 0.15);
+  --on-accent: #f4ecdd;
+  --grain-opacity: 0.045;
+
+  --font-display: 'Fraunces Variable', 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --font-body: 'Newsreader Variable', 'Newsreader', 'EB Garamond', Georgia, serif;
+  --font-ui: 'Inter Tight Variable', 'Inter Tight', system-ui, -apple-system, sans-serif;
+
+  --fs-xs: clamp(0.72rem, 0.7rem + 0.1vw, 0.8rem);
+  --fs-sm: clamp(0.875rem, 0.85rem + 0.15vw, 0.95rem);
+  --fs-base: clamp(1.05rem, 1rem + 0.25vw, 1.2rem);
+  --fs-md: clamp(1.25rem, 1.1rem + 0.7vw, 1.6rem);
+  --fs-lg: clamp(1.6rem, 1.3rem + 1.4vw, 2.4rem);
+  --fs-xl: clamp(2.2rem, 1.6rem + 3vw, 4rem);
+  --fs-2xl: clamp(3rem, 2rem + 5vw, 7rem);
+  --fs-hero: clamp(3.5rem, 12vw, 11rem);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+  --space-9: 7rem;
+  --space-10: 10rem;
+
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 24px;
+  --radius-arch: 999px 999px 12px 12px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(30, 26, 22, 0.12);
+  --shadow-md: 0 8px 24px rgba(30, 26, 22, 0.14);
+  --shadow-lg: 0 24px 60px rgba(30, 26, 22, 0.22);
+
+  --z-base: 1;
+  --z-raised: 10;
+  --z-header: 100;
+  --z-overlay: 200;
+  --z-modal: 300;
+  --z-cursor: 900;
+  --z-grain: 1000;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-power: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --dur-fast: 0.25s;
+  --dur: 0.6s;
+  --dur-slow: 1.2s;
+
+  --gutter: 16px;
+  --max-w: 1440px;
+}
+
+[data-theme='night'] {
+  --bg: #0f0d0b;
+  --bg-alt: #1a1612;
+  --text: #efe6d6;
+  --text-soft: #a99d8c;
+  --accent: #e8a84a;
+  --accent-2: #6fa58c;
+  --line: rgba(239, 230, 214, 0.12);
+  --on-accent: #0f0d0b;
+  --grain-opacity: 0.06;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.7);
+  color-scheme: dark;
+}
+
+@media (min-width: 768px) {
+  :root { --gutter: 32px; }
+}
+@media (min-width: 1024px) {
+  :root { --gutter: 48px; }
+}

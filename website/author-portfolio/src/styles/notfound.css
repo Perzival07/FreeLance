@@ -1,0 +1,22 @@
+body.lost { background: var(--bg); overflow-x: hidden; }
+.lost__main { position: relative; min-height: 100svh; display: grid; place-items: center; padding: 120px 0 80px; overflow: hidden; }
+.lost__inner { position: relative; z-index: 2; max-width: 52rem; }
+.lost__code { font: 600 clamp(7rem, 26vw, 20rem)/.8 var(--font-display); font-variation-settings: 'SOFT' 100; letter-spacing: -.05em; color: transparent; -webkit-text-stroke: 2px color-mix(in srgb, var(--text) 40%, transparent); margin-bottom: var(--space-5); user-select: none; }
+.lost__title { font-size: clamp(2.4rem, 1.4rem + 4.4vw, 5.5rem); letter-spacing: -.03em; margin-bottom: var(--space-5); }
+.lost__title em { color: var(--accent); }
+.lost__text { max-width: 36rem; color: var(--text-soft); margin-bottom: var(--space-6); font-size: var(--fs-md); line-height: 1.5; }
+.lost__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+.fog { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+.fog i { position: absolute; left: -30%; width: 160%; height: 55%; border-radius: 50%; filter: blur(60px); opacity: .5; background: radial-gradient(closest-side, color-mix(in srgb, var(--text) 18%, transparent), transparent); animation: drift 26s ease-in-out infinite alternate; }
+.fog i:nth-child(1) { top: -10%; } .fog i:nth-child(2) { top: 30%; animation-duration: 34s; animation-direction: alternate-reverse; opacity: .35; } .fog i:nth-child(3) { top: 62%; animation-duration: 42s; opacity: .45; }
+@keyframes drift { from { transform: translateX(-8%) scale(1); } to { transform: translateX(10%) scale(1.15); } }
+
+.moth { position: fixed; left: 0; top: 0; z-index: 3; width: 56px; height: 56px; color: var(--accent); pointer-events: none; filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 70%, transparent)); will-change: transform; }
+.moth__wl, .moth__wr { transform-box: fill-box; animation: flap .16s ease-in-out infinite alternate; }
+.moth__wl { transform-origin: 100% 50%; } .moth__wr { transform-origin: 0% 50%; }
+.moth__wr { animation-name: flap-r; }
+@keyframes flap { to { transform: scaleX(.35); } }
+@keyframes flap-r { to { transform: scaleX(.35); } }
+:root:not(.moth-on) .moth { position: absolute; left: auto; right: 12%; top: 22%; }
+@media (prefers-reduced-motion: reduce) { .moth__wl, .moth__wr, .fog i { animation: none; } }

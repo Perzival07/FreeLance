@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en" data-default-night>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lost to the fog — Elara Voss</title>
+    <meta name="description" content="This page has been lost to the fog. Return to the shelf." />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#0F0D0B" />
+    <script>
+      /* Apply the saved/system theme before first paint (prevents a day-to-night flash). */
+      try {
+        var t = localStorage.getItem('ev-theme');
+        if (!t && document.documentElement.hasAttribute('data-default-night')) t = 'night';
+        if (t === 'night') document.documentElement.dataset.theme = 'night';
+      } catch (e) {}
+    </script>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+  </head>
+  <body class="lost">
+    <header id="site-header"></header>
+    <main id="main" class="lost__main">
+      <div class="fog" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="lost__inner container">
+        <p class="lost__code" aria-hidden="true">404</p>
+        <h1 class="lost__title">This page has been <em>lost to the fog.</em></h1>
+        <p class="lost__text">The lantern swung left and right, and found nothing here. The page you wanted may have moved, or may never have been written. A moth is keeping you company while you decide.</p>
+        <div class="lost__actions">
+          <a class="btn btn--primary" href="/#books" data-cursor="Shelf">Return to the shelf</a>
+          <a class="btn btn--ghost" href="/">Back to the beginning</a>
+        </div>
+      </div>
+      <svg class="moth" viewBox="0 0 100 100" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <g class="moth__wl"><path d="M47 46C30 26 8 30 7 45c0 12 22 14 40 7z"/><path d="M47 55C33 56 21 70 29 82c11 3 17-13 18-24z"/></g>
+        <g class="moth__wr"><path d="M53 46C70 26 92 30 93 45c0 12-22 14-40 7z"/><path d="M53 55c14 1 26 15 18 27-11 3-17-13-18-24z"/></g>
+        <ellipse cx="50" cy="55" rx="3" ry="15" fill="currentColor"/><circle cx="50" cy="38" r="3.5"/><path d="M48 35Q42 24 35 26M52 35Q58 24 65 26"/>
+      </svg>
+    </main>
+    <footer id="site-footer"></footer>
+    <script type="module" src="/src/notfound.js"></script>
+  </body>
+</html>

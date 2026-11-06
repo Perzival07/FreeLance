@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Elara Voss — Stories written in lantern light</title>
+    <meta name="description" content="Elara Voss is a literary fantasy author, writer of the Lanternfall Trilogy. Explore the books, the world, and upcoming events." />
+    <meta name="theme-color" content="#F4ECDD" />
+    <link rel="canonical" href="%SITE%/" />
+    <meta property="og:url" content="%SITE%/" />
+    <meta property="og:site_name" content="Elara Voss" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Elara Voss, author of the Lanternfall Trilogy: Stories written in lantern light." />
+    <!--JSONLD-->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Elara Voss — Stories written in lantern light" />
+    <meta property="og:description" content="Literary fantasy author of the Lanternfall Trilogy." />
+    <meta property="og:image" content="%SITE%/images/og.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Elara Voss — Stories written in lantern light" />
+    <meta name="twitter:description" content="Literary fantasy author of the Lanternfall Trilogy." />
+    <meta name="twitter:image" content="%SITE%/images/og.jpg" />
+    <script>
+      /* Apply the saved/system theme before first paint (prevents a day-to-night flash). */
+      try {
+        var t = localStorage.getItem('ev-theme');
+        if (!t && document.documentElement.hasAttribute('data-default-night')) t = 'night';
+        if (t === 'night') document.documentElement.dataset.theme = 'night';
+      } catch (e) {}
+      /* Hero intro: ink-bleed text renders blurred on first paint; JS resolves it. Failsafe removes it if JS never runs. */
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('intro');
+        setTimeout(function () { document.documentElement.classList.remove('intro'); }, 7000);
+      }
+    </script>
+    <noscript><style>html.intro .hero__name, html.intro .hero__eyebrow, html.intro .hero__tagline, html.intro .hero__ctas > *, html.intro .hero__cue { filter: none !important; opacity: 1 !important; }</style></noscript>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+  </head>
+  <body>
+    <header id="site-header"></header>
+    <main id="main">
+      <section id="hero" data-name="Intro" class="hero" aria-label="Introduction">
+        <!--HERO-->
+      </section>
+      <section id="featured" data-name="Next book" aria-label="Upcoming release"></section>
+      <section id="books" data-name="The shelf" aria-label="The bookshelf"></section>
+      <section id="world" data-name="The world" aria-label="World map and reading order"></section>
+      <section id="quiz" data-name="Quiz" aria-label="Which book to read first"></section>
+      <section id="about" data-name="About" aria-label="About the author"></section>
+      <section id="praise" data-name="Praise" aria-label="Praise and awards"></section>
+      <section id="events" data-name="Events" aria-label="Events and tour"></section>
+      <section id="journal" data-name="Journal" aria-label="Journal"></section>
+      <section id="newsletter" data-name="Newsletter" aria-label="Newsletter"></section>
+      <section id="contact" data-name="Contact" aria-label="Press kit and contact"></section>
+    </main>
+    <footer id="site-footer"></footer>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
